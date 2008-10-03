@@ -23,6 +23,7 @@ Mount models as web services in Sinatra with ease.
 
 == Usage
 
+  $ ruby example/app.rb &
   $ curl http://localhost:4567/posts.json
   $ curl http://localhost:4567/posts/1.json
   $ curl http://localhost:4567/posts/1.xml
