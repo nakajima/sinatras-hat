@@ -22,14 +22,14 @@ module Sinatra
 
     def index!
       map :get, "/#{prefix}" do |params|
-        model.send(*finder).send as(params)
+        model.send(*finder)
       end
     end
     
     def show!
       map :get, "/#{prefix}/:id" do |params|
         record = model.find(params[:id])
-        record.send(as(params))
+        record
       end
     end
     
@@ -38,7 +38,7 @@ module Sinatra
         record = model.find(params[:id])
         record.attributes = parse_for_attributes!(params)
         record.save
-        record.send(as(params))
+        record
       end
     end
     
@@ -69,7 +69,7 @@ module Sinatra
       context.send(verb, "#{path}.:format") do
         format = params[:format].downcase.to_sym
         
-        next block.call(params) if valid_formats[format]
+        next block.call(params).send("to_#{format}") if valid_formats[format]
         
         throw :halt, [
           406, [
@@ -91,10 +91,6 @@ module Sinatra
     
     def prefix
       Extlib::Inflection.tableize(model.name)
-    end
-    
-    def as(params)
-      "to_#{params[:format]}"
     end
   end
 end
