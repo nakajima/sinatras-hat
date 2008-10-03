@@ -84,9 +84,8 @@ module Sinatra
     end
     
     def parse_for_attributes!(params)
-      string = params[prefix.singularize]
-      handle = formats[params[:format].to_sym]
-      handle.call(string)
+      handler = formats[params[:format].to_sym]
+      handler.call params[prefix.singularize]
     end
     
     def prefix
