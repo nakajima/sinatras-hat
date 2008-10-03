@@ -60,6 +60,8 @@ module Sinatra
       end
       
       context.send(verb, "#{path}.:format") do
+        next block.call(params) if VALID_FORMATS.include?(params[:format])
+        
         throw :halt, [
           406, [
             "",
@@ -68,9 +70,7 @@ module Sinatra
             "Example: #{path}.json",
             "\n"
           ].join("\n")
-        ] unless VALID_FORMATS.include?(params[:format])
-        
-        block.call(params)
+        ]
       end
     end
     
