@@ -41,11 +41,7 @@ module Sinatra
         record
       end
     end
-    
-    def finder
-      options[:finder]
-    end
-    
+
     def formats
       @formats ||= {
         :json => proc { |string| JSON.parse(string) },
@@ -63,7 +59,7 @@ module Sinatra
       valid_formats = formats
       
       context.send(verb, path) do
-        throw :halt, [400, "\nYou must specify JSON or XML in your path. Example: #{path}.json\n"]
+        throw :halt, [400, "\nYou must specify format in your path. Example: #{path}.json\n"]
       end
       
       context.send(verb, "#{path}.:format") do
@@ -73,15 +69,14 @@ module Sinatra
         
         throw :halt, [
           406, [
-            "",
-            "The '#{format}' format is not supported.",
-            "You must specify JSON or XML in your path.\n",
-            "Example: #{path}.json",
-            "\n"
+            "The `#{format}` format is not supported.\n",
+            "Valid Formats: #{valid_formats.keys.join(', ')}\n",
           ].join("\n")
         ]
       end
     end
+    
+    private
     
     def parse_for_attributes!(params)
       handler = formats[params[:format].to_sym]
