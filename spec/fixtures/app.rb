@@ -12,4 +12,5 @@ get('/hello/:name') { "Hello #{params[:name]}!" }
 mount(Foo)
 mount(Bar) do |klass|
   klass.finder = [:find, :all]
+  klass.formats[:yaml] = proc { |string| YAML.load(string) }
 end

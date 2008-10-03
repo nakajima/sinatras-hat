@@ -17,9 +17,18 @@ describe "sinatra's hat" do
   
   describe "customizing options" do
     it "should allow for custom finder" do
-      mock(result = []).to_json
-      mock(Bar).find(:all).returns(result)
+      mock(record = []).to_json
+      mock(Bar).find(:all).returns(record)
       get_it '/bars.json'
+      response.should be_ok
+    end
+    
+    it "should allow new formats" do
+      mock(record = Object.new).attributes = { "name" => "Frank" }
+      mock(record).to_yaml
+      mock(record).save
+      mock(Bar).find.with('3').returns(record)
+      put_it '/bars/3.yaml', "bar" => { "name" => "Frank" }.to_yaml
       response.should be_ok
     end
   end
@@ -27,15 +36,15 @@ describe "sinatra's hat" do
   describe "generating routes for model" do
     describe "index" do
       it "should generate index for foos for json" do
-        mock(result = []).to_json
-        mock(Foo).all.returns(result)
+        mock(record = []).to_json
+        mock(Foo).all.returns(record)
         get_it '/foos.json'
         response.should be_ok
       end
 
       it "should generate index for foos for xml" do
-        mock(result = []).to_xml
-        mock(Foo).all.returns(result)
+        mock(record = []).to_xml
+        mock(Foo).all.returns(record)
         get_it '/foos.xml'
         response.should be_ok
       end
@@ -53,15 +62,15 @@ describe "sinatra's hat" do
 
     describe "show" do
       it "should generate show route for json" do
-        mock(result = Object.new).to_json
-        mock(Foo).find.with('3').returns(result)
+        mock(record = Object.new).to_json
+        mock(Foo).find.with('3').returns(record)
         get_it '/foos/3.json'
         response.should be_ok
       end
       
       it "should generate show route for xml" do
-        mock(result = Object.new).to_xml
-        mock(Foo).find.with('3').returns(result)
+        mock(record = Object.new).to_xml
+        mock(Foo).find.with('3').returns(record)
         get_it '/foos/3.xml'
         response.should be_ok
       end
@@ -69,19 +78,19 @@ describe "sinatra's hat" do
     
     describe "update" do
       it "should update a record via json" do
-        mock(result = Object.new).attributes = { "name" => "Frank" }
-        mock(result).to_json
-        mock(result).save
-        mock(Foo).find.with('3').returns(result)
+        mock(record = Object.new).attributes = { "name" => "Frank" }
+        mock(record).to_json
+        mock(record).save
+        mock(Foo).find.with('3').returns(record)
         put_it '/foos/3.json', "foo" => { "name" => "Frank" }.to_json
         response.should be_ok
       end
       
       it "should update a record via xml" do
-        mock(result = Object.new).attributes = { "name" => "Frank" }
-        mock(result).to_xml
-        mock(result).save
-        mock(Foo).find.with('3').returns(result)
+        mock(record = Object.new).attributes = { "name" => "Frank" }
+        mock(record).to_xml
+        mock(record).save
+        mock(Foo).find.with('3').returns(record)
         put_it '/foos/3.xml', "foo" => <<-XML
         <?xml version="1.0" encoding="UTF-8"?>
         <hash>

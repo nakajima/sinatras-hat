@@ -7,8 +7,6 @@ module Sinatra
   class Hat
     attr_reader :model, :context, :options
     
-    VALID_FORMATS = ['xml', 'json'] unless defined?(VALID_FORMATS)
-    
     def initialize(model)
       @model = model
       with(options)
@@ -48,6 +46,13 @@ module Sinatra
       options[:finder]
     end
     
+    def formats
+      @formats ||= {
+        :json => proc { |string| JSON.parse(string) },
+        :xml  => proc { |string| Hash.from_xml(string)['hash'] }
+      }
+    end
+    
     def options
       @options ||= {
         :finder => [:all]
@@ -55,17 +60,21 @@ module Sinatra
     end
     
     def map(verb, path, &block)
+      valid_formats = formats
+      
       context.send(verb, path) do
         throw :halt, [400, "\nYou must specify JSON or XML in your path. Example: #{path}.json\n"]
       end
       
       context.send(verb, "#{path}.:format") do
-        next block.call(params) if VALID_FORMATS.include?(params[:format])
+        format = params[:format].downcase.to_sym
+        
+        next block.call(params) if valid_formats[format]
         
         throw :halt, [
           406, [
             "",
-            "The '#{params[:format]}' format is not supported.",
+            "The '#{format}' format is not supported.",
             "You must specify JSON or XML in your path.\n",
             "Example: #{path}.json",
             "\n"
@@ -76,10 +85,8 @@ module Sinatra
     
     def parse_for_attributes!(params)
       string = params[prefix.singularize]
-      case params[:format].to_sym
-      when :json then JSON.parse(string)
-      when :xml  then Hash.from_xml(string)['hash']
-      end
+      handle = formats[params[:format].to_sym]
+      handle.call(string)
     end
     
     def prefix
