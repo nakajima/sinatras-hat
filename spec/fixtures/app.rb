@@ -11,9 +11,11 @@ get('/') { "home" }
 get('/hello/:name') { "Hello #{params[:name]}!" }
 
 mount(Foo)
-mount(Bar) do |klass|
-  klass.finder = [:find, :all]
-  klass.formats[:yaml] = proc { |string| YAML.load(string) }
+mount(Bar) do |klass, model|
+  klass.finder = proc { |params| model.find(:all) }
+  klass.record = proc { |params| model.find(params[:id]) }
+  klass.accepts[:yaml] = proc { |string| YAML.load(string) }
+  klass.formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
 end
 
 mount(Fizz, :only => :index)
