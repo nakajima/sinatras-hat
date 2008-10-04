@@ -13,9 +13,9 @@ module Sinatra
     end
     
     def define(context, opts={})
-      yield self if block_given?
       @context = context
-      self.options.merge!(opts)
+      @options.merge!(opts)
+      yield self if block_given?
       [only].flatten.each { |action| send("#{action}!") }
     end
 
