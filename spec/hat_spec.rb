@@ -154,5 +154,29 @@ describe "sinatra's hat" do
         response.should be_ok
       end
     end
+    
+    describe ":only option" do
+      it "should take a symbol" do
+        stub(Fizz).all.returns(record)
+        get_it '/fizzs.json'
+        response.should be_ok
+        get_it '/fizzs/1.json'
+        response.status.should == 404
+      end
+      
+      it "should take an array" do
+        stub(Buzz).all.returns(record)
+        stub(Buzz).find('1').returns(record)
+        
+        get_it '/buzzs.json'
+        response.should be_ok
+        
+        get_it '/buzzs/1.json'
+        response.should be_ok
+        
+        put_it '/buzzs/1.json', "buzz" => { "whiz" => "bang" }.to_json
+        response.status.should == 404
+      end
+    end
   end
 end

@@ -30,9 +30,7 @@ Mount models as web services in Sinatra with ease.
 
 == TODO
 
-* Create/Destroy actions
-* Ability to specify additional actions
-* More options with #mount call (:if, :only)
+* More options with #mount call (:if)
 * More documentation (show update action)
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 

@@ -12,14 +12,11 @@ module Sinatra
       with(options)
     end
     
-    def define(context)
+    def define(context, opts={})
       yield self if block_given?
       @context = context
-      index!
-      show!
-      create!
-      update!
-      destroy!
+      self.options.merge!(opts)
+      [only].flatten.each { |action| send("#{action}!") }
     end
 
     def index!
@@ -70,7 +67,8 @@ module Sinatra
     
     def options
       @options ||= {
-        :finder => [:all]
+        :finder => [:all],
+        :only => [:index, :show, :create, :update, :destroy]
       }
     end
     
@@ -115,11 +113,11 @@ module Sinatra
     end
     
     def prefix
-      Extlib::Inflection.tableize(model.name)
+      @prefix ||= Extlib::Inflection.tableize(model.name)
     end
   end
 end
 
-def mount(model, &block)
-  Sinatra::Hat.new(model).define(self, &block)
+def mount(model, opts={}, &block)
+  Sinatra::Hat.new(model).define(self, opts, &block)
 end
