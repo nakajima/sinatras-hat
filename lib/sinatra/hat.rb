@@ -17,7 +17,9 @@ module Sinatra
       @context = context
       index!
       show!
+      create!
       update!
+      destroy!
     end
 
     def index!
@@ -33,12 +35,29 @@ module Sinatra
       end
     end
     
+    def create!
+      map :post, "/#{prefix}" do |params|
+        record = model.new
+        record.attributes = parse_for_attributes!(params)
+        record.save
+        record
+      end
+    end
+    
     def update!
       map :put, "/#{prefix}/:id" do |params|
         record = model.find(params[:id])
         record.attributes = parse_for_attributes!(params)
         record.save
         record
+      end
+    end
+    
+    def destroy!
+      map :delete, "/#{prefix}/:id", :no_format => true do |params|
+        record = model.find(params[:id])
+        record.destroy
+        :ok
       end
     end
 
@@ -55,7 +74,21 @@ module Sinatra
       }
     end
     
-    def map(verb, path, &block)
+    def map(verb, path, opts={}, &block)
+      opts[:no_format] ? 
+        handle_without_format(verb, path, &block) : 
+        handle_with_format(verb, path, &block)
+    end
+    
+    private
+    
+    def handle_without_format(verb, path, &block)
+      context.send(verb, path) do
+        block.call(params)
+      end
+    end
+    
+    def handle_with_format(verb, path, &block)
       valid_formats = formats
       
       context.send(verb, path) do
@@ -75,8 +108,6 @@ module Sinatra
         ]
       end
     end
-    
-    private
     
     def parse_for_attributes!(params)
       handler = formats[params[:format].to_sym]

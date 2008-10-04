@@ -79,6 +79,41 @@ describe "sinatra's hat" do
         get_it '/foos/3.xml'
         response.should be_ok
       end
+      
+      it "should return 406 when format unknown" do
+        get_it '/foos/3.silly'
+        response.status.should == 406
+      end
+    end
+    
+    describe "create" do
+      it "should create a record via json" do
+        mock(record).attributes = { "name" => "Frank" }
+        mock(record).to_json
+        mock(record).save
+        mock(Foo).new.returns(record)
+        post_it '/foos.json', "foo" => { "name" => "Frank" }.to_json
+        response.should be_ok
+      end
+      
+      it "should create a record via xml" do
+        mock(record).attributes = { "name" => "Frank" }
+        mock(record).to_xml
+        mock(record).save
+        mock(Foo).new.returns(record)
+        post_it '/foos.xml', "foo" => FOO_XML
+        response.should be_ok
+      end
+      
+      it "should return 400 when format omitted" do
+        post_it '/foos', "foo" => FOO_XML
+        response.status.should == 400
+      end
+      
+      it "should return 406 when format unknown" do
+        post_it '/foos.silly', "foo" => FOO_XML
+        response.status.should == 406
+      end
     end
     
     describe "update" do
@@ -96,12 +131,26 @@ describe "sinatra's hat" do
         mock(record).to_xml
         mock(record).save
         mock(Foo).find.with('3').returns(record)
-        put_it '/foos/3.xml', "foo" => <<-XML
-        <?xml version="1.0" encoding="UTF-8"?>
-        <hash>
-          <name>Frank</name>
-        </hash>
-        XML
+        put_it '/foos/3.xml', "foo" => FOO_XML
+        response.should be_ok
+      end
+      
+      it "should return 400 when format omitted" do
+        put_it '/foos/3', "foo" => FOO_XML
+        response.status.should == 400
+      end
+      
+      it "should return 406 when format unknown" do
+        put_it '/foos/3.silly', "foo" => FOO_XML
+        response.status.should == 406
+      end
+    end
+    
+    describe "destroy" do
+      it "should destroy a record" do
+        mock(record).destroy
+        mock(Foo).find('3').returns(record)
+        delete_it '/foos/3'
         response.should be_ok
       end
     end
