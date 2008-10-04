@@ -30,6 +30,8 @@ Mount models as web services in Sinatra with ease.
 
 == TODO
 
+* Allow a default format for requests without one specified
+* Refactor actions (maybe an Action class?)
 * More options with #mount call (:if)
 * More documentation (show update action)
 
