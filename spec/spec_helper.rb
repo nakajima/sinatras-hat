@@ -7,7 +7,6 @@ require 'json'
 require 'spec'
 require 'sinatra'
 require 'sinatra/test/rspec'
-require 'sinatras_hat'
 require 'app'
 
 FOO_XML = <<-XML

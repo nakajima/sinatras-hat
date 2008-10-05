@@ -4,7 +4,7 @@ require 'sinatra'
 set :app_file, __FILE__
 set :views, File.join(File.dirname(__FILE__), 'views')
 
-require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'sinatras_hat')
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'sinatras-hat')
 
 class Foo; end
 class Bar; end
