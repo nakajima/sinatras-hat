@@ -75,7 +75,8 @@ module Sinatra
         :finder => proc { |params| model.all },
         :record => proc { |params| model.first(:id => params[:id]) },
         :only => [:show, :create, :update, :destroy, :index],
-        :renderer => :erb
+        :renderer => :erb,
+        :prefix => Extlib::Inflection.tableize(model.name)
       }
     end
     
@@ -134,10 +135,6 @@ module Sinatra
       
       context.send(verb, path, &handler)
       context.send(verb, "#{path}.:format", &handler)
-    end
-    
-    def prefix
-      @prefix ||= Extlib::Inflection.tableize(model.name)
     end
     
     def ivar_name(result)

@@ -24,4 +24,5 @@ end
 
 mount(Post) do |klass, model|
   klass.accepts[:yaml] = proc { |string| YAML.load(string) }
+  klass.formats[:ruby] = proc { |record| [record].flatten.map(&:inspect) }
 end

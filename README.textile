@@ -1,0 +1,89 @@
+h1. Sinatra's Hat
+
+Mount models as web services in Sinatra with ease.
+
+h2. Usage
+
+The setup:
+
+  %w(rubygems dm-core dm-serializer sinatra sinatras-hat).each { |lib| require lib }
+
+  class Post
+    include DataMapper::Resource
+    include DataMapper::Serializer
+    property :id, Serial, :key => true
+    property :name, String
+  end
+  
+  configure do
+    DataMapper.setup(:default, 'sqlite3::memory:')
+    Post.auto_migrate!
+    Post.create :name => 'A test', :body => "Some sort of thing"
+  end
+
+The simplest use case:
+  
+  mount(Post)
+  
+Whenever a request comes in to one of the generated routes, we look for a format. If we
+can't find one, we look for a template file, which should be located in a subdirectory
+of your app views directory named the same as your prefix. So the index.erb template
+should be located in the views/posts directory.
+
+h3. Options
+
+Calling @mount(Post)@ generate index, show, update, and destroy routes for the Post model
+using the prefix of "/posts". You can specify a different prefix to use with
+the @:prefix@ option:
+
+  mount Post, :prefix => :articles
+
+If you only want to generate certain actions, you can use the @:only@ option. The following
+will generate only show and index actions:
+
+  mount Post, :only => [:show, :index]
+
+The @#mount@ method also takes a block, where you can specify options as well:
+
+  mount Post do |klass, model|
+    klass.only = [:show, :index]
+  end
+
+By default, Sinatra's Hat will work with a DataMapper model, but you can specify your own @finder@
+and @record@ loaders. To make things work with ActiveRecord, you can do this:
+
+  mount Post do |klass, model|
+    klass.finder = proc { |params| model.find(:all) }
+    klass.record = proc { |params| model.find(params[:id]) }
+  end
+
+h3. Accepting formats
+
+You can add new formats that can be used to create/update record using the @accepts@ hash to
+specify a proc to turn into an attributes hash:
+
+  mount Post do |klass, model|
+    klass.accepts[:yaml] = proc { |string| YAML.load(string) }
+  end
+
+When a request comes in to @/posts.yaml@, the YAML proc will be called, and passed the @params[:post]@
+string. The value of that will be assigned to a new @Post@ object's attributes hash, which is then saved.
+
+h3. Response formats
+
+You can register new response formats using the @formats@ option:
+
+  mount Post |klass, model|
+    klass.formats[:ruby] = proc { |result| [result].flatten.map(&:inspect) }
+  end
+
+Requests coming in with the format @.ruby@ will be processed by this proc. The other way to provide formats
+is to just have a method defined by the model class that will convert for you (such as @to_json@ or @to_xml@).
+
+h4. TODO
+
+* Refactor actions (maybe an Action class?)
+* Access controls using :if option.
+* More documentation (show update action)
+
+(c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
