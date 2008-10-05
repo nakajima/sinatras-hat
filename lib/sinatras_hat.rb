@@ -96,7 +96,6 @@ module Sinatra
       return verb == :get ?
         context.render(renderer, name, :views_directory => template_root) :
         context.redirect(redirection_path(result))
-      throw :halt, [500, "Couldn't find template: #{template_path}"]
     end
     
     def render_format(context, format, verb, &block)

@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'dm-core'
 require 'dm-serializer'
-require 'erector'
 require 'sinatra'
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'sinatras_hat')
