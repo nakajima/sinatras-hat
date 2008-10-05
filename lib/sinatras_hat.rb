@@ -4,6 +4,9 @@ require 'dm-core'
 require 'dm-serializer'
 require File.join(File.dirname(__FILE__), 'core_ext', 'object')
 
+Rack::File::MIME_TYPES['json'] = 'text/x-json'
+Rack::File::MIME_TYPES['yaml'] = 'text/x-yaml'
+
 module Sinatra
   class Hat
     attr_reader :model, :context, :options
@@ -100,8 +103,9 @@ module Sinatra
     
     def render_format(context, format, verb, &block)
       if accepts[format] or verb.eql?(:get)
+        context.content_type format rescue nil
         object = block.call(context.params)
-        handle = formats[format]
+        handle = formats[format.to_sym]
         result = handle ? handle.call(object) : object.try("to_#{format}")
         return result unless result.nil?
       end
