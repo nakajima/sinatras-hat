@@ -66,8 +66,9 @@ specify a proc to turn into an attributes hash:
     klass.accepts[:yaml] = proc { |string| YAML.load(string) }
   end
 
-When a request comes in to @/posts.yaml@, the YAML proc will be called, and passed the @params[:post]@
-string. The value of that will be assigned to a new @Post@ object's attributes hash, which is then saved.
+When a request comes in to @/posts.yaml@, the YAML handling proc will be called, and passed the
+@params[:post]@ string. The value of that will be assigned to a new @Post@ object's attributes hash,
+which is then saved.
 
 h3. Response formats
 

@@ -61,6 +61,7 @@ module Sinatra
 
     def accepts
       @accepts ||= {
+        :yaml => proc { |string| YAML.load(string) },
         :json => proc { |string| JSON.parse(string) },
         :xml  => proc { |string| Hash.from_xml(string)['hash'] }
       }

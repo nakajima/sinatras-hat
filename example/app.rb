@@ -22,6 +22,10 @@ configure do
   Post.create :name => 'Another test', :body => "This is some other sort of thing"
 end
 
+get '/' do
+  redirect '/posts'
+end
+
 mount(Post) do |klass, model|
   klass.accepts[:yaml] = proc { |string| YAML.load(string) }
   klass.formats[:ruby] = proc { |record| [record].flatten.map(&:inspect) }
