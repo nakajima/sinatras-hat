@@ -90,18 +90,17 @@ module Sinatra
         handle_with_format(name, path, opts, &block)
     end
     
-    def render_template(context, name, verb, &block)
-      template_root = File.join(Sinatra.application.options.views, prefix)
-      template_path = File.join(template_root, "#{name}.#{renderer}")
+    def templating_response(context, name, verb, &block)
+      root = File.join(Sinatra.application.options.views, prefix)
       params = railsify_params(context.params)
       result = block.call(params)
       context.instance_variable_set ivar_name(result), result
       return verb == :get ?
-        context.render(renderer, name, :views_directory => template_root) :
+        context.render(renderer, name, :views_directory => root) :
         context.redirect(redirection_path(result))
     end
     
-    def render_format(context, format, verb, &block)
+    def serialized_response(context, format, verb, &block)
       if accepts[format] or verb.eql?(:get)
         context.content_type format rescue nil
         object = block.call(context.params)
@@ -121,7 +120,8 @@ module Sinatra
     private
     
     def railsify_params(params)
-      new_params = {} 
+      new_params = { }
+      params = params.dup
       params.each_pair do |full_key, value| 
         this_param = new_params 
         split_keys = full_key.split(/\]\[|\]|\[/) 
@@ -150,8 +150,8 @@ module Sinatra
       handler = proc do
         format = request.env['PATH_INFO'].split('.')[1]
         format ? 
-          klass.render_format(self, format.to_sym, verb, &block) :
-          klass.render_template(self, name, verb, &block)
+          klass.serialized_response(self, format.to_sym, verb, &block) :
+          klass.templating_response(self, name, verb, &block)
       end
       
       context.send(verb, path, &handler)
