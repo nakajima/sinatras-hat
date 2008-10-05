@@ -85,14 +85,6 @@ module Sinatra
         handle_with_format(name, path, opts, &block)
     end
     
-    def prefix
-      @prefix ||= Extlib::Inflection.tableize(model.name)
-    end
-    
-    def ivar_name(result)
-      "@" + (result.is_a?(Array) ? prefix : model.name.downcase)
-    end
-    
     def render_template(context, name, &block)
       template_root = File.join(Sinatra.application.options.views, prefix)
       template_path = File.join(template_root, "#{name}.#{renderer}")
@@ -142,6 +134,14 @@ module Sinatra
       
       context.send(verb, path, &handler)
       context.send(verb, "#{path}.:format", &handler)
+    end
+    
+    def prefix
+      @prefix ||= Extlib::Inflection.tableize(model.name)
+    end
+    
+    def ivar_name(result)
+      "@" + (result.is_a?(Array) ? prefix : model.name.downcase)
     end
     
     def parse_for_attributes!(params)
