@@ -6,6 +6,7 @@ describe "sinatra's hat" do
     @response = nil
     @record = Object.new
     stub(@record).id.returns(3)
+    stub(@record).name.returns("Frank")
     stub(@record).to_json.returns(:a_result)
     stub(@record).to_xml.returns(:a_result)
     stub(Foo).first(:id => '3').returns(@record)
@@ -77,7 +78,6 @@ describe "sinatra's hat" do
     before(:each) do
       stub(Foo).all.returns([record])
       stub(Foo).first.returns(record)
-      stub(record).name.returns("Frank")
     end
     
     describe "index" do
@@ -167,7 +167,15 @@ describe "sinatra's hat" do
         mock(Foo).new.returns(record)
         post_it '/foos.yaml', "foo" => { "name" => "Frank" }.to_yaml
         response.should be_ok
-      end      
+      end
+      
+      it "should update a record using regular url params" do
+        mock(record).attributes = { "name" => "Frank" }
+        mock(record).save
+        mock(Foo).new.returns(record)
+        post_it '/foos', "foo[name]" => "Frank"
+        response.should be_redirection
+      end
       
       it "should return 406 when format unknown" do
         post_it '/foos.silly', "foo" => FOO_XML
