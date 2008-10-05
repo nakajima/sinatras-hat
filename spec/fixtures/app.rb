@@ -1,6 +1,10 @@
 require 'rubygems'
 require 'sinatra'
-require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'sinatra', 'hat')
+
+set :app_file, __FILE__
+set :views, File.join(File.dirname(__FILE__), 'views')
+
+require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'sinatras_hat')
 
 class Foo; end
 class Bar; end

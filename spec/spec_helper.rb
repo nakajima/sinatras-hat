@@ -1,5 +1,5 @@
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'fixtures')
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib', 'sinatra')
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
 require 'rubygems'
 require 'rr'
@@ -7,7 +7,7 @@ require 'json'
 require 'spec'
 require 'sinatra'
 require 'sinatra/test/rspec'
-require 'hat'
+require 'sinatras_hat'
 require 'app'
 
 FOO_XML = <<-XML
@@ -19,4 +19,8 @@ XML
 
 Spec::Runner.configure do |config|
   config.mock_with :rr
+end
+
+def log(msg)
+  puts "<pre>" + msg + "</pre>"
 end

@@ -3,6 +3,7 @@ require File.join(File.dirname(__FILE__), 'spec_helper')
 describe "sinatra's hat" do
   attr_reader :response, :record
   before(:each) do
+    @response = nil
     @record = Object.new
     stub(@record).to_json.returns(:a_result)
     stub(@record).to_xml.returns(:a_result)
@@ -82,6 +83,7 @@ describe "sinatra's hat" do
     before(:each) do
       stub(Foo).all.returns([record])
       stub(Foo).first.returns(record)
+      stub(record).name.returns("Frank")
     end
     
     describe "index" do
@@ -99,9 +101,14 @@ describe "sinatra's hat" do
         response.should be_ok
       end
       
-      it "should return 400 when format omitted" do
+      it "should generate index for foos for html" do
         get_it '/foos'
-        response.status.should == 400
+        response.should be_ok
+      end
+      
+      it "should render proper view template" do
+        get_it '/foos'
+        body.should == "Frank"
       end
       
       it "should return 406 when format unknown" do
@@ -111,6 +118,10 @@ describe "sinatra's hat" do
     end
 
     describe "show" do
+      before(:each) do
+        stub(Foo).first(:id => '3').returns(record)
+      end
+      
       it "should generate show route for json" do
         mock(record).to_json.returns(:a_result)
         mock(Foo).first(:id => '3').returns(record)
@@ -122,6 +133,11 @@ describe "sinatra's hat" do
         mock(record).to_xml.returns(:a_result)
         mock(Foo).first(:id => '3').returns(record)
         get_it '/foos/3.xml'
+        response.should be_ok
+      end
+      
+      it "should generate show html when no format specified" do
+        get_it '/foos/3'
         response.should be_ok
       end
       
@@ -150,11 +166,6 @@ describe "sinatra's hat" do
         response.should be_ok
       end
       
-      it "should return 400 when format omitted" do
-        post_it '/foos', "foo" => FOO_XML
-        response.status.should == 400
-      end
-      
       it "should return 406 when format unknown" do
         post_it '/foos.silly', "foo" => FOO_XML
         response.status.should == 406
@@ -178,11 +189,6 @@ describe "sinatra's hat" do
         mock(Foo).first(:id => '3').returns(record)
         put_it '/foos/3.xml', "foo" => FOO_XML
         response.should be_ok
-      end
-      
-      it "should return 400 when format omitted" do
-        put_it '/foos/3', "foo" => FOO_XML
-        response.status.should == 400
       end
       
       it "should return 406 when format unknown" do
