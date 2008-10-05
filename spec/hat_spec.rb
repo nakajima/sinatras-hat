@@ -5,6 +5,7 @@ describe "sinatra's hat" do
   before(:each) do
     @response = nil
     @record = Object.new
+    stub(@record).id.returns(3)
     stub(@record).to_json.returns(:a_result)
     stub(@record).to_xml.returns(:a_result)
     stub(Foo).first(:id => '3').returns(@record)
@@ -199,6 +200,13 @@ describe "sinatra's hat" do
         mock(record).save
         put_it '/foos/3.yaml', "foo" => { "name" => "Frank" }.to_yaml
         response.should be_ok
+      end
+      
+      it "should update a record using regular url params" do
+        mock(record).attributes = { "name" => "Frank" }
+        mock(record).save
+        put_it '/foos/3', "foo[name]" => "Frank"
+        response.should be_redirection
       end
       
       it "should return 406 when format unknown" do

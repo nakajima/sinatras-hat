@@ -87,16 +87,16 @@ module Sinatra
         handle_with_format(name, path, opts, &block)
     end
     
-    def render_template(context, name, &block)
+    def render_template(context, name, verb, &block)
       template_root = File.join(Sinatra.application.options.views, prefix)
       template_path = File.join(template_root, "#{name}.#{renderer}")
-      if File.exists?(template_path)
-        result = block.call(context.params)
-        context.instance_variable_set ivar_name(result), result
-        return context.render(renderer, name, :views_directory => template_root)
-      else
-        throw :halt, [500, "Couldn't find template: #{template_path}"]
-      end
+      params = railsify_params(context.params)
+      result = block.call(params)
+      context.instance_variable_set ivar_name(result), result
+      return verb == :get ?
+        context.render(renderer, name, :views_directory => template_root) :
+        context.redirect(redirection_path(result))
+      throw :halt, [500, "Couldn't find template: #{template_path}"]
     end
     
     def render_format(context, format, verb, &block)
@@ -117,6 +117,23 @@ module Sinatra
     
     private
     
+    def railsify_params(params)
+      new_params = {} 
+      params.each_pair do |full_key, value| 
+        this_param = new_params 
+        split_keys = full_key.split(/\]\[|\]|\[/) 
+        split_keys.each_index do |index| 
+          break if split_keys.length == index + 1 
+          this_param[split_keys[index]] ||= {} 
+          this_param = this_param[split_keys[index]] 
+        end 
+        this_param[split_keys.last] = value 
+      end 
+      params.clear
+      params.merge! new_params 
+      params
+    end
+    
     def handle_without_format(name, path, opts, &block)
       context.send(opts[:verb], path) do
         block.call(params)
@@ -131,20 +148,33 @@ module Sinatra
         format = request.env['PATH_INFO'].split('.')[1]
         format ? 
           klass.render_format(self, format.to_sym, verb, &block) :
-          klass.render_template(self, name, &block)
+          klass.render_template(self, name, verb, &block)
       end
       
       context.send(verb, path, &handler)
       context.send(verb, "#{path}.:format", &handler)
     end
     
+    def redirection_path(result)
+      result.is_a?(Symbol) ?
+        "/#{prefix}" :
+        "/#{prefix}/#{result.id}"
+    end
+    
+    def plural?(result)
+      result.respond_to?(:length)
+    end
+    
     def ivar_name(result)
-      "@" + (result.is_a?(Array) ? prefix : model.name.downcase)
+      "@" + (plural?(result) ? prefix : model.name.downcase)
     end
     
     def parse_for_attributes!(params)
-      handler = accepts[params[:format].to_sym]
-      handler.call params[prefix.singularize]
+      if handler = accepts[params[:format].try(:to_sym)]
+        handler.call params[prefix.singularize]
+      else
+        params[model.name.downcase]
+      end
     end
   end
 end
