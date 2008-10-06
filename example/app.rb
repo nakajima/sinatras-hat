@@ -29,8 +29,8 @@ get '/' do
 end
 
 mount(Post) do |klass, model|
-  klass.accepts[:yaml] = proc { |content| YAML.load(string) }
-  klass.formats[:ruby] = proc { |content| "<pre>#{record.inspect}</pre>" }
-  klass.formats[:atom] = proc { |content| "<atom>\n  #{record.to_xml}\n</atom>" }
-  klass.formats[:rss]  = proc { |content| "<rss>\n  #{record.to_xml}\n</rss>" }
+  klass.accepts[:yaml] = proc { |content| YAML.load(content) }
+  klass.formats[:ruby] = proc { |content| "<pre>#{content.inspect}</pre>" }
+  klass.formats[:atom] = proc { |content| "<atom>\n  #{content.to_xml}\n</atom>" }
+  klass.formats[:rss]  = proc { |content| "<rss>\n  #{content.to_xml}\n</rss>" }
 end
