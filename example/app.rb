@@ -30,7 +30,7 @@ end
 
 mount(Post) do |klass, model|
   klass.accepts[:yaml] = proc { |string| YAML.load(string) }
-  klass.formats[:ruby] = proc { |record| [record].flatten.map(&:inspect) }
+  klass.formats[:ruby] = proc { |record| "<pre>#{record.inspect}</pre>" }
   klass.formats[:atom] = proc { |record| "<atom>\n  #{record.to_xml}\n</atom>" }
   klass.formats[:rss]  = proc { |record| "<rss>\n  #{record.to_xml}\n</rss>" }
 end
