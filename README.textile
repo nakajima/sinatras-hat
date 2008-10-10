@@ -75,7 +75,7 @@ h3. Response formats
 You can register new response formats using the @formats@ option:
 
   mount Post |klass, model|
-    klass.formats[:ruby] = proc { |result| [result].flatten.map(&:inspect) }
+    klass.formats[:ruby] = proc { |result| result.inspect }
   end
 
 Requests coming in with the format @.ruby@ will be processed by this proc. The other way to provide formats
