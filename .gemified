@@ -1,6 +1,9 @@
 --- 
 :summary: Simple REST-ful resources with Sinatra.
 :email: patnakajima@gmail.com
-:version: 0.0.2
+:dependencies: 
+- extlib
+- sinatra
 :name: sinatras-hat
+:version: 0.0.2
 :author: Pat Nakajima
