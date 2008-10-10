@@ -84,7 +84,6 @@ is to just have a method defined by the model class that will convert for you (s
 h4. TODO
 
 * Refactor actions (maybe an Action class?)
-* Access controls using :if option.
-* More documentation (show update action)
+* Access controls using @:if@ option.
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
