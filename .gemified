@@ -4,6 +4,8 @@
 :dependencies: 
 - extlib
 - sinatra
+- metaid
 :name: sinatras-hat
 :version: 0.0.2
 :author: Pat Nakajima
+

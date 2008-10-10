@@ -43,7 +43,7 @@ will generate only show and index actions:
 
   mount Post, :only => [:show, :index]
 
-The @#mount@ method also takes a block, where you can specify options as well:
+The @mount@ method also takes a block, where you can specify options as well:
 
   mount Post do |klass, model|
     klass.only = [:show, :index]
@@ -75,7 +75,7 @@ h3. Response formats
 You can register new response formats using the @formats@ option:
 
   mount Post |klass, model|
-    klass.formats[:ruby] = proc { |result| [result].flatten.map(&:inspect) }
+    klass.formats[:ruby] = proc { |result| result.inspect }
   end
 
 Requests coming in with the format @.ruby@ will be processed by this proc. The other way to provide formats
@@ -84,7 +84,6 @@ is to just have a method defined by the model class that will convert for you (s
 h4. TODO
 
 * Refactor actions (maybe an Action class?)
-* Access controls using :if option.
-* More documentation (show update action)
+* Access controls using @:if@ option.
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
