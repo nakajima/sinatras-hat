@@ -43,7 +43,7 @@ will generate only show and index actions:
 
   mount Post, :only => [:show, :index]
 
-The @#mount@ method also takes a block, where you can specify options as well:
+The @mount@ method also takes a block, where you can specify options as well:
 
   mount Post do |klass, model|
     klass.only = [:show, :index]
