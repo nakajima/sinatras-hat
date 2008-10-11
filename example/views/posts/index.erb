@@ -1,5 +1,15 @@
-<% @posts.each do |post| %>
-  <h1><%= post.name %></h1>
-  <p><%= post.body %></p>
-  <small><a href="/posts/<%= post.id %>">Click here to go there.</a></small>
-<% end %>
+<div>
+  <% @posts.each do |post| %>
+    <h1><%= post.name %></h1>
+    <p><%= post.body %></p>
+    <small><a href="/posts/<%= post.id %>">Click here to go there.</a></small>
+  <% end %>
+</div>
+
+<form action="/posts" method="post">
+  <p>Create a new post:</p>
+  <input type="text" name="post[name]">
+  <br>
+  <textarea name="post[body]" rows="8" cols="40"></textarea>
+  <p><input type="submit" value="Continue &rarr;"></p>
+</form>

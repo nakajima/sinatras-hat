@@ -1,8 +1,13 @@
+$LOAD_PATH << File.join(File.dirname(__FILE__), 'core_ext')
+$LOAD_PATH << File.join(File.dirname(__FILE__), 'sinatras-hat')
+
 require 'erb'
 require 'extlib'
 require 'dm-core'
 require 'dm-serializer'
-require File.join(File.dirname(__FILE__), 'core_ext', 'object')
+require 'object'
+
+load 'auth.rb'
 
 Rack::File::MIME_TYPES['json'] = 'text/x-json'
 Rack::File::MIME_TYPES['yaml'] = 'text/x-yaml'
@@ -80,6 +85,7 @@ module Sinatra
         :record => proc { |params| model.first(:id => params[:id]) },
         :only => [:show, :create, :update, :destroy, :index],
         :renderer => :erb,
+        :protect => [],
         :prefix => Extlib::Inflection.tableize(model.name)
       }
     end
@@ -148,6 +154,7 @@ module Sinatra
       klass = self
       
       handler = proc do
+        protect! if klass.protect.include?(name)
         format = request.env['PATH_INFO'].split('.')[1]
         format ? 
           klass.serialized_response(self, format.to_sym, verb, &block) :

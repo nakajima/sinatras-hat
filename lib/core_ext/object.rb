@@ -10,7 +10,7 @@ Object.class_eval do
       meta_def(key) { hash[key] }
       meta_def("#{key}=") { |v| hash[key] = v }
     end
-
+    
     return unless block_given?
 
     result = yield

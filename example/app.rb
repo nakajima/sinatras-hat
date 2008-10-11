@@ -18,7 +18,7 @@ class Post
 end
 
 configure do
-  DataMapper.setup(:default, 'sqlite3::memory:')
+  DataMapper.setup(:default, 'sqlite3:db.sqlite3')
   Post.auto_migrate!
   Post.create :name => 'A test', :body => "Some sort of thing"
   Post.create :name => 'Another test', :body => "This is some other sort of thing"
@@ -29,6 +29,7 @@ get '/' do
 end
 
 mount(Post) do |klass, model|
+  klass.protect = [:create]
   klass.accepts[:yaml] = proc { |content| YAML.load(content) }
   klass.formats[:ruby] = proc { |content| "<pre>#{content.inspect}</pre>" }
   klass.formats[:atom] = proc { |content| "<atom>\n  #{content.to_xml}\n</atom>" }
