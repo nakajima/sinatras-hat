@@ -13,6 +13,7 @@ The setup:
     include DataMapper::Serializer
     property :id, Serial, :key => true
     property :name, String
+    property :body, Text
   end
   
   configure do
