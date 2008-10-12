@@ -81,9 +81,26 @@ You can register new response formats using the @formats@ option:
 Requests coming in with the format @.ruby@ will be processed by this proc. The other way to provide formats
 is to just have a method defined by the model class that will convert for you (such as @to_json@ or @to_xml@).
 
+h3. Authentication
+
+You can protect certain actions using basic authentication using the @protect@ method. The following snippet
+will make the @index@ and @show@ actions require authentication. You should pass username and password options
+as well, unless you want to just use the defaults (admin:password):
+
+  mount Post |klass, model|
+    klass.protect :index, :show, :username => 'foo', :password => 'bar'
+  end
+
+If you want all of your actions to require authentication, you can simply pass @:all@ to @protect@:
+
+  mount Post |klass, model|
+    klass.protect :all, :username => 'foo', :password => 'bar'
+  end
+
+All of your actions will then require authentication.
+
 h4. TODO
 
 * Refactor actions (maybe an Action class?)
-* Access controls using @:if@ option.
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
