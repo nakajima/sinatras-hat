@@ -28,10 +28,11 @@ module Sinatra
         with(options)
       end
     
-      def define(context, opts={})
+      def define(context, opts={}, &block)
         @context = context
+        send(:protect, opts.delete(:protect)) if opts[:protect] # FIXME hack to allow options-esque syntax
         @options.merge!(opts)
-        yield self, model if block_given?
+        instance_eval &block if block_given?
         [only].flatten.each { |action| send("#{action}!") }
       end
 

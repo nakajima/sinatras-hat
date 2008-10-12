@@ -7,6 +7,7 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'sinatras-hat')
 
 Rack::File::MIME_TYPES['atom'] = 'application/atom+xml'
 Rack::File::MIME_TYPES['rss'] = 'application/rss+xml'
+Rack::File::MIME_TYPES['ruby'] = 'text/x-ruby'
 
 class Post
   include DataMapper::Resource
@@ -29,9 +30,9 @@ get '/' do
 end
 
 mount(Post) do |klass, model|
-  klass.protect = [:create]
-  klass.accepts[:yaml] = proc { |content| YAML.load(content) }
-  klass.formats[:ruby] = proc { |content| "<pre>#{content.inspect}</pre>" }
-  klass.formats[:atom] = proc { |content| "<atom>\n  #{content.to_xml}\n</atom>" }
-  klass.formats[:rss]  = proc { |content| "<rss>\n  #{content.to_xml}\n</rss>" }
+  protect :create
+  accepts[:yaml] = proc { |content| YAML.load(content) }
+  formats[:ruby] = proc { |content| content.inspect }
+  formats[:atom] = proc { |content| "<atom>\n  #{content.to_xml}\n</atom>" }
+  formats[:rss]  = proc { |content| "<rss>\n  #{content.to_xml}\n</rss>" }
 end

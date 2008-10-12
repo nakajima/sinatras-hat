@@ -17,19 +17,17 @@ get('/') { "home" }
 get('/hello/:name') { "Hello #{params[:name]}!" }
 
 mount(Foo)
-mount(Bar) do |klass, model|
-  klass.finder = proc { |params| model.find(:all) }
-  klass.record = proc { |params| model.find(params[:id]) }
-  klass.accepts[:yaml] = proc { |string| YAML.load(string) }
-  klass.formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
+mount(Bar) do
+  self.finder = proc { |params| model.find(:all) }
+  self.record = proc { |params| model.find(params[:id]) }
+  accepts[:yaml] = proc { |string| YAML.load(string) }
+  formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
 end
 
 mount(Fizz, :only => :index)
 mount(Buzz, :only => [:index, :show])
-mount(Sekret) do |klass, model|
-  klass.protect :index, :username => 'spec', :password => 'helper'
+mount(Sekret) do
+  protect :index, :username => 'spec', :password => 'helper'
 end
 
-mount(TopSekret) do |klass, model|
-  klass.protect :all
-end
+mount TopSekret, :protect => :all
