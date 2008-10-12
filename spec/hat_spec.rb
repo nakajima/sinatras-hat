@@ -72,6 +72,42 @@ describe "sinatra's hat" do
         response.status.should == 404
       end
     end
+    
+    describe "protecting actions" do
+      it "uses basic auth if action is protected" do
+        get_it '/sekrets'
+        response.status.should == 401
+      end
+      
+      it "allows access when proper credentials provided" do
+        mock(Sekret).all.returns([])
+        
+        get_it '/sekrets.json', :env => {
+          'HTTP_AUTHORIZATION' => 'Basic ' + ["spec:helper"].pack("m*")
+        }
+        
+        response.should be_ok
+      end
+      
+      it "denies access when incorrect credentials provided" do
+        get_it '/sekrets.json', :env => {
+          'HTTP_AUTHORIZATION' => 'Basic ' + ["wrong:stuff"].pack("m*")
+        }
+        
+        response.status.should == 401
+      end
+      
+      it "allows non-protected actions" do
+        mock(Sekret).first(:id => '1').returns(record)
+        get_it '/sekrets/1.json'
+        response.should be_ok
+      end
+      
+      it "allows :all option for protect" do
+        get_it '/top_sekrets'
+        response.status.should == 401
+      end
+    end
   end
   
   describe "generating routes for model" do

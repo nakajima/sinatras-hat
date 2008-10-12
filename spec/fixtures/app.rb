@@ -10,6 +10,8 @@ class Foo; end
 class Bar; end
 class Fizz; end
 class Buzz; end
+class Sekret; end
+class TopSekret; end
 
 get('/') { "home" }
 get('/hello/:name') { "Hello #{params[:name]}!" }
@@ -24,3 +26,10 @@ end
 
 mount(Fizz, :only => :index)
 mount(Buzz, :only => [:index, :show])
+mount(Sekret) do |klass, model|
+  klass.protect :index, :username => 'spec', :password => 'helper'
+end
+
+mount(TopSekret) do |klass, model|
+  klass.protect :all
+end

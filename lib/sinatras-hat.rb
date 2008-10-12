@@ -5,6 +5,7 @@ require 'erb'
 require 'extlib'
 require 'dm-core'
 require 'dm-serializer'
+require 'array'
 require 'object'
 
 load 'auth.rb'
@@ -14,7 +15,7 @@ Rack::File::MIME_TYPES['yaml'] = 'text/x-yaml'
 
 module Sinatra
   class Hat
-    attr_reader :model, :context, :options
+    attr_reader :model, :context, :options, :credentials
     
     def initialize(model)
       @model = model
@@ -85,8 +86,27 @@ module Sinatra
         :record => proc { |params| model.first(:id => params[:id]) },
         :only => [:show, :create, :update, :destroy, :index],
         :renderer => :erb,
-        :protect => [],
+        :realm => 'The App',
         :prefix => Extlib::Inflection.tableize(model.name)
+      }
+    end
+    
+    def protect(*args)
+      opts = args.extract_options! and credentials.merge!(opts)
+
+      if args.length > 0
+        @protect ||= []
+        @protect += args
+        @protect.uniq!
+      else
+        @protect ||= []
+      end
+    end
+    
+    def credentials
+      @credentials ||= {
+        :username => 'admin',
+        :password => 'password'
       }
     end
     
@@ -94,6 +114,10 @@ module Sinatra
       opts[:no_format] ? 
         handle_without_format(name, path, opts, &block) : 
         handle_with_format(name, path, opts, &block)
+    end
+    
+    def protecting?(name)
+      protect.include?(:all) or protect.include?(name)
     end
     
     def templating_response(context, name, verb, &block)
@@ -154,7 +178,7 @@ module Sinatra
       klass = self
       
       handler = proc do
-        protect! if klass.protect.include?(name)
+        protect!(klass) if klass.protecting?(name)
         format = request.env['PATH_INFO'].split('.')[1]
         format ? 
           klass.serialized_response(self, format.to_sym, verb, &block) :
