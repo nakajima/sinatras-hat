@@ -101,6 +101,7 @@ All of your actions will then require authentication.
 
 h4. TODO
 
+* Abstract jQuery-esque pattern for option methods (@only@, @protect@, etc)
 * Refactor actions (maybe an Action class?)
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
