@@ -45,16 +45,16 @@ will generate only show and index actions:
 
 The @mount@ method also takes a block, where you can specify options as well:
 
-  mount Post do |klass, model|
-    klass.only = [:show, :index]
+  mount Post do
+    self.only = [:show, :index]
   end
 
 By default, Sinatra's Hat will work with a DataMapper model, but you can specify your own @finder@
 and @record@ loaders. To make things work with ActiveRecord, you can do this:
 
-  mount Post do |klass, model|
-    klass.finder = proc { |params| model.find(:all) }
-    klass.record = proc { |params| model.find(params[:id]) }
+  mount Post do
+    self.finder = proc { |params| model.find(:all) }
+    self.record = proc { |params| model.find(params[:id]) }
   end
 
 h3. Accepting formats
@@ -62,8 +62,8 @@ h3. Accepting formats
 You can add new formats that can be used to create/update record using the @accepts@ hash to
 specify a proc to turn into an attributes hash:
 
-  mount Post do |klass, model|
-    klass.accepts[:yaml] = proc { |string| YAML.load(string) }
+  mount Post do
+    accepts[:yaml] = proc { |string| YAML.load(string) }
   end
 
 When a request comes in to @/posts.yaml@, the YAML handling proc will be called, and passed the
@@ -74,8 +74,8 @@ h3. Response formats
 
 You can register new response formats using the @formats@ option:
 
-  mount Post |klass, model|
-    klass.formats[:ruby] = proc { |result| result.inspect }
+  mount Post do
+    formats[:ruby] = proc { |result| result.inspect }
   end
 
 Requests coming in with the format @.ruby@ will be processed by this proc. The other way to provide formats
@@ -87,14 +87,14 @@ You can protect certain actions using basic authentication using the @protect@ m
 will make the @index@ and @show@ actions require authentication. You should pass username and password options
 as well, unless you want to just use the defaults (admin:password):
 
-  mount Post |klass, model|
-    klass.protect :index, :show, :username => 'foo', :password => 'bar'
+  mount Post do
+    protect :index, :show, :username => 'foo', :password => 'bar'
   end
 
 If you want all of your actions to require authentication, you can simply pass @:all@ to @protect@:
 
-  mount Post |klass, model|
-    klass.protect :all, :username => 'foo', :password => 'bar'
+  mount Post do
+    protect :all, :username => 'foo', :password => 'bar'
   end
 
 All of your actions will then require authentication.
