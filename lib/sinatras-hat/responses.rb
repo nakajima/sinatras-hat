@@ -31,7 +31,9 @@ module Sinatra
       private
       
       def handle_without_format(name, path, opts, &block)
+        klass = self
         context.send(opts[:verb], path) do
+          protect!(klass) if klass.protecting?(name)
           block.call(params)
         end
       end

@@ -30,7 +30,7 @@ get '/' do
 end
 
 mount(Post) do |klass, model|
-  protect :create
+  protect :create, :destroy, :username => 'bliggety', :password => 'blam'
   accepts[:yaml] = proc { |content| YAML.load(content) }
   formats[:ruby] = proc { |content| content.inspect }
   formats[:atom] = proc { |content| "<atom>\n  #{content.to_xml}\n</atom>" }

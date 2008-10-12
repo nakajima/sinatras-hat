@@ -1,3 +1,9 @@
 <h1><%= @post.name %></h1>
 <p><%= @post.body %></p>
+
+<form action="/posts/<%= @post.id %>" method="post">
+  <input type="hidden" name="_method" value="delete">
+  <p><input type="submit" value="Delete"></p>
+</form>
+
 <small><a href="/posts">Click here to go back.</a></small>
