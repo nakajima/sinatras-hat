@@ -29,9 +29,9 @@ module Sinatra
       end
     
       def define(context, opts={}, &block)
+        # FIXME hack to allow options-esque syntax
+        [:protect, :only].each { |key| send key, opts.delete(key) if opts[key] }
         @context = context
-        send(:protect, opts.delete(:protect)) if opts[:protect] # FIXME hack to allow options-esque syntax
-        send(:only, opts.delete(:only)) if opts[:only] # FIXME hack to allow options-esque syntax
         @options.merge!(opts)
         instance_eval &block if block_given?
         [only].flatten.each { |action| send("#{action}!") }
