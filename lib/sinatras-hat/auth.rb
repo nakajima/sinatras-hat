@@ -1,4 +1,5 @@
 # from http://www.gittr.com/index.php/archive/sinatra-basic-authentication-selectively-applied
+# adapted by pat nakajima for sinatra's hat
 module Sinatra
   module Authorization
     class ProtectedAction
