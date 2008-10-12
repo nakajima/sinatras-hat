@@ -46,15 +46,15 @@ will generate only show and index actions:
 The @mount@ method also takes a block, where you can specify options as well:
 
   mount Post do
-    self.only = [:show, :index]
+    only :show, :index
   end
 
 By default, Sinatra's Hat will work with a DataMapper model, but you can specify your own @finder@
 and @record@ loaders. To make things work with ActiveRecord, you can do this:
 
   mount Post do
-    self.finder = proc { |params| model.find(:all) }
-    self.record = proc { |params| model.find(params[:id]) }
+    finder { |params| model.find(:all) }
+    record { |params| model.find(params[:id]) }
   end
 
 h3. Accepting formats

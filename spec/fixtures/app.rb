@@ -18,14 +18,16 @@ get('/hello/:name') { "Hello #{params[:name]}!" }
 
 mount(Foo)
 mount(Bar) do
-  self.finder = proc { |params| model.find(:all) }
-  self.record = proc { |params| model.find(params[:id]) }
+  finder { |params| model.find(:all) }
+  record { |params| model.find(params[:id]) }
   accepts[:yaml] = proc { |string| YAML.load(string) }
   formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
 end
 
 mount(Fizz, :only => :index)
-mount(Buzz, :only => [:index, :show])
+mount(Buzz) do
+  only :index, :show
+end
 mount(Sekret) do
   protect :index, :username => 'spec', :password => 'helper'
 end

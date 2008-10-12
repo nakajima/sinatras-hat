@@ -31,6 +31,7 @@ module Sinatra
       def define(context, opts={}, &block)
         @context = context
         send(:protect, opts.delete(:protect)) if opts[:protect] # FIXME hack to allow options-esque syntax
+        send(:only, opts.delete(:only)) if opts[:only] # FIXME hack to allow options-esque syntax
         @options.merge!(opts)
         instance_eval &block if block_given?
         [only].flatten.each { |action| send("#{action}!") }
@@ -47,7 +48,32 @@ module Sinatra
           @protect ||= []
         end
       end
-    
+
+      def only(*args)
+        if args.length > 0
+          @only = args
+          @only.uniq!
+        else
+          @only ||= [:show, :create, :update, :destroy, :index]
+        end
+      end
+      
+      def finder(&block)
+        if block_given?
+          @finder = proc(&block)
+        else
+          @finder ||= proc { |params| model.all }
+        end
+      end
+      
+      def record(&block)
+        if block_given?
+          @record = proc(&block)
+        else
+          @record ||= proc { |params| model.first(:id => params[:id]) }
+        end
+      end
+      
       def map(name, path, opts={}, &block)
         opts[:no_format] ? 
           handle_without_format(name, path, opts, &block) : 
@@ -56,9 +82,6 @@ module Sinatra
       
       def options
         @options ||= {
-          :finder => proc { |params| model.all },
-          :record => proc { |params| model.first(:id => params[:id]) },
-          :only => [:show, :create, :update, :destroy, :index],
           :renderer => :erb,
           :realm => 'The App',
           :prefix => Extlib::Inflection.tableize(model.name),
