@@ -4,10 +4,10 @@ module Sinatra
   module Hat
     module Authorization
       class ProtectedAction
-        attr_reader :klass, :context
+        attr_reader :credentials, :context
       
-        def initialize(klass, context)
-          @klass, @context = klass, context
+        def initialize(context, credentials={})
+          @credentials, @context = credentials, context
         end
       
         def check!
@@ -15,19 +15,19 @@ module Sinatra
           bad_request! unless auth.basic?
           unauthorized! unless authorize(*auth.credentials)
         end
-      
-        def username
+
+        def remote_user
           auth.username
         end
-      
+
         private
       
         def authorize(username, password)
-          klass.credentials[:username] == username and klass.credentials[:password] == password
+          credentials[:username] == username and credentials[:password] == password
         end
       
         def unauthorized!(realm="myApp.com")
-          context.header 'WWW-Authenticate' => %(Basic realm="#{klass.realm}")
+          context.header 'WWW-Authenticate' => %(Basic realm="#{credentials[:realm]}")
           throw :halt, [ 401, 'Authorization Required' ]
         end
 
@@ -41,11 +41,11 @@ module Sinatra
       end
     
       module Helpers
-        def protect!(klass)
+        def protect!(credentials={})
           return if authorized?
-          guard = ProtectedAction.new(klass, self)
+          guard = ProtectedAction.new(self, credentials)
           guard.check!
-          request.env['REMOTE_USER'] = guard.username
+          request.env['REMOTE_USER'] = guard.remote_user
         end
 
         def authorized?

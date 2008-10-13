@@ -83,9 +83,8 @@ module Sinatra
       def options
         @options ||= {
           :renderer => :erb,
-          :realm => 'The App',
           :prefix => Extlib::Inflection.tableize(model.name),
-          :credentials => { :username => 'admin', :password => 'password' },
+          :credentials => { :username => 'admin', :password => 'password', :realm => 'TheApp.com' },
           :formats => { },
           :accepts => {
             :yaml => proc { |string| YAML.load(string) },

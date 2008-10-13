@@ -33,7 +33,7 @@ module Sinatra
       def handle_without_format(name, path, opts, &block)
         klass = self
         context.send(opts[:verb], path) do
-          protect!(klass) if klass.protecting?(name)
+          protect!(klass.credentials) if klass.protecting?(name)
           block.call(params)
         end
       end
@@ -43,7 +43,7 @@ module Sinatra
         klass = self
       
         handler = proc do
-          protect!(klass) if klass.protecting?(name)
+          protect!(klass.credentials) if klass.protecting?(name)
           format = request.env['PATH_INFO'].split('.')[1]
           format ? 
             klass.serialized_response(self, format.to_sym, verb, &block) :
