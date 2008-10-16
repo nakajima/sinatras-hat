@@ -26,7 +26,7 @@ module Sinatra
       def redirection_path(result)
         result.is_a?(Symbol) ?
           "/#{prefix}" :
-          "/#{prefix}/#{result.id}"
+          "/#{prefix}/#{result.send(to_param)}"
       end
     
       def plural?(result)

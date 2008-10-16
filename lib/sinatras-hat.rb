@@ -84,6 +84,7 @@ module Sinatra
         @options ||= {
           :renderer => :erb,
           :prefix => Extlib::Inflection.tableize(model.name),
+          :to_param => :id,
           :credentials => { :username => 'admin', :password => 'password', :realm => 'TheApp.com' },
           :formats => { },
           :accepts => {

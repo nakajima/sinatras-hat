@@ -27,7 +27,7 @@ get '/' do
   redirect '/posts'
 end
 
-mount(Post) do |klass, model|
+mount(Post) do
   # Protects the create and destroy actions using basic auth
   protect :create, :destroy, :username => 'bliggety', :password => 'blam'
   
