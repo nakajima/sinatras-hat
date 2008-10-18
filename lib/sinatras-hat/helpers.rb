@@ -37,11 +37,12 @@ module Sinatra
         "@" + (plural?(result) ? prefix : model.name.downcase)
       end
     
-      def parse_for_attributes!(params)
+      def parse_for_attributes!(params, name=model.name.downcase)
+        value = params[name.to_s.singularize]
         if handler = accepts[params[:format].try(:to_sym)]
-          handler.call params[prefix.singularize]
+          handler.call value
         else
-          params[model.name.downcase]
+          value
         end
       end
     end

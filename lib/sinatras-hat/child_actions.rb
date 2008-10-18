@@ -20,21 +20,42 @@ module Sinatra
       end
           
       def create_child!(name)
-
+        map :create, "/#{prefix}/:#{model_id}/#{name}", :verb => :post do |params|
+          proxy = proxy_for(name, params)
+          result = proxy.new
+          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent(params).id)
+          result.save
+          result
+        end
       end
           
       def update_child!(name)
-
+        map :update, "/#{prefix}/:#{model_id}/#{name}/:id", :verb => :put do |params|
+          proxy = proxy_for(name, params)
+          result = call(:record, params, :on => proxy_for(name, params))
+          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent(params).id)
+          result.save
+          result
+        end
       end
           
       def destroy_child!(name)
-
+        map :destroy, "/#{prefix}/:#{model_id}/#{name}/:id", :verb => :delete do |params|
+          proxy = proxy_for(name, params)
+          result = call(:record, params, :on => proxy_for(name, params))
+          result.destroy
+          :ok
+        end
       end
       
       private
       
       def proxy_for(name, params)
-        call(:record, :id => params[model_id]).send(name)
+        parent(params).send(name)
+      end
+      
+      def parent(params)
+        call(:record, :id => params[model_id])
       end
       
       def model_id

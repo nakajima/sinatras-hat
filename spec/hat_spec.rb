@@ -196,7 +196,7 @@ describe "sinatra's hat" do
         response.should be_ok
       end
       
-      it "should update a record via yaml" do
+      it "should create a record via yaml" do
         mock(record).attributes = { "name" => "Frank" }
         mock(record).to_yaml.returns(:a_result)
         mock(record).save
@@ -205,7 +205,7 @@ describe "sinatra's hat" do
         response.should be_ok
       end
       
-      it "should update a record using regular url params" do
+      it "should create a record using regular url params" do
         mock(record).attributes = { "name" => "Frank" }
         mock(record).save
         mock(Foo).new.returns(record)
@@ -270,15 +270,21 @@ describe "sinatra's hat" do
   end
   
   describe "nesting routes" do
+    attr_reader :comment, :comments_proxy
+    
     before(:each) do
-      stub(Post).first(:id => '1').returns(record)
+      @comment = Object.new
+      stub(comment).id.returns(2)
       @comments_proxy = []
+      stub(Post).first(:id => '3').returns(record)
+      stub(record).comments.returns(comments_proxy)
+      stub(comments_proxy).first(:id => '2').returns(comment)
     end
     
     it "should generate nested index" do
       mock(@comments_proxy).to_json.returns('ok')
       mock(record).comments.returns(@comments_proxy)
-      get_it '/posts/1/comments.json'
+      get_it '/posts/3/comments.json'
       response.should be_ok
     end
     
@@ -286,8 +292,30 @@ describe "sinatra's hat" do
       mock(record).to_json.returns('ok')
       mock(record).comments.returns(@comments_proxy)
       mock(@comments_proxy).first(:id => '2').returns(record)
-      get_it '/posts/1/comments/2.json'
+      get_it '/posts/3/comments/2.json'
       response.should be_ok
+    end
+    
+    it "should create a record using regular url params" do
+      mock(@comments_proxy).new.returns(comment)
+      mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+      mock(comment).save
+      post_it '/posts/3/comments', "comment[name]" => "Frank"
+      response.should be_redirection
+    end
+    
+    it "should update a record using regular url params" do
+      mock(@comments_proxy).first(:id => '2').returns(comment)
+      mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+      mock(comment).save
+      put_it '/posts/3/comments/2', "comment[name]" => "Frank"
+      response.should be_redirection
+    end
+    
+    it "should destroy a record" do
+      mock(comment).destroy
+      delete_it '/posts/3/comments/2'
+      response.should be_redirect
     end
   end
 end

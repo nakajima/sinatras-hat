@@ -23,9 +23,7 @@ Object.class_eval do
     result
   end
 
-  class Object
-    def instance_exec(*arguments, &block)
-      block.bind(self)[*arguments]
-    end
+  def instance_exec(*arguments, &block)
+    block.bind(self)[*arguments]
   end
 end
