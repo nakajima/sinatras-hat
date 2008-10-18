@@ -268,4 +268,10 @@ describe "sinatra's hat" do
       end
     end
   end
+  
+  describe "nesting routes" do
+    it "should description" do
+      
+    end
+  end
 end

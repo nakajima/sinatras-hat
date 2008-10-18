@@ -19,7 +19,7 @@ Rack::File::MIME_TYPES['yaml'] = 'text/x-yaml'
 module Sinatra
   module Hat
     class Maker
-      attr_reader :model, :context, :options, :credentials
+      attr_reader :model, :context, :options
 
       include Actions, Responses, Helpers
       
@@ -30,32 +30,30 @@ module Sinatra
     
       def define(context, opts={}, &block)
         # FIXME hack to allow options-esque syntax
-        [:protect, :only].each { |key| send key, opts.delete(key) if opts[key] }
         @context = context
         @options.merge!(opts)
         instance_eval &block if block_given?
-        [only].flatten.each { |action| send("#{action}!") }
+        only.each { |action| send("#{action}!") }
       end
 
       def protect(*args)
         opts = args.extract_options!
         credentials.update(opts)
-        if args.length > 0
-          @protect ||= []
-          @protect += args
-          @protect.uniq!
-        else
-          @protect ||= []
+        actions = get_or_set_option(:protect, args) do
+          self.protect += args
+          self.protect.uniq!
         end
+        
+        [actions].flatten
       end
 
       def only(*args)
-        if args.length > 0
-          @only = args
-          @only.uniq!
-        else
-          @only ||= [:show, :create, :update, :destroy, :index]
+        result = get_or_set_option(:only, args) do
+          self.only = args
+          self.only.uniq!
         end
+        
+        [result].flatten
       end
       
       def finder(&block)
@@ -82,17 +80,25 @@ module Sinatra
       
       def options
         @options ||= {
-          :renderer => :erb,
+          :only => [:show, :create, :update, :destroy, :index],
           :prefix => Extlib::Inflection.tableize(model.name),
+          :protect => [],
+          :formats => { },
+          :renderer => :erb,
           :to_param => :id,
           :credentials => { :username => 'admin', :password => 'password', :realm => 'TheApp.com' },
-          :formats => { },
           :accepts => {
             :yaml => proc { |string| YAML.load(string) },
             :json => proc { |string| JSON.parse(string) },
             :xml  => proc { |string| Hash.from_xml(string)['hash'] }
           }
         }
+      end
+      
+      private
+      
+      def get_or_set_option(name, args, opts={})
+        args.length > 0 ? yield : options[name]
       end
     end
   end
