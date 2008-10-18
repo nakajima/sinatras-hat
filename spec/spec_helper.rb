@@ -16,6 +16,14 @@ unless defined?(FOO_XML)
     <name>Frank</name>
   </hash>
   XML
+  
+  COMMENT_XML = <<-XML
+  <?xml version="1.0" encoding="UTF-8"?>
+  <hash>
+    <name>Frank</name>
+    <post_id>3</post_id>
+  </hash>
+  XML
 end
 
 Spec::Runner.configure do |config|

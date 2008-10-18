@@ -8,13 +8,13 @@ module Sinatra
       end
       
       def index_child!(name)
-        map :index, "/#{prefix}/:id/#{name}" do |params|
-          call(:record, params).send(name)
+        map :index, "/#{prefix}/:#{model_id}/#{name}", :view_as => name.to_s do |params|
+          call :finder, params, :on => parent(params).send(name)
         end
       end
     
       def show_child!(name)
-        map :show, "/#{prefix}/:#{model_id}/#{name}/:id" do |params|
+        map :show, "/#{prefix}/:#{model_id}/#{name}/:id", :view_as => name.to_s do |params|
           call(:record, params, :on => proxy_for(name, params))
         end
       end

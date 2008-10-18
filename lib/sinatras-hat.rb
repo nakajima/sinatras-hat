@@ -34,8 +34,9 @@ module Sinatra
         @context = context
         @options.merge!(opts)
         instance_eval &block if block_given?
-        generate_actions!
         generate_child_actions!
+        generate_actions!
+        
       end
 
       def protect(*args)
@@ -84,19 +85,19 @@ module Sinatra
       end
       
       def map(name, path, opts={}, &block)
-        verb = opts[:verb] || :get
+        opts[:verb] ||= :get
         klass = self
       
         handler = proc do
           protect!(klass.credentials) if klass.protecting?(name)
           format = request.env['PATH_INFO'].split('.')[1]
           format ? 
-            klass.serialized_response(self, format.to_sym, verb, &block) :
-            klass.templating_response(self, name, verb, &block)
+            klass.serialized_response(self, format.to_sym, opts, &block) :
+            klass.templating_response(self, name, opts, &block)
         end
       
-        context.send(verb, path, &handler)
-        context.send(verb, "#{path}.:format", &handler)
+        context.send(opts[:verb], path, &handler)
+        context.send(opts[:verb], "#{path}.:format", &handler)
       end
       
       def call(method, params, opts={})
