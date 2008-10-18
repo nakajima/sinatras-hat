@@ -27,32 +27,6 @@ module Sinatra
           ].join("\n")
         ]
       end
-      
-      private
-      
-      def handle_without_format(name, path, opts, &block)
-        klass = self
-        context.send(opts[:verb], path) do
-          protect!(klass.credentials) if klass.protecting?(name)
-          block.call(params)
-        end
-      end
-    
-      def handle_with_format(name, path, opts, &block)
-        verb = opts[:verb] || :get
-        klass = self
-      
-        handler = proc do
-          protect!(klass.credentials) if klass.protecting?(name)
-          format = request.env['PATH_INFO'].split('.')[1]
-          format ? 
-            klass.serialized_response(self, format.to_sym, verb, &block) :
-            klass.templating_response(self, name, verb, &block)
-        end
-      
-        context.send(verb, path, &handler)
-        context.send(verb, "#{path}.:format", &handler)
-      end
     end
   end
 end
