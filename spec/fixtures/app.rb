@@ -8,6 +8,7 @@ require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'sinatras-hat')
 
 class Foo; end
 class Bar; end
+class Post; end
 class Fizz; end
 class Buzz; end
 class Sekret; end
@@ -18,11 +19,13 @@ get('/hello/:name') { "Hello #{params[:name]}!" }
 
 mount(Foo)
 mount(Bar) do
-  finder { |params| model.find(:all) }
-  record { |params| model.find(params[:id]) }
+  finder { |params| find(:all) }
+  record { |params| find(params[:id]) }
   accepts[:yaml] = proc { |string| YAML.load(string) }
   formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
 end
+
+mount(Post, :children => :comments)
 
 mount(Fizz, :only => :index)
 mount(Buzz) do

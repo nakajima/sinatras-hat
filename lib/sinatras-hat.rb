@@ -8,6 +8,7 @@ require 'dm-serializer'
 require 'array'
 require 'object'
 require 'actions'
+require 'child_actions'
 require 'responses'
 require 'helpers'
 
@@ -21,7 +22,7 @@ module Sinatra
     class Maker
       attr_reader :model, :context, :options
 
-      include Actions, Responses, Helpers
+      include Actions, ChildActions, Responses, Helpers
       
       def initialize(model)
         @model = model
@@ -33,7 +34,8 @@ module Sinatra
         @context = context
         @options.merge!(opts)
         instance_eval &block if block_given?
-        only.each { |action| send("#{action}!") }
+        generate_actions!
+        generate_child_actions!
       end
 
       def protect(*args)
@@ -56,11 +58,20 @@ module Sinatra
         [result].flatten
       end
       
+      def children(*args)
+        result = get_or_set_option(:children, args) do
+          self.children = args
+          self.children.uniq!
+        end
+        
+        [result].flatten
+      end
+      
       def finder(&block)
         if block_given?
           @finder = proc(&block)
         else
-          @finder ||= proc { |params| model.all }
+          @finder ||= proc { |params| all }
         end
       end
       
@@ -68,7 +79,7 @@ module Sinatra
         if block_given?
           @record = proc(&block)
         else
-          @record ||= proc { |params| model.first(:id => params[:id]) }
+          @record ||= proc { |params| first(:id => params[:id]) }
         end
       end
       
@@ -78,6 +89,12 @@ module Sinatra
           handle_with_format(name, path, opts, &block)
       end
       
+      def call(method, params, opts={})
+        fn = send(method)
+        klass = opts[:on] || model
+        klass.instance_exec(params, &fn)
+      end
+      
       def options
         @options ||= {
           :only => [:show, :create, :update, :destroy, :index],
@@ -85,6 +102,7 @@ module Sinatra
           :protect => [],
           :formats => { },
           :renderer => :erb,
+          :children => [],
           :to_param => :id,
           :credentials => { :username => 'admin', :password => 'password', :realm => 'TheApp.com' },
           :accepts => {

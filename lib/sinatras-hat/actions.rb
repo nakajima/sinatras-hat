@@ -1,16 +1,19 @@
 module Sinatra
   module Hat
     module Actions
+      def generate_actions!
+        only.each { |action| send("#{action}!") }
+      end
+      
       def index!
         map :index, "/#{prefix}" do |params|
-          finder.call(params)
+          call(:finder, params)
         end
       end
     
       def show!
         map :show, "/#{prefix}/:id" do |params|
-          result = record.call(params)
-          result
+          call(:record, params)
         end
       end
     
@@ -25,7 +28,7 @@ module Sinatra
     
       def update!
         map :update, "/#{prefix}/:id", :verb => :put do |params|
-          result = record.call(params)
+          result = call(:record, params)
           result.attributes = parse_for_attributes!(params)
           result.save
           result
@@ -34,7 +37,7 @@ module Sinatra
     
       def destroy!
         map :destroy, "/#{prefix}/:id", :no_format => true, :verb => :delete do |params|
-          result = record.call(params)
+          result = call(:record, params)
           result.destroy
           :ok
         end

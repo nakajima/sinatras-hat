@@ -270,8 +270,24 @@ describe "sinatra's hat" do
   end
   
   describe "nesting routes" do
-    it "should description" do
-      
+    before(:each) do
+      stub(Post).first(:id => '1').returns(record)
+      @comments_proxy = []
+    end
+    
+    it "should generate nested index" do
+      mock(@comments_proxy).to_json.returns('ok')
+      mock(record).comments.returns(@comments_proxy)
+      get_it '/posts/1/comments.json'
+      response.should be_ok
+    end
+    
+    it "should generate nested show" do
+      mock(record).to_json.returns('ok')
+      mock(record).comments.returns(@comments_proxy)
+      mock(@comments_proxy).first(:id => '2').returns(record)
+      get_it '/posts/1/comments/2.json'
+      response.should be_ok
     end
   end
 end
