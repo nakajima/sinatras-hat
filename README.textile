@@ -25,7 +25,17 @@ The setup:
 The simplest use case:
   
   mount(Post)
-  
+
+This will generate the following routes:
+
+* @GET  /posts/:id@
+* @POST /posts/:id@
+* @GET  /posts/:id@
+* @PUT  /posts/:id@
+* @DELETE /posts/:id@
+
+h3. Rendering views
+
 Whenever a request comes in to one of the generated routes, we look for a format. If we
 can't find one, we look for a template file, which should be located in a subdirectory
 of your app views directory named the same as your prefix. So the index.erb template
@@ -33,7 +43,7 @@ should be located in the views/posts directory.
 
 h3. Options
 
-Calling @mount(Post)@ generate index, show, update, and destroy routes for the Post model
+Calling @mount(Post)@ generates index, show, update, and destroy routes for the Post model
 using the prefix of "/posts". You can specify a different prefix to use with
 the @:prefix@ option:
 
@@ -54,9 +64,28 @@ By default, Sinatra's Hat will work with a DataMapper model, but you can specify
 and @record@ loaders. To make things work with ActiveRecord, you can do this:
 
   mount Post do
-    finder { |params| model.find(:all) }
-    record { |params| model.find(params[:id]) }
+    finder { |params| find(:all) }
+    record { |params| find(params[:id]) }
   end
+
+The @finder@ and @record@ blocks will be instance_exec'd in the context of your classes.
+
+h3. Nested Resources
+
+You can nest one level of child resources using the @children@ option:
+
+  mount Post, :children => :comments
+
+Using that snippet, you'll get the following routes:
+  
+* @GET  /posts/:post_id/comments@
+* @POST /posts/:post_id/comments@ (not implemented yet)
+* @GET  /posts/:post_id/comments/:id@ 
+* @PUT  /posts/:post_id/comments/:id@ (not implemented yet)
+* @DELETE /posts/:post_id/comments/:id@ (not implemented yet)
+
+Your nested resources will be accessed using the same @finder@ and @record@ options as are
+used for everything else.
 
 h3. Accepting formats
 
@@ -89,13 +118,13 @@ will make the @index@ and @show@ actions require authentication. You should pass
 as well, unless you want to just use the defaults (admin:password):
 
   mount Post do
-    protect :index, :show, :username => 'foo', :password => 'bar'
+    protect :index, :show, :username => 'foo', :password => 'bar', :realm => 'MYPOSTS.com'
   end
 
 If you want all of your actions to require authentication, you can simply pass @:all@ to @protect@:
 
   mount Post do
-    protect :all, :username => 'foo', :password => 'bar'
+    protect :all, :username => 'foo', :password => 'bar', :realm => 'MYPOSTS.com'
   end
 
 All of your actions will then require authentication.

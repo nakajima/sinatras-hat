@@ -264,7 +264,7 @@ describe "sinatra's hat" do
         mock(record).destroy
         mock(Foo).first(:id => '3').returns(record)
         delete_it '/foos/3'
-        response.should be_ok
+        response.should be_redirect
       end
     end
   end

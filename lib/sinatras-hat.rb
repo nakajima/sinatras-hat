@@ -6,6 +6,7 @@ require 'extlib'
 require 'dm-core'
 require 'dm-serializer'
 require 'array'
+require 'proc'
 require 'object'
 require 'actions'
 require 'child_actions'
@@ -30,7 +31,6 @@ module Sinatra
       end
     
       def define(context, opts={}, &block)
-        # FIXME hack to allow options-esque syntax
         @context = context
         @options.merge!(opts)
         instance_eval &block if block_given?
@@ -84,8 +84,8 @@ module Sinatra
       end
       
       def map(name, path, opts={}, &block)
-        opts[:no_format] ? 
-          handle_without_format(name, path, opts, &block) : 
+        # opts[:no_format] ? 
+        #   handle_without_format(name, path, opts, &block) : 
           handle_with_format(name, path, opts, &block)
       end
       
