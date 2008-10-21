@@ -79,10 +79,10 @@ You can nest one level of child resources using the @children@ option:
 Using that snippet, you'll get the following routes:
   
 * @GET  /posts/:post_id/comments@
-* @POST /posts/:post_id/comments@
+* @POST /posts/:post_id/comments@ (not implemented yet)
 * @GET  /posts/:post_id/comments/:id@ 
-* @PUT  /posts/:post_id/comments/:id@
-* @DELETE /posts/:post_id/comments/:id@
+* @PUT  /posts/:post_id/comments/:id@ (not implemented yet)
+* @DELETE /posts/:post_id/comments/:id@ (not implemented yet)
 
 Your nested resources will be accessed using the same @finder@ and @record@ options as are
 used for everything else.
@@ -136,7 +136,17 @@ h4. Projects using it
 
 h4. TODO
 
-* Abstract jQuery-esque pattern for option methods (@only@, @protect@, etc)
 * Refactor actions (maybe an Action class?)
+* Nesting resources should work like this:
+    
+    mount Post do
+      mount Comment do
+        mount Reply
+          # etc.
+        end
+      end
+    end
+    
+  This would allow nested options to be tracked as well.
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
