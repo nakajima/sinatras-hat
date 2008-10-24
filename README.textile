@@ -138,5 +138,16 @@ h4. TODO
 
 * Abstract jQuery-esque pattern for option methods (@only@, @protect@, etc)
 * Refactor actions (maybe an Action class?)
+* Nesting resources should work like this:
+    
+    mount Post do
+      mount Comment do
+        mount Reply
+          # etc.
+        end
+      end
+    end
+    
+  This would allow nested options to be tracked as well.
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
