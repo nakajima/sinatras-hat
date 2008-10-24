@@ -136,7 +136,6 @@ h4. Projects using it
 
 h4. TODO
 
-* Abstract jQuery-esque pattern for option methods (@only@, @protect@, etc)
 * Refactor actions (maybe an Action class?)
 * Nesting resources should work like this:
     
