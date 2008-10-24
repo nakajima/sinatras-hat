@@ -134,6 +134,10 @@ h4. Projects using it
 * "ActiveRecorder":http://github.com/nakajima/activerecorder
 * "JavaScript demos":http://github.com/nakajima/javascript-demos
 
+h4. Install
+
+  gem install nakajima-sinatras-hat --source=http://gems.github.com
+
 h4. TODO
 
 * Refactor actions (maybe an Action class?)
