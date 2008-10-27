@@ -138,7 +138,7 @@ h4. Install
 
   gem install nakajima-sinatras-hat --source=http://gems.github.com
 
-h4. "View out the CI build":http://ci.patnakajima.com/sinatra-s-hat
+"View the CI build":http://ci.patnakajima.com/sinatra-s-hat
 
 h4. TODO
 
