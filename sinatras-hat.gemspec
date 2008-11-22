@@ -8,7 +8,19 @@ Gem::Specification.new do |s|
   s.authors = ["Pat Nakajima"]
   s.date = %q{2008-10-16}
   s.email = %q{patnakajima@gmail.com}
-  s.files = ["lib/core_ext", "lib/core_ext/array.rb", "lib/core_ext/object.rb", "lib/sinatras-hat", "lib/sinatras-hat/actions.rb", "lib/sinatras-hat/auth.rb", "lib/sinatras-hat/helpers.rb", "lib/sinatras-hat/responses.rb", "lib/sinatras-hat.rb"]
+  s.files = [
+    "lib/core_ext",
+    "lib/core_ext/array.rb",
+    "lib/core_ext/object.rb",
+    "lib/core_ext/proc.rb",
+    "lib/sinatras-hat",
+    "lib/sinatras-hat/actions.rb",
+    "lib/sinatras-hat/auth.rb",
+    "lib/sinatras-hat/child_actions.rb",
+    "lib/sinatras-hat/helpers.rb",
+    "lib/sinatras-hat/responses.rb",
+    "lib/sinatras-hat.rb"
+  ]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.0}
   s.summary = %q{Simple REST-ful resources with Sinatra.}
