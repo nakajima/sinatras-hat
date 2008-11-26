@@ -1,4 +1,4 @@
-Array.class_eval do
+class Array
   def extract_options!
     last.is_a?(Hash) ? pop : { }
   end

@@ -89,7 +89,9 @@ module Sinatra
         klass = self
       
         handler = proc do
-          protect!(klass.credentials) if klass.protecting?(name)
+          protect!(:realm => klass.credentials[:realm]) do |user, pass|
+            user == klass.credentials[:username] and pass == klass.credentials[:password]
+          end if klass.protecting?(name)
           format = request.env['PATH_INFO'].split('.')[1]
           format ? 
             klass.serialized_response(self, format.to_sym, opts, &block) :
@@ -115,7 +117,11 @@ module Sinatra
           :renderer => :erb,
           :children => [],
           :to_param => :id,
-          :credentials => { :username => 'admin', :password => 'password', :realm => 'TheApp.com' },
+          :credentials => {
+            :username => 'admin',
+            :password => 'password',
+            :realm => 'TheApp.com'
+          },
           :accepts => {
             :yaml => proc { |string| YAML.load(string) },
             :json => proc { |string| JSON.parse(string) },
