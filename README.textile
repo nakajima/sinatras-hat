@@ -129,11 +129,6 @@ If you want all of your actions to require authentication, you can simply pass @
 
 All of your actions will then require authentication.
 
-h4. Projects using it
-
-* "ActiveRecorder":http://github.com/nakajima/activerecorder
-* "JavaScript demos":http://github.com/nakajima/javascript-demos
-
 h4. Install
 
   gem install nakajima-sinatras-hat --source=http://gems.github.com
