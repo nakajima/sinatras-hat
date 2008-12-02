@@ -1,112 +1,62 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe "sinatra's hat" do
-  attr_reader :response, :record
+  attr_reader :hat, :model, :app
+  
   before(:each) do
-    @response = nil
-    @record = Object.new
-    stub(record).id.returns(3)
-    stub(record).name.returns("Frank")
-    stub(record).to_json.returns(:a_result)
-    stub(record).to_xml.returns(:a_result)
-    stub(Foo).first(:id => '3').returns(record)
+    @model = Class.new
+    @app = Object.new
   end
   
-  describe "default behavior" do
-    it "should work as usual" do
-      get_it '/'
-      response.should be_ok
+  def new_hat(options={}, &block)
+    hat = Sinatra::Hat::Maker.new(model)
+    hat.define(app, options, &block)
+    hat
+  end
+  
+  it "can be instantiated" do
+    proc {
+      new_hat
+    }.should_not raise_error
+  end
+  
+  describe "#only" do
+    it "can be specified in options hash" do
+      new_hat(:only => [:create, :show]).only.should == [:create, :show]
     end
-
-    it "should work properly" do
-      get_it '/hello/world'
-      body.should == 'Hello world!'
+    
+    it "can be specified in block" do
+      new_hat { only :create, :show }.only.should == [:create, :show]
+    end
+    
+    it "always ensures :index is last for routing purposes" do
+      new_hat(:only => [:index, :show]).only.should == [:show, :index]
+      new_hat(:only => [:update, :index, :show]).only.should == [:update, :show, :index]
     end
   end
   
-  describe "customizing options" do
-    before(:each) do
-      stub(Bar).find(anything).returns(record)
-    end
-    
-    it "should allow for custom finder" do
-      mock(Bar).find(:all).returns(record)
-      record.should respond_to(:to_json)
-      get_it '/bars.json'
-      response.should be_ok
-    end
-    
-    it "should serialize into new formats" do
-      mock(record).name.returns("Frank")
-      get_it '/bars/3.html'
-      response.should be_ok
-      body.should == "<h1>Frank</h1>"
-    end
-    
-    it "should allow custom loader" do
-      mock(Bar).find('3').returns(record)
-      get_it '/bars/3.json'
-      response.should be_ok
-    end
-    
-    describe ":only option" do
-      it "should take a symbol" do
-        stub(Fizz).all.returns(record)
-        get_it '/fizzs.json'
-        response.should be_ok
-        get_it '/fizzs/1.json'
-        response.status.should == 404
-      end
-      
-      it "should take an array" do
-        stub(Buzz).all.returns(record)
-        stub(Buzz).first(:id => '3').returns(record)
-        
-        get_it '/buzzs.json'
-        response.should be_ok
-        
-        get_it '/buzzs/3.json'
-        response.should be_ok
-        
-        put_it '/buzzs/3.json', "buzz" => { "whiz" => "bang" }.to_json
-        response.status.should == 404
+  describe "#protected" do
+    context "when there are none" do
+      it "should be empty" do
+        new_hat.protect.should be_empty
       end
     end
     
-    describe "protecting actions" do
-      it "uses basic auth if action is protected" do
-        get_it '/sekrets'
-        response.status.should == 401
+    context "when there are some" do
+      it "can be specified in options hash" do
+        new_hat(:protect => [:create, :show]).protect.should == [:create, :show]
       end
       
-      it "allows access when proper credentials provided" do
-        mock(Sekret).all.returns([])
-        
-        get_it '/sekrets.json', :env => {
-          'HTTP_AUTHORIZATION' => 'Basic ' + ["spec:helper"].pack("m*")
-        }
-        
-        response.should be_ok
+      it "can be specified in block" do
+        new_hat { protect :create, :show }.protect.should == [:create, :show]
       end
-      
-      it "denies access when incorrect credentials provided" do
-        get_it '/sekrets.json', :env => {
-          'HTTP_AUTHORIZATION' => 'Basic ' + ["wrong:stuff"].pack("m*")
-        }
-        
-        response.status.should == 401
-      end
-      
-      it "allows non-protected actions" do
-        mock(Sekret).first(:id => '1').returns(record)
-        get_it '/sekrets/1.json'
-        response.should be_ok
-      end
-      
-      it "allows :all option for protect" do
-        get_it '/top_sekrets'
-        response.status.should == 401
-      end
+    end
+  end
+  
+  describe "#prefix" do
+    it "returns the tableized model name" do
+      stub(model).name { "Post" }
+      new_hat.prefix.should == "posts"
     end
   end
 end

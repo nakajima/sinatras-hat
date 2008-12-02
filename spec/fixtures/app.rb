@@ -12,6 +12,7 @@ class Post; end
 class Fizz; end
 class Buzz; end
 class Sekret; end
+class Comment; end
 class TopSekret; end
 
 get('/') { "home" }
@@ -25,7 +26,9 @@ mount(Bar) do
   formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
 end
 
-mount(Post, :children => :comments)
+mount(Post, :children => :comments) do
+  # mount(Comment)
+end
 
 mount(Fizz, :only => :index)
 mount(Buzz) do

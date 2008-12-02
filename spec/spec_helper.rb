@@ -29,11 +29,11 @@ end
 def stub_record
   @response = nil
   @record = Object.new
-  stub(record).id.returns(3)
-  stub(record).name.returns("Frank")
-  stub(record).to_json.returns(:a_result)
-  stub(record).to_xml.returns(:a_result)
-  stub(Foo).first(:id => '3').returns(record)
+  stub(@record).id.returns(3)
+  stub(@record).name.returns("Frank")
+  stub(@record).to_json.returns(:a_result)
+  stub(@record).to_xml.returns(:a_result)
+  stub(Foo).first(:id => '3').returns(@record)
 end
 
 Spec::Runner.configure do |config|

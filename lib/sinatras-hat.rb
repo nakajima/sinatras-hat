@@ -36,7 +36,10 @@ module Sinatra
         instance_eval &block if block_given?
         generate_child_actions!
         generate_actions!
-        
+      end
+
+      def prefix
+        options[:prefix]
       end
 
       def protect(*args)
@@ -56,7 +59,15 @@ module Sinatra
           self.only.uniq!
         end
         
-        [result].flatten
+        result = Array(result)
+        
+        # we need the index action to be last or else it picks
+        # up the other actions due to the paths. hacky? yes.
+        if action = result.delete(:index)
+          result << action 
+        end
+        
+        result
       end
       
       def children(*args)
@@ -113,6 +124,7 @@ module Sinatra
           :only => [:show, :create, :update, :destroy, :index],
           :prefix => Extlib::Inflection.tableize(model.name),
           :protect => [],
+          :parents => [],
           :formats => { },
           :renderer => :erb,
           :children => [],
