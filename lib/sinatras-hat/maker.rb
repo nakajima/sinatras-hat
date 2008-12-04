@@ -39,10 +39,6 @@ module Sinatra
         @parents ||= parent ? Array(parent) + parent.parents : []
       end
 
-      def prefix
-        options[:prefix]
-      end
-
       def protect(*args)
         opts = args.extract_options!
         credentials.update(opts)
