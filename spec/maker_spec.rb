@@ -39,6 +39,30 @@ describe "sinatra's hat" do
     end
   end
   
+  describe "#authenticator" do
+    it "defaults to checking username and password" do
+      maker = new_maker do
+        credentials[:username] = :user
+        credentials[:password] = :pass
+      end
+      
+      maker.authenticator.call(:user, :pass).should be_true
+      maker.authenticator.call(:wrong, :nogood).should be_false
+    end
+    
+    it "can be overridden with custom authenticator" do
+      mock(checker = Object.new).call!(:user, :pass)
+      
+      maker = new_maker do
+        authenticator do |username, password|
+          checker.call!(username, password)
+        end
+      end
+      
+      maker.authenticator.call(:user, :pass)
+    end
+  end
+  
   describe "#protected" do
     context "when there are none" do
       it "should be empty" do

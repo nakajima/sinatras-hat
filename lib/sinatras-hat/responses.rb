@@ -2,9 +2,7 @@ module Sinatra
   module Hat
     module Responses
       def templated(event, name, opts={}, &block)
-        event.protect!(:realm => credentials[:realm]) do |user, pass|
-          user == credentials[:username] and pass == credentials[:password]
-        end if protecting?(name)
+        event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
         event.params.nest!
         dir = opts[:view_as] || prefix
@@ -19,9 +17,7 @@ module Sinatra
       def serialized(event, name, opts={}, &block)
         format = event.params[:format].to_sym
         
-        event.protect!(:realm => credentials[:realm]) do |user, pass|
-          user == credentials[:username] and pass == credentials[:password]
-        end if protecting?(name)
+        event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
         if accepts[format] or opts[:verb].eql?(:get)
           event.content_type format rescue nil

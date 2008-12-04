@@ -76,6 +76,16 @@ module Sinatra
         [result].flatten
       end
       
+      def authenticator(&block)
+        if block_given?
+          @authenticator = block
+        else
+          @authenticator ||= proc { |username, password|
+            credentials[:username] == username and credentials[:password] == password
+          }
+        end
+      end
+      
       def finder(&block)
         if block_given?
           @finder = block
