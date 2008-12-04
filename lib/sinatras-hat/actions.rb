@@ -20,7 +20,7 @@ module Sinatra
       def create!
         map :create, "/#{prefix}", :verb => :post do |params|
           result = model.new
-          result.attributes = parse_for_attributes!(params)
+          result.attributes = parse_for_attributes(params)
           result.save
           result
         end
@@ -29,7 +29,7 @@ module Sinatra
       def update!
         map :update, "/#{prefix}/:id", :verb => :put do |params|
           result = call(:record, params)
-          result.attributes = parse_for_attributes!(params)
+          result.attributes = parse_for_attributes(params)
           result.save
           result
         end

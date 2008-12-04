@@ -23,7 +23,7 @@ module Sinatra
         map :create, "/#{prefix}/:#{model_id}/#{name}", :verb => :post do |params|
           proxy = proxy_for(name, params)
           result = proxy.new
-          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent_model(params).id)
+          result.attributes = parse_for_attributes(params, name).merge(model_id => parent_model(params).id)
           result.save
           result
         end
@@ -33,7 +33,7 @@ module Sinatra
         map :update, "/#{prefix}/:#{model_id}/#{name}/:id", :verb => :put do |params|
           proxy = proxy_for(name, params)
           result = call(:record, params, :on => proxy_for(name, params))
-          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent_model(params).id)
+          result.attributes = parse_for_attributes(params, name).merge(model_id => parent_model(params).id)
           result.save
           result
         end

@@ -13,7 +13,7 @@ module Sinatra
       def define(context, opts={}, &block)
         @context = context
         @options.merge!(opts)
-        instance_eval &block if block_given?
+        instance_eval(&block) if block_given?
         generate_child_actions!
         generate_actions!
       end
@@ -26,8 +26,9 @@ module Sinatra
       end
       
       def resource_path
-        (parents + [self]).inject("") do |memo, maker|
-          memo += (maker == self) ?
+        resources = parents + [self]
+        resources.inject("") do |memo, maker|
+          memo += eql?(maker) ?
             "/#{maker.prefix}/:id" :
             "/#{maker.prefix}/:#{maker.model.name}_id"
         end.downcase
@@ -80,7 +81,7 @@ module Sinatra
       
       def finder(&block)
         if block_given?
-          @finder = proc(&block)
+          @finder = block
         else
           @finder ||= proc { |params| all }
         end
@@ -88,7 +89,7 @@ module Sinatra
       
       def record(&block)
         if block_given?
-          @record = proc(&block)
+          @record = block
         else
           @record ||= proc { |params| first(:id => params[:id]) }
         end

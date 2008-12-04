@@ -6,6 +6,7 @@ describe "sinatra's hat" do
   before(:each) do
     @app = Object.new
     @model = Class.new
+    stub(model).name { "Post" }
   end
   
   def new_maker(options={}, &block)
@@ -104,10 +105,6 @@ describe "sinatra's hat" do
   end
   
   describe "path helpers" do
-    before(:each) do
-      stub(model).name { "Post" }
-    end
-    
     describe "#prefix" do
       it "returns the tableized model name" do
         new_maker.prefix.should == "posts"
@@ -128,11 +125,25 @@ describe "sinatra's hat" do
           child.resource_path.should == "/posts/:post_id/comments/:id"
         end
         
-        it "doesn't change parents" do
+        it "doesn't change parents" do # regression test
           stub(child_klass = Object.new).name.returns("Comment")
           child = new_maker.mount(child_klass)
           child.resource_path.should == "/posts/:post_id/comments/:id"
           child.resource_path.should == "/posts/:post_id/comments/:id"
+        end
+      end
+    end
+    
+    describe "#ivar_name" do
+      context "when a collection" do
+        it "returns pluralized version" do
+          new_maker.ivar_name([:foo]).should == "@posts"
+        end
+      end
+      
+      context "when not a collection" do
+        it "returns singular version" do
+          new_maker.ivar_name(:foo).should == "@post"
         end
       end
     end

@@ -5,6 +5,7 @@ module Sinatra
         protect.include?(:all) or protect.include?(name)
       end
     
+      # taken from the Sinatra mailing list
       def railsify_params(params)
         new_params = { }
         params = params.dup
@@ -29,15 +30,11 @@ module Sinatra
           "/#{prefix}/#{result.send(to_param)}"
       end
     
-      def plural?(result)
-        result.respond_to?(:length)
-      end
-    
       def ivar_name(result)
-        "@" + (plural?(result) ? prefix : model.name.downcase)
+        "@" + (result.respond_to?(:each) ? prefix : model.name.downcase)
       end
     
-      def parse_for_attributes!(params, name=model.name.downcase)
+      def parse_for_attributes(params, name=model.name.downcase)
         value = params[name.to_s.singularize]
         if handler = accepts[params[:format].try(:to_sym)]
           handler.call value
