@@ -12,7 +12,6 @@ Gem::Specification.new do |s|
     "lib/core_ext",
     "lib/core_ext/array.rb",
     "lib/core_ext/object.rb",
-    "lib/core_ext/proc.rb",
     "lib/sinatras-hat",
     "lib/sinatras-hat/actions.rb",
     "lib/sinatras-hat/auth.rb",
