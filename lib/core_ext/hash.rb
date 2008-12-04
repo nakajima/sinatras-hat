@@ -1,17 +1,24 @@
 class Hash
+  def make_indifferent!
+    keys_values = self.dup
+    indifferent = Hash.new { |h,k| h[k.to_s] if Symbol === k }
+    replace(indifferent)
+    merge!(keys_values)
+  end
+  
   def nest!
-    new_params = { }
+    new_params = Hash.new.make_indifferent!
     each_pair do |full_key, value| 
-      this_param = new_params 
+      this_param = new_params
       split_keys = full_key.split(/\]\[|\]|\[/) 
       split_keys.each_index do |index| 
         break if split_keys.length == index + 1 
-        this_param[split_keys[index]] ||= {} 
+        this_param[split_keys[index]] ||= Hash.new.make_indifferent!
         this_param = this_param[split_keys[index]] 
       end 
       this_param[split_keys.last] = value 
     end 
     clear
-    merge! new_params 
+    replace(new_params)
   end
 end

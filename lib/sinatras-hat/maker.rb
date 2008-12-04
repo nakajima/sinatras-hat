@@ -123,8 +123,8 @@ module Sinatra
       def proxy(params={})
         return model if parent.nil?
         fake_params = params.dup
-        fake_params[:id] = fake_params.delete("id")
-        fake_params.merge!(:id => params[parent.model_id])
+        fake_params.merge!("id" => params[parent.model_id])
+        fake_params.make_indifferent!
         parent.call(:record, fake_params).try(prefix) || model
       end
       
