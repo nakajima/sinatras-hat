@@ -17,6 +17,25 @@ module Sinatra
         generate_child_actions!
         generate_actions!
       end
+      
+      def mount(klass, opts={}, &block)
+        child = Maker.new(klass)
+        child.parent = self
+        child.define(context, opts, &block)
+        child
+      end
+      
+      def resource_path
+        (parents + [self]).inject("") do |memo, maker|
+          memo += (maker == self) ?
+            "/#{maker.prefix}/:id" :
+            "/#{maker.prefix}/:#{maker.model.name}_id"
+        end.downcase
+      end
+      
+      def parents
+        @parents ||= parent ? Array(parent) + parent.parents : []
+      end
 
       def prefix
         options[:prefix]
@@ -102,9 +121,9 @@ module Sinatra
       def options
         @options ||= {
           :only => [:show, :create, :update, :destroy, :index],
+          :parent => nil,
           :prefix => Extlib::Inflection.tableize(model.name),
           :protect => [],
-          :parents => [],
           :formats => { },
           :renderer => :erb,
           :children => [],
