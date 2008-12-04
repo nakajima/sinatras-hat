@@ -9,7 +9,7 @@ module Sinatra
       
       def index_child!(name)
         map :index, "/#{prefix}/:#{model_id}/#{name}", :view_as => name.to_s do |params|
-          call :finder, params, :on => parent(params).send(name)
+          call :finder, params, :on => parent_model(params).send(name)
         end
       end
     
@@ -23,7 +23,7 @@ module Sinatra
         map :create, "/#{prefix}/:#{model_id}/#{name}", :verb => :post do |params|
           proxy = proxy_for(name, params)
           result = proxy.new
-          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent(params).id)
+          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent_model(params).id)
           result.save
           result
         end
@@ -33,7 +33,7 @@ module Sinatra
         map :update, "/#{prefix}/:#{model_id}/#{name}/:id", :verb => :put do |params|
           proxy = proxy_for(name, params)
           result = call(:record, params, :on => proxy_for(name, params))
-          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent(params).id)
+          result.attributes = parse_for_attributes!(params, name).merge(model_id => parent_model(params).id)
           result.save
           result
         end
@@ -51,10 +51,10 @@ module Sinatra
       private
       
       def proxy_for(name, params)
-        parent(params).send(name)
+        parent_model(params).send(name)
       end
       
-      def parent(params)
+      def parent_model(params)
         call(:record, :id => params[model_id])
       end
       
