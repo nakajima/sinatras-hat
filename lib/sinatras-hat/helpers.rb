@@ -16,11 +16,13 @@ module Sinatra
       end
     
       def parse_for_attributes(params, name=model.name.downcase)
-        value = params[name.to_s.singularize]
         if handler = accepts[params[:format].try(:to_sym)]
-          handler.call value
+          handler.call params[name]
         else
-          value
+          params.nest!
+          params[name] ||= { }
+          params[name][parent.model_id] = params[parent.model_id] if parent
+          params[name]
         end
       end
     end

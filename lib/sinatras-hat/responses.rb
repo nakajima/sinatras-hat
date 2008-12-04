@@ -4,9 +4,7 @@ module Sinatra
       def templated(event, name, opts={}, &block)
         event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
-        event.params.nest!
-        dir = opts[:view_as] || prefix
-        root = File.join(Sinatra.application.options.views, dir)
+        root = File.join(Sinatra.application.options.views, prefix)
         result = block.call(event.params)
         event.instance_variable_set ivar_name(result), result
         return opts[:verb] == :get ?
