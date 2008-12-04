@@ -96,20 +96,8 @@ module Sinatra
         opts[:verb] ||= :get
         klass = self
       
-        handler = proc do
-          protect!(:realm => klass.credentials[:realm]) do |user, pass|
-            user == klass.credentials[:username] and pass == klass.credentials[:password]
-          end if klass.protecting?(name)
-          
-          format = request.env['PATH_INFO'].split('.')[1]
-          
-          format ? 
-            klass.serialized_response(self, format.to_sym, opts, &block) :
-            klass.templating_response(self, name, opts, &block)
-        end
-      
-        context.send(opts[:verb], path, &handler)
-        context.send(opts[:verb], "#{path}.:format", &handler)
+        context.send(opts[:verb], path) { klass.templated(self, name, opts, &block) }
+        context.send(opts[:verb], "#{path}.:format") { klass.serialized(self, name, opts, &block) }
       end
       
       def call(method, params)

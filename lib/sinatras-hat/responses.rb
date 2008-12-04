@@ -1,7 +1,11 @@
 module Sinatra
   module Hat
     module Responses
-      def templating_response(event, name, opts={}, &block)
+      def templated(event, name, opts={}, &block)
+        event.protect!(:realm => credentials[:realm]) do |user, pass|
+          user == credentials[:username] and pass == credentials[:password]
+        end if protecting?(name)
+        
         event.params.nest!
         dir = opts[:view_as] || prefix
         root = File.join(Sinatra.application.options.views, dir)
@@ -12,7 +16,13 @@ module Sinatra
           event.redirect(redirection_path(result))
       end
     
-      def serialized_response(event, format, opts={}, &block)
+      def serialized(event, name, opts={}, &block)
+        format = event.params[:format].to_sym
+        
+        event.protect!(:realm => credentials[:realm]) do |user, pass|
+          user == credentials[:username] and pass == credentials[:password]
+        end if protecting?(name)
+        
         if accepts[format] or opts[:verb].eql?(:get)
           event.content_type format rescue nil
           object = block.call(event.params)
