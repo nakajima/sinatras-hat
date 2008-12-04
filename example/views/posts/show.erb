@@ -6,4 +6,23 @@
   <p><input type="submit" value="Delete"></p>
 </form>
 
+<div>
+  
+  <h4><a href="/posts/<%= @post.id %>/comments">Comments</a></h4>
+  <% @post.comments.each do |comment| %>
+    <blockquote>
+      <%= comment.body %> 
+      <small>
+        <a href="/posts/<%= @post.id %>/comments/<%= comment.id %>">View it.</a>
+      </small>
+    </blockquote>
+  <% end %>
+</div>
+
+<form action="/posts/<%= @post.id %>/comments" method="post">
+  <p>Leave a comment:</p>
+  <textarea name="comment[body]" rows="8" cols="40"></textarea>
+  <p><input type="submit" value="Comment! &rarr;"></p>
+</form>
+
 <small><a href="/posts">Click here to go back.</a></small>

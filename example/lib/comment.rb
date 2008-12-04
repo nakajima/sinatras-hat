@@ -8,4 +8,6 @@ class Comment
   property :id, Serial, :key => true
   property :post_id, Integer
   property :body, Text
+  
+  belongs_to :post
 end

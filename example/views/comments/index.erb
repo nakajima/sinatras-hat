@@ -1,0 +1,6 @@
+<div>
+  <% @comments.each do |comment| %>
+    <h3>Comments on <a href="/posts/<%= comment.post.id %>"><%= comment.post.name %></a>:</h3>
+    <blockquote><%= comment.body %></blockquote>
+  <% end %>
+</div>

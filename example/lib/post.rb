@@ -8,4 +8,6 @@ class Post
   property :id, Serial, :key => true
   property :name, String
   property :body, Text
+  
+  has n, :comments
 end
