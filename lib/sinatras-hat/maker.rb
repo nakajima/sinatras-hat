@@ -1,6 +1,7 @@
 module Sinatra
   module Hat
     class Maker
+      attr_accessor :parent
       attr_reader :model, :context, :options
 
       include Actions, ChildActions, Responses, Helpers
@@ -25,13 +26,13 @@ module Sinatra
         child
       end
       
-      def resource_path
+      def resource_path(root=false)
         resources = parents + [self]
         resources.inject("") do |memo, maker|
           memo += eql?(maker) ?
-            "/#{maker.prefix}/:id" :
+            "/#{maker.prefix}" :
             "/#{maker.prefix}/:#{maker.model.name}_id"
-        end.downcase
+        end.downcase + (root ? "" : "/:id")
       end
       
       def parents
@@ -122,7 +123,6 @@ module Sinatra
       def options
         @options ||= {
           :only => [:show, :create, :update, :destroy, :index],
-          :parent => nil,
           :prefix => Extlib::Inflection.tableize(model.name),
           :protect => [],
           :formats => { },

@@ -137,7 +137,7 @@ h4. Install
 
 h4. TODO
 
-* Refactor actions (maybe an Action class?)
+* Figure out nested association proxies
 * Nesting resources should work like this:
     
     mount Post do

@@ -115,7 +115,11 @@ describe "sinatra's hat" do
       context "with no parent" do
         it "returns normal resource path" do
           new_maker.resource_path.should == "/posts/:id"
-        end        
+        end
+        
+        it "can return :root path" do
+          new_maker.resource_path(:root).should == "/posts"
+        end
       end
       
       context "with parents" do

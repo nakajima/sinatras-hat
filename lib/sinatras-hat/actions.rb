@@ -6,19 +6,19 @@ module Sinatra
       end
       
       def index!
-        map :index, "/#{prefix}" do |params|
+        map :index, resource_path(:root) do |params|
           call(:finder, params)
         end
       end
     
       def show!
-        map :show, "/#{prefix}/:id" do |params|
+        map :show, resource_path do |params|
           call(:record, params)
         end
       end
     
       def create!
-        map :create, "/#{prefix}", :verb => :post do |params|
+        map :create, resource_path(:root), :verb => :post do |params|
           result = model.new
           result.attributes = parse_for_attributes(params)
           result.save
@@ -27,7 +27,7 @@ module Sinatra
       end
     
       def update!
-        map :update, "/#{prefix}/:id", :verb => :put do |params|
+        map :update, resource_path, :verb => :put do |params|
           result = call(:record, params)
           result.attributes = parse_for_attributes(params)
           result.save
@@ -36,7 +36,7 @@ module Sinatra
       end
     
       def destroy!
-        map :destroy, "/#{prefix}/:id", :no_format => true, :verb => :delete do |params|
+        map :destroy, resource_path, :no_format => true, :verb => :delete do |params|
           result = call(:record, params)
           result.destroy
           :ok

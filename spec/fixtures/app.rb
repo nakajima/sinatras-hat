@@ -26,7 +26,7 @@ mount(Bar) do
   formats[:html] = proc { |record| %(<h1>#{record.name}</h1>) }
 end
 
-mount(Post, :children => :comments) do
+mount(Post, :children => Comment) do
   # mount(Comment)
 end
 
