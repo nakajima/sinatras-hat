@@ -19,7 +19,7 @@ module Sinatra
     
       def create!
         map :create, resource_path(:root), :verb => :post do |params|
-          result = model.new
+          result = proxy(params).new
           result.attributes = parse_for_attributes(params)
           result.save
           result

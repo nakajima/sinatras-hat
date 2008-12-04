@@ -73,7 +73,7 @@ describe Sinatra::Hat::Actions, 'children' do
     describe "create" do
       it "should create a child using regular url params" do
         mock(comments_proxy).new.returns(comment)
-        mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+        mock(comment).attributes = { "name" => "Frank" }
         mock(comment).save
         post_it '/posts/3/comments', "comment[name]" => "Frank"
         response.should be_redirection
@@ -81,15 +81,15 @@ describe Sinatra::Hat::Actions, 'children' do
       
       it "should create a child using json" do
         mock(comments_proxy).new.returns(comment)
-        mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+        mock(comment).attributes = { "name" => "Frank", "post_id" => '3' }
         mock(comment).save
-        post_it '/posts/3/comments.json', "comment" => { "name" => "Frank", "post_id" => 3 }.to_json
+        post_it '/posts/3/comments.json', "comment" => { "name" => "Frank", "post_id" => '3' }.to_json
         response.should be_ok
       end
       
       it "should create a child using xml" do
         mock(comments_proxy).new.returns(comment)
-        mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+        mock(comment).attributes = { "name" => "Frank", "post_id" => '3' }
         mock(comment).to_xml.returns('some-xml')
         mock(comment).save
         post_it '/posts/3/comments.xml', "comment" => COMMENT_XML
@@ -100,7 +100,7 @@ describe Sinatra::Hat::Actions, 'children' do
     describe "update" do
       it "should update a record using regular url params" do
         mock(comments_proxy).first(:id => '2').returns(comment)
-        mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+        mock(comment).attributes = { "name" => "Frank" }
         mock(comment).save
         put_it '/posts/3/comments/2', "comment[name]" => "Frank"
         response.should be_redirection
@@ -108,15 +108,15 @@ describe Sinatra::Hat::Actions, 'children' do
       
       it "should create a child using json" do
         mock(comments_proxy).first(:id => '2').returns(comment)
-        mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+        mock(comment).attributes = { "name" => "Frank", "post_id" => '3' }
         mock(comment).save
-        put_it '/posts/3/comments/2.json', "comment" => { "name" => "Frank", "post_id" => 3 }.to_json
+        put_it '/posts/3/comments/2.json', "comment" => { "name" => "Frank", "post_id" => '3' }.to_json
         response.should be_ok
       end
       
       it "should create a child using xml" do
         mock(comments_proxy).first(:id => '2').returns(comment)
-        mock(comment).attributes = { "name" => "Frank", "post_id" => 3 }
+        mock(comment).attributes = { "name" => "Frank", "post_id" => '3' }
         mock(comment).to_xml.returns('some-xml')
         mock(comment).save
         put_it '/posts/3/comments/2.xml', "comment" => COMMENT_XML

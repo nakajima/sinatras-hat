@@ -104,7 +104,9 @@ module Sinatra
           protect!(:realm => klass.credentials[:realm]) do |user, pass|
             user == klass.credentials[:username] and pass == klass.credentials[:password]
           end if klass.protecting?(name)
+          
           format = request.env['PATH_INFO'].split('.')[1]
+          
           format ? 
             klass.serialized_response(self, format.to_sym, opts, &block) :
             klass.templating_response(self, name, opts, &block)
@@ -114,10 +116,20 @@ module Sinatra
         context.send(opts[:verb], "#{path}.:format", &handler)
       end
       
-      def call(method, params, opts={})
-        fn = send(method)
-        klass = opts[:on] || model
-        klass.instance_exec(params, &fn)
+      def call(method, params)
+        proxy(params).instance_exec(params, &send(method))
+      end
+      
+      def proxy(params={})
+        return model if parent.nil?
+        fake_params = params.dup
+        fake_params[:id] = fake_params.delete("id")
+        fake_params.merge!(:id => params[parent.model_id])
+        parent.call(:record, fake_params).try(prefix) || model
+      end
+      
+      def model_id
+        "#{model.name.downcase}_id".to_sym
       end
       
       def options
@@ -129,6 +141,7 @@ module Sinatra
           :renderer => :erb,
           :children => [],
           :to_param => :id,
+          :nest_params => true,
           :credentials => {
             :username => 'admin',
             :password => 'password',

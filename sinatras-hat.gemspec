@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.email = %q{patnakajima@gmail.com}
   s.files = [
     "lib/core_ext",
+    "lib/core_ext/hash.rb",
     "lib/core_ext/array.rb",
     "lib/core_ext/object.rb",
     "lib/sinatras-hat",

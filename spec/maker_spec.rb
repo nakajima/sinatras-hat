@@ -1,12 +1,15 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe "sinatra's hat" do
-  attr_reader :hat, :app, :child, :maker, :model
+  attr_reader :hat, :app, :child, :maker, :model, :child_klass, :grand_child_klass
   
   before(:each) do
     @app = Object.new
     @model = Class.new
+    @grand_child_klass = Class.new
+    @child_klass = Class.new
     stub(model).name { "Post" }
+    stub(child_klass).name { "Comment" }
   end
   
   def new_maker(options={}, &block)
@@ -58,7 +61,6 @@ describe "sinatra's hat" do
     attr_reader :child_klass
     
     before(:each) do
-      @child_klass = Class.new
       @maker = new_maker
     end
     
@@ -72,11 +74,7 @@ describe "sinatra's hat" do
   end
   
   describe "#parents" do
-    attr_reader :child_klass, :grand_child_klass
-    
     before(:each) do
-      @grand_child_klass = Class.new
-      @child_klass = Class.new
       @maker = new_maker
     end
     
@@ -104,6 +102,40 @@ describe "sinatra's hat" do
     end
   end
   
+  describe "#proxy" do
+    context "when there's no parent" do
+      it "returns the model" do
+        new_maker.proxy.should == model
+      end
+    end
+    
+    context "when there is a parent" do
+      before(:each) do
+        @maker = new_maker
+        @child = maker.mount(child_klass)
+      end
+      
+      context "with an association proxy" do
+        it "returns the association proxy" do
+          mock(model).first(:id => :foo) do
+            mock(comments_proxy = Object.new).comments { :comments_proxy }
+            comments_proxy
+          end
+
+          child.proxy(:post_id => :foo).should == :comments_proxy
+        end
+      end
+      
+      context "without an association proxy" do
+        it "returns the model" do
+          mock(model).first(:id => :foo) { Object.new }
+
+          child.proxy(:post_id => :foo).should == child_klass
+        end
+      end
+    end
+  end
+  
   describe "path helpers" do
     describe "#prefix" do
       it "returns the tableized model name" do
@@ -124,16 +156,20 @@ describe "sinatra's hat" do
       
       context "with parents" do
         it "returns nested resource path" do
-          stub(child_klass = Object.new).name.returns("Comment")
           child = new_maker.mount(child_klass)
           child.resource_path.should == "/posts/:post_id/comments/:id"
         end
         
         it "doesn't change parents" do # regression test
-          stub(child_klass = Object.new).name.returns("Comment")
           child = new_maker.mount(child_klass)
           child.resource_path.should == "/posts/:post_id/comments/:id"
           child.resource_path.should == "/posts/:post_id/comments/:id"
+        end
+      end
+      
+      describe "#model_id" do
+        it "returns parent param value" do
+          new_maker.model_id.should == :post_id
         end
       end
     end
