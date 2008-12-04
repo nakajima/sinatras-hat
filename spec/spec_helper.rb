@@ -1,3 +1,5 @@
+ARGV.clear
+
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'fixtures')
 $LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
 
