@@ -170,24 +170,24 @@ describe "sinatra's hat" do
     describe "#resource_path" do
       context "with no parent" do
         it "returns normal resource path" do
-          new_maker.resource_path.should == "/posts/:id"
+          new_maker.resource_path('/:id').should == "/posts/:id"
         end
         
         it "can return :root path" do
-          new_maker.resource_path(:root).should == "/posts"
+          new_maker.resource_path('/').should == "/posts"
         end
       end
       
       context "with parents" do
         it "returns nested resource path" do
           child = new_maker.mount(child_klass)
-          child.resource_path.should == "/posts/:post_id/comments/:id"
+          child.resource_path('/:id').should == "/posts/:post_id/comments/:id"
         end
         
         it "doesn't change parents" do # regression test
           child = new_maker.mount(child_klass)
-          child.resource_path.should == "/posts/:post_id/comments/:id"
-          child.resource_path.should == "/posts/:post_id/comments/:id"
+          child.resource_path('/:id').should == "/posts/:post_id/comments/:id"
+          child.resource_path('/:id').should == "/posts/:post_id/comments/:id"
         end
       end
       

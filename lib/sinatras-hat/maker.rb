@@ -26,13 +26,17 @@ module Sinatra
         child
       end
       
-      def resource_path(root=false)
+      def resource_path(suffix)
         resources = parents + [self]
-        resources.inject("") do |memo, maker|
+        path = resources.inject("") do |memo, maker|
           memo += eql?(maker) ?
             "/#{maker.prefix}" :
             "/#{maker.prefix}/:#{maker.model.name}_id"
-        end.downcase + (root ? "" : "/:id")
+        end
+        (path + suffix).tap do |s|
+          s.downcase!
+          s.gsub!(%r(/$), '')
+        end
       end
       
       def parents
