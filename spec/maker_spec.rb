@@ -37,6 +37,12 @@ describe "sinatra's hat" do
       new_maker(:only => [:index, :show]).only.should == [:show, :index]
       new_maker(:only => [:update, :index, :show]).only.should == [:update, :show, :index]
     end
+    
+    it "always ensures :new is first for routing purposes" do
+      new_maker(:only => [:show, :new]).only.should == [:new, :show]
+      new_maker(:only => [:show, :index, :new]).only.should == [:new, :show, :index]
+      
+    end
   end
   
   describe "#authenticator" do

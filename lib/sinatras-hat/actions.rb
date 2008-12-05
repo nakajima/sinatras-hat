@@ -14,6 +14,12 @@ module Sinatra
         end
       end
     
+      def new!
+        map :new, resource_path('/new') do |params|
+          proxy(params).new
+        end
+      end
+    
       def show!
         map :show, resource_path('/:id') do |params|
           call(:record, params)

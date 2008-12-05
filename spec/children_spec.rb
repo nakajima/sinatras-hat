@@ -42,6 +42,36 @@ describe Sinatra::Hat::Actions, 'children' do
       end
     end
     
+    describe "new" do
+      attr_reader :new_comment
+      
+      before(:each) do
+        @new_comment = Object.new
+        stub(new_comment).hello { "The new comment" }
+        stub(comments_proxy).new.returns { new_comment }
+      end
+
+      it "should generate new action" do
+        get_it '/posts/3/comments/new'
+        response.should be_ok
+      end
+
+      it "assigns a new model object" do
+        mock(new_comment).hello
+        get_it '/posts/3/comments/new'
+      end
+
+      it "should render proper view template" do
+        get_it '/posts/3/comments/new'
+        body.should == "The new comment"
+      end
+
+      it "should return 406 when format unknown" do
+        get_it '/posts/3/comments/new.bars'
+        response.status.should == 406
+      end
+    end
+    
     describe "show" do
       it "should generate nested json" do
         mock(comments_proxy).first(:id => '2').returns(record)
