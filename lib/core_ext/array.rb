@@ -5,17 +5,13 @@ class Array
   
   def move_to_front(*entries)
     entries.each do |entry|
-      if deleted = delete(entry)
-        unshift(deleted)
-      end
+      unshift(entry) if delete(entry)
     end
   end
   
   def move_to_back(*entries)
     entries.each do |entry|
-      if deleted = delete(entry)
-        push(deleted)
-      end
+      push(entry) if delete(entry)
     end
   end
 end
