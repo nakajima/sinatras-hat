@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require File.join(File.dirname(__FILE__), '..', 'spec_helper')
 
 describe Sinatra::Hat::Actions, '#new' do
   attr_reader :response, :new_foo
