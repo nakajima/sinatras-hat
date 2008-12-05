@@ -3,6 +3,9 @@ module Sinatra
     module Actions
       def generate_actions!
         only.each { |action| send("#{action}!") }
+        children.each do |resource|
+          mount(resource)
+        end
       end
       
       def index!

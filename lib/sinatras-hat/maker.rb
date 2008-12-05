@@ -4,7 +4,7 @@ module Sinatra
       attr_accessor :parent
       attr_reader :model, :context, :options
 
-      include Actions, ChildActions, Responses
+      include Actions, Responses
       
       def initialize(model)
         @model = model
@@ -15,7 +15,6 @@ module Sinatra
         @context = context
         @options.merge!(opts)
         instance_eval(&block) if block_given?
-        generate_child_actions!
         generate_actions!
       end
       

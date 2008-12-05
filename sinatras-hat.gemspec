@@ -17,8 +17,6 @@ Gem::Specification.new do |s|
     "lib/sinatras-hat/maker.rb",
     "lib/sinatras-hat/actions.rb",
     "lib/sinatras-hat/auth.rb",
-    "lib/sinatras-hat/child_actions.rb",
-    "lib/sinatras-hat/helpers.rb",
     "lib/sinatras-hat/responses.rb",
     "lib/sinatras-hat.rb"
   ]
