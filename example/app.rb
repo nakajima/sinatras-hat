@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + '/lib/common.rb'
 
 mount(Post) do
+  # Mount children as a nested resource
   mount(Comment)
   
   # Allows for params[:post] to just be a YAML string which will

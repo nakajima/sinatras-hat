@@ -1,3 +1,4 @@
+<h1>Posts! <small><a href="/posts/new">Create one.</a></small></h1>
 <div>
   <% @posts.each do |post| %>
     <h1><%= post.name %></h1>
@@ -5,11 +6,3 @@
     <small><a href="/posts/<%= post.id %>">Click here to go there.</a></small>
   <% end %>
 </div>
-
-<form action="/posts" method="post">
-  <p>Create a new post:</p>
-  <input type="text" name="post[name]">
-  <br>
-  <textarea name="post[body]" rows="8" cols="40"></textarea>
-  <p><input type="submit" value="Continue &rarr;"></p>
-</form>
