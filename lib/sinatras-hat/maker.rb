@@ -61,19 +61,8 @@ module Sinatra
         
         result = Array(result)
         
-        # we need the index action to be last or else it picks
-        # up the other actions due to the paths. hacky? yes.
-        if action = result.delete(:index)
-          result << action 
-        end
-        
-        if action = result.delete(:new)
-          result.unshift(action)
-        end
-        
-        if action = result.delete(:edit)
-          result.unshift(action)
-        end
+        result.move_to_back(:index)
+        result.move_to_front(:new, :edit)
         
         result
       end
