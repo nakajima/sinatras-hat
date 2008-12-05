@@ -36,7 +36,7 @@ module Sinatra
       end
     
       def destroy!
-        map :destroy, resource_path('/:id'), :no_format => true, :verb => :delete do |params|
+        map :destroy, resource_path('/:id'), :verb => :delete do |params|
           result = call(:record, params)
           result.destroy
           :ok
