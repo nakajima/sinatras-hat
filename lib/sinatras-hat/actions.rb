@@ -19,6 +19,12 @@ module Sinatra
           proxy(params).new
         end
       end
+      
+      def edit!
+        map :edit, resource_path('/:id/edit') do |params|
+          call(:record, params)
+        end
+      end
     
       def show!
         map :show, resource_path('/:id') do |params|

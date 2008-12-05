@@ -41,7 +41,11 @@ describe "sinatra's hat" do
     it "always ensures :new is first for routing purposes" do
       new_maker(:only => [:show, :new]).only.should == [:new, :show]
       new_maker(:only => [:show, :index, :new]).only.should == [:new, :show, :index]
-      
+    end
+
+    it "always ensures :edit is first for routing purposes" do
+      new_maker(:only => [:show, :edit]).only.should == [:edit, :show]
+      new_maker(:only => [:show, :index, :edit]).only.should == [:edit, :show, :index]
     end
   end
   

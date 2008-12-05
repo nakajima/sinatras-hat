@@ -71,6 +71,10 @@ module Sinatra
           result.unshift(action)
         end
         
+        if action = result.delete(:edit)
+          result.unshift(action)
+        end
+        
         result
       end
       
@@ -135,7 +139,7 @@ module Sinatra
       
       def options
         @options ||= {
-          :only => [:show, :create, :update, :destroy, :index, :new],
+          :only => [:new, :edit, :show, :create, :update, :destroy, :index],
           :prefix => Extlib::Inflection.tableize(model.name),
           :protect => [],
           :formats => { },

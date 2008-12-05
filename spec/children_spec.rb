@@ -72,6 +72,23 @@ describe Sinatra::Hat::Actions, 'children' do
       end
     end
     
+    describe "edit" do
+      before(:each) do
+        stub(comment).name { "EDIT A COMMENT" }
+        stub(comments_proxy).first(:id => '2').returns(comment)
+      end
+      
+      it "should generate edit route" do
+        get_it '/posts/3/comments/2/edit'
+        response.should be_ok
+      end
+
+      it "renders edit template" do
+        get_it '/posts/3/comments/2/edit'
+        response.body.should == "EDIT A COMMENT"
+      end
+    end
+    
     describe "show" do
       it "should generate nested json" do
         mock(comments_proxy).first(:id => '2').returns(record)
