@@ -137,17 +137,8 @@ h4. Install
 
 h4. TODO
 
-* Figure out nested association proxies
-* Nesting resources should work like this:
-    
-    mount Post do
-      mount Comment do
-        mount Reply
-          # etc.
-        end
-      end
-    end
-    
-  This would allow nested options to be tracked as well.
+* Generate #new action
+* Generate #edit action
+
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
