@@ -1,6 +1,11 @@
 require 'metaid'
 
-Object.class_eval do
+class Object
+  def tap
+    yield self
+    self
+  end
+  
   def try(m, *a, &b)
     respond_to?(m) ? send(m, *a, &b) : nil
   end
