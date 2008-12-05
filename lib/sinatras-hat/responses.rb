@@ -32,6 +32,22 @@ module Sinatra
           ].join("\n")
         ]
       end
+      
+      private
+      
+      def protecting?(name)
+        protect.include?(:all) or protect.include?(name)
+      end
+    
+      def redirection_path(result)
+        result.is_a?(Symbol) ?
+          "/#{prefix}" :
+          "/#{prefix}/#{result.send(to_param)}"
+      end
+    
+      def ivar_name(result)
+        "@" + (result.respond_to?(:each) ? prefix : model.name.downcase)
+      end
     end
   end
 end

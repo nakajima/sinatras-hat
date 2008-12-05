@@ -4,7 +4,7 @@ module Sinatra
       attr_accessor :parent
       attr_reader :model, :context, :options
 
-      include Actions, ChildActions, Responses, Helpers
+      include Actions, ChildActions, Responses
       
       def initialize(model)
         @model = model

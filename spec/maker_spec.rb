@@ -197,19 +197,5 @@ describe "sinatra's hat" do
         end
       end
     end
-    
-    describe "#ivar_name" do
-      context "when a collection" do
-        it "returns pluralized version" do
-          new_maker.ivar_name([:foo]).should == "@posts"
-        end
-      end
-      
-      context "when not a collection" do
-        it "returns singular version" do
-          new_maker.ivar_name(:foo).should == "@post"
-        end
-      end
-    end
   end
 end

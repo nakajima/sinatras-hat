@@ -42,6 +42,19 @@ module Sinatra
           :ok
         end
       end
+      
+      private
+      
+      def parse_for_attributes(params, name=model.name.downcase)
+        if handler = accepts[params[:format].try(:to_sym)]
+          handler.call params[name]
+        else
+          params.nest!
+          params[name] ||= { }
+          params[name][parent.model_id] = params[parent.model_id] if parent
+          params[name]
+        end
+      end
     end
   end
 end
