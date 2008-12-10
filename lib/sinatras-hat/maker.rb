@@ -106,8 +106,13 @@ module Sinatra
         opts[:verb] ||= :get
         klass = self
       
-        context.send(opts[:verb], path) { klass.templated(self, name, opts, &block) }
-        context.send(opts[:verb], "#{path}.:format") { klass.serialized(self, name, opts, &block) }
+        context.send(opts[:verb], path) do
+          klass.templated(self, name, opts, &block)
+        end
+        
+        context.send(opts[:verb], "#{path}.:format") do
+          klass.serialized(self, name, opts, &block)
+        end
       end
       
       def call(method, params)
