@@ -41,7 +41,26 @@ can't find one, we look for a template file, which should be located in a subdir
 of your app views directory named the same as your prefix. So the index.erb template
 should be located in the views/posts directory.
 
-h3. Options
+h4. Sample App Directory:
+
+  awesome-app/
+    app.rb
+    lib/
+      comment.rb
+      post.rb
+    views/
+      comments/
+        edit.erb
+        new.erb
+        index.erb
+        show.erb
+      posts/
+        edit.erb
+        index.erb
+        new.erb
+        show.erb
+
+h3. Mounting Options
 
 Calling @mount(Post)@ generates index, show, update, and destroy routes for the Post model
 using the prefix of "/posts". You can specify a different prefix to use with
@@ -70,23 +89,6 @@ and @record@ loaders. To make things work with ActiveRecord, you can do this:
 
 The @finder@ and @record@ blocks will be instance_exec'd in the context of your classes.
 
-h3. Nested Resources
-
-You can nest one level of child resources using the @children@ option:
-
-  mount Post, :children => :comments
-
-Using that snippet, you'll get the following routes:
-  
-* @GET  /posts/:post_id/comments@
-* @POST /posts/:post_id/comments@ (not implemented yet)
-* @GET  /posts/:post_id/comments/:id@ 
-* @PUT  /posts/:post_id/comments/:id@ (not implemented yet)
-* @DELETE /posts/:post_id/comments/:id@ (not implemented yet)
-
-Your nested resources will be accessed using the same @finder@ and @record@ options as are
-used for everything else.
-
 h3. Accepting formats
 
 You can add new formats that can be used to create/update record using the @accepts@ hash to
@@ -113,9 +115,9 @@ is to just have a method defined by the model class that will convert for you (s
 
 h3. Authentication
 
-You can protect certain actions using basic authentication using the @protect@ method. The following snippet
-will make the @index@ and @show@ actions require authentication. You should pass username and password options
-as well, unless you want to just use the defaults (admin:password):
+You can protect certain actions using basic authentication using the @protect@ method. The
+following snippet will make the @index@ and @show@ actions require authentication. You should
+pass username and password options as well, unless you want to just use the defaults (admin:password):
 
   mount Post do
     protect :index, :show, :username => 'foo', :password => 'bar', :realm => 'MYPOSTS.com'
@@ -128,6 +130,45 @@ If you want all of your actions to require authentication, you can simply pass @
   end
 
 All of your actions will then require authentication.
+
+h4. Custom Authentication Logic
+
+Assuming you don't want to just verify username/password with the basic auth logic, you can use the #authenticator method to specify custom authentication logic:
+
+  mount Post do
+    protect :all
+    authenticator { |username, password| User.authenticate(username, password) }
+  end
+
+h3. Mounting Child Resources
+
+In Rails, you can mount child resources like so:
+
+  map.resources :posts do |post|
+    post.resources :comments
+  end
+
+With Sinatra's Hat, you just call @mount@ within a parent's @mount@ block:
+
+  mount Post do
+    mount Comment
+  end
+
+The child @mount@ call can take advantage of all the regular @mount@ options:
+
+  mount Post do
+    mount Comment do
+      protect :destroy # only admins can destroy comments
+    end
+  end
+
+You can keep mounting subresources until the cows come home:
+
+  mount Post do
+    mount Comment do
+      mount Reply
+    end
+  end
 
 h4. Install
 
