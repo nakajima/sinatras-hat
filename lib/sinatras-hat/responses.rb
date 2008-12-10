@@ -18,10 +18,9 @@ module Sinatra
         event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
         if accepts[format] or opts[:verb].eql?(:get)
-          event.content_type format rescue nil
+          event.content_type(format) rescue nil
           object = block.call(event.params)
-          handle = formats[format.to_sym]
-          result = handle ? handle.call(object) : object.try("to_#{format}")
+          result = serializer_for(format).call(object)
           return result unless result.nil?
         end
       
@@ -34,6 +33,12 @@ module Sinatra
       end
       
       private
+      
+      def serializer_for(format)
+        formats[format.to_sym] ||= proc do |object|
+          object.try("to_#{format}")
+        end
+      end
       
       def protecting?(name)
         protect.include?(:all) or protect.include?(name)
