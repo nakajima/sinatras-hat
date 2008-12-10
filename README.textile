@@ -137,8 +137,6 @@ h4. Install
 
 h4. TODO
 
-* Generate #new action
-* Generate #edit action
-
+* Figure out better way to handle control flow (redirects vs. renders, etc.)
 
 (c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
