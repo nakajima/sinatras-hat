@@ -1,6 +1,14 @@
 module Sinatra
   module Hat
     module Responses
+      class UnsupportedFormat < StandardError
+        attr_reader :format
+        
+        def initialize(format)
+          @format = format
+        end
+      end
+      
       def templated(event, name, opts={}, &block)
         event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
@@ -24,12 +32,7 @@ module Sinatra
           return result unless result.nil?
         end
       
-        throw :halt, [
-          406, [
-            "The `#{format}` format is not supported.\n",
-            "Valid Formats: #{accepts.keys.join(', ')}\n",
-          ].join("\n")
-        ]
+        raise UnsupportedFormat.new(format)
       end
       
       private

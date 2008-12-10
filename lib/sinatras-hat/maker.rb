@@ -3,7 +3,7 @@ module Sinatra
     class Maker
       attr_accessor :parent
       attr_reader :model, :context, :options
-
+      
       include Actions, Responses
       
       def initialize(model)
@@ -107,12 +107,36 @@ module Sinatra
         klass = self
       
         context.send(opts[:verb], path) do
-          klass.templated(self, name, opts, &block)
+          begin
+            klass.templated(self, name, opts, &block)
+          rescue Errno::ENOENT => e
+            klass.rescue_template_error(e)
+          end
         end
         
         context.send(opts[:verb], "#{path}.:format") do
-          klass.serialized(self, name, opts, &block)
+          begin
+            klass.serialized(self, name, opts, &block)
+          rescue UnsupportedFormat => e
+            klass.rescue_format_error(e)
+          end
         end
+      end
+      
+      def rescue_format_error(e)
+        throw :halt, [
+          406, [
+            "The `#{e.format}` format is not supported.\n",
+            "Valid Formats: #{accepts.keys.join(', ')}\n",
+          ].join("\n")
+        ]
+      end
+
+      # TODO Create a real template for this error.
+      def rescue_template_error(e)
+        msg = "<pre>There was a problem with your view template:\n\n  "
+        msg << e.message
+        msg << "\n</pre>"
       end
       
       def call(method, params)

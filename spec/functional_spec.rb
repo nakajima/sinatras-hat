@@ -110,5 +110,18 @@ describe "functional specs" do
       end
     end
   end
+  
+  describe "when templates aren't found" do
+    before(:each) do
+      stub(Fizz).all { [] }
+    end
+    
+    it "returns thoughtful error message" do
+      get_it '/fizzs'
+      response.should be_ok
+      response.body.should include("There was a problem with your view template:")
+      response.body.should include("index.erb")
+    end
+  end
 end
 
