@@ -12,30 +12,22 @@ describe Sinatra::Hat::Action do
   describe "basics" do
     before(:each) do
       @handler = proc { |record| erb "/posts/#{record.id}" }
-      @action = Sinatra::Hat::Action.new(maker, :show, handler)
+      @action = Sinatra::Hat::Action.new(maker, handler)
     end
     
     it "has a maker" do
       action.maker.should == maker
     end
 
-    it "has a name" do
-      action.name.should == :show
-    end
-    
     it "has a handler" do
       action.handler.should == handler
-    end
-    
-    it "has options" do
-      action.options.should == { }
     end
   end
   
   describe "event handling" do
     before(:each) do
       @handler = proc { |params| params[:foo] }
-      @action = Sinatra::Hat::Action.new(maker, :show, handler)
+      @action = Sinatra::Hat::Action.new(maker, handler)
       @event = Object.new
       stub(event).params.returns({ :foo => "bar" })
     end

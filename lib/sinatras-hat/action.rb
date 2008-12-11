@@ -1,10 +1,10 @@
 module Sinatra
   module Hat
     class Action
-      attr_reader :maker, :name, :handler, :options
+      attr_reader :maker, :handler
       
-      def initialize(maker, name, handler, options={})
-        @maker, @name, @handler, @options = maker, name, handler, options
+      def initialize(maker, handler)
+        @maker, @handler = maker, handler
       end
       
       def handle(event)

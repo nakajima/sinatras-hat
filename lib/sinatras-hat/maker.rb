@@ -105,7 +105,7 @@ module Sinatra
       def map(name, path, opts={}, &block)
         opts[:verb] ||= :get
         klass = self
-        actions[name] = Action.new(self, name, block, opts)
+        actions[name] = Action.new(self, block)
       
         context.send(opts[:verb], path) do
           begin
