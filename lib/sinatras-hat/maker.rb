@@ -102,12 +102,25 @@ module Sinatra
         end
       end
       
+      def create(&block)
+        if block_given?
+          @create = block
+        else
+          @create ||= proc do |model, params|
+            result = model.new
+            result.attributes = parse_for_attributes(params)
+            result.save ? result : nil
+          end
+        end
+        
+      end
+      
       def map(name, path, opts={}, &block)
         opts[:verb] ||= :get
         klass = self
-        actions[name] = Action.new(self, block)
+        actions[name] = Action.new(self, name, block)
       
-        context.send(opts[:verb], path) do
+        context.send(opts[:verb], resource_path(path)) do
           begin
             klass.templated(self, name, opts)
           rescue Errno::ENOENT => e
@@ -115,7 +128,7 @@ module Sinatra
           end
         end
         
-        context.send(opts[:verb], "#{path}.:format") do
+        context.send(opts[:verb], "#{resource_path(path)}.:format") do
           begin
             klass.serialized(self, name, opts)
           rescue UnsupportedFormat => e

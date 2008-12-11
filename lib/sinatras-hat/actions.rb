@@ -9,40 +9,37 @@ module Sinatra
       end
       
       def index!
-        map :index, resource_path('/') do |params|
+        map :index, '/' do |params|
           call(:finder, params)
         end
       end
     
       def new!
-        map :new, resource_path('/new') do |params|
+        map :new, '/new' do |params|
           proxy(params).new
         end
       end
       
       def edit!
-        map :edit, resource_path('/:id/edit') do |params|
+        map :edit, '/:id/edit' do |params|
           call(:record, params)
         end
       end
     
       def show!
-        map :show, resource_path('/:id') do |params|
+        map :show, '/:id' do |params|
           call(:record, params)
         end
       end
     
       def create!
-        map :create, resource_path('/'), :verb => :post do |params|
-          result = proxy(params).new
-          result.attributes = parse_for_attributes(params)
-          result.save
-          result
+        map :create, '/', :verb => :post do |params|
+          create.call(proxy(params), params)
         end
       end
     
       def update!
-        map :update, resource_path('/:id'), :verb => :put do |params|
+        map :update, '/:id', :verb => :put do |params|
           result = call(:record, params)
           result.attributes = parse_for_attributes(params)
           result.save
@@ -51,7 +48,7 @@ module Sinatra
       end
     
       def destroy!
-        map :destroy, resource_path('/:id'), :verb => :delete do |params|
+        map :destroy, '/:id', :verb => :delete do |params|
           result = call(:record, params)
           result.destroy
           :ok

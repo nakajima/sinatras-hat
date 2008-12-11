@@ -12,7 +12,7 @@ describe Sinatra::Hat::Action do
   describe "basics" do
     before(:each) do
       @handler = proc { |record| erb "/posts/#{record.id}" }
-      @action = Sinatra::Hat::Action.new(maker, handler)
+      @action = Sinatra::Hat::Action.new(maker, :show, handler)
     end
     
     it "has a maker" do
@@ -27,7 +27,7 @@ describe Sinatra::Hat::Action do
   describe "event handling" do
     before(:each) do
       @handler = proc { |params| params[:foo] }
-      @action = Sinatra::Hat::Action.new(maker, handler)
+      @action = Sinatra::Hat::Action.new(maker, :show, handler)
       @event = Object.new
       stub(event).params.returns({ :foo => "bar" })
     end

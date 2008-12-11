@@ -7,7 +7,7 @@ describe Sinatra::Hat::Actions, '#create' do
     it "should create a record via json" do
       mock(record).attributes = { "name" => "Frank" }
       mock(record).to_json.returns(:a_result)
-      mock(record).save
+      mock(record).save.returns(true)
       mock(Foo).new.returns(record)
       post_it '/foos.json', "foo" => { "name" => "Frank" }.to_json
       response.should be_ok
@@ -16,7 +16,7 @@ describe Sinatra::Hat::Actions, '#create' do
     it "should create a record via xml" do
       mock(record).attributes = { "name" => "Frank" }
       mock(record).to_xml.returns(:a_result)
-      mock(record).save
+      mock(record).save.returns(true)
       mock(Foo).new.returns(record)
       post_it '/foos.xml', "foo" => FOO_XML
       response.should be_ok
@@ -25,7 +25,7 @@ describe Sinatra::Hat::Actions, '#create' do
     it "should create a record via yaml" do
       mock(record).attributes = { "name" => "Frank" }
       mock(record).to_yaml.returns(:a_result)
-      mock(record).save
+      mock(record).save.returns(true)
       mock(Foo).new.returns(record)
       post_it '/foos.yaml', "foo" => { "name" => "Frank" }.to_yaml
       response.should be_ok
@@ -33,7 +33,7 @@ describe Sinatra::Hat::Actions, '#create' do
     
     it "should create a record using regular url params" do
       mock(record).attributes = { "name" => "Frank" }
-      mock(record).save
+      mock(record).save.returns(true)
       mock(Foo).new.returns(record)
       post_it '/foos', "foo[name]" => "Frank"
       response.should be_redirection

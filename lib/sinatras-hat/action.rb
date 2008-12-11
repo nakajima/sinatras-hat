@@ -3,7 +3,7 @@ module Sinatra
     class Action
       attr_reader :maker, :handler
       
-      def initialize(maker, handler)
+      def initialize(maker, name, handler)
         @maker, @handler = maker, handler
       end
       
