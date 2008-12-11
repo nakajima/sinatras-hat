@@ -1,5 +1,6 @@
 module Sinatra
   module Hat
+    # TODO: Move these to Action class?
     module Responses
       class UnsupportedFormat < StandardError
         attr_reader :format
