@@ -117,7 +117,7 @@ module Sinatra
         
         context.send(opts[:verb], "#{path}.:format") do
           begin
-            klass.serialized(self, name, opts, &block)
+            klass.serialized(self, name, opts)
           rescue UnsupportedFormat => e
             klass.rescue_format_error(e)
           end
