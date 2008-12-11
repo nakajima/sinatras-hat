@@ -112,7 +112,17 @@ module Sinatra
             result.save ? result : nil
           end
         end
-        
+      end
+      
+      def update(&block)
+        if block_given?
+          @update = block
+        else
+          @update ||= proc do |record, params|
+            record.attributes = parse_for_attributes(params)
+            record.save ? record : false
+          end
+        end
       end
       
       def map(name, path, opts={}, &block)

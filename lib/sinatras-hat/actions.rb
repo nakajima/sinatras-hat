@@ -34,16 +34,13 @@ module Sinatra
     
       def create!
         map :create, '/', :verb => :post do |params|
-          create.call(proxy(params), params)
+          create[proxy(params), params]
         end
       end
     
       def update!
         map :update, '/:id', :verb => :put do |params|
-          result = call(:record, params)
-          result.attributes = parse_for_attributes(params)
-          result.save
-          result
+          update[call(:record, params), params]
         end
       end
     
