@@ -109,7 +109,7 @@ module Sinatra
       
         context.send(opts[:verb], path) do
           begin
-            klass.templated(self, name, opts, &block)
+            klass.templated(self, name, opts)
           rescue Errno::ENOENT => e
             klass.rescue_template_error(e)
           end

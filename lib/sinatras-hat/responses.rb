@@ -10,7 +10,7 @@ module Sinatra
         end
       end
       
-      def templated(event, name, opts={}, &block)
+      def templated(event, name, opts={})
         event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
         root = File.join(Sinatra.application.options.views, prefix)
@@ -21,7 +21,7 @@ module Sinatra
           event.redirect(redirection_path(result))
       end
     
-      def serialized(event, name, opts={}, &block)
+      def serialized(event, name, opts={})
         format = event.params[:format].to_sym
         
         event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
