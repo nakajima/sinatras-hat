@@ -105,6 +105,7 @@ module Sinatra
       def map(name, path, opts={}, &block)
         opts[:verb] ||= :get
         klass = self
+        actions[name] = Action.new(self, name, block, opts)
       
         context.send(opts[:verb], path) do
           begin
@@ -159,7 +160,8 @@ module Sinatra
         @options ||= {
           :only => [:new, :edit, :show, :create, :update, :destroy, :index],
           :prefix => Extlib::Inflection.tableize(model.name),
-          :protect => [],
+          :actions => { },
+          :protect => [ ],
           :formats => { },
           :renderer => :erb,
           :children => [],

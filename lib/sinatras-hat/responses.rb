@@ -13,7 +13,7 @@ module Sinatra
         event.protect!(:realm => credentials[:realm], &authenticator) if protecting?(name)
         
         root = File.join(Sinatra.application.options.views, prefix)
-        result = block.call(event.params)
+        result = actions[name].handle(event)
         event.instance_variable_set ivar_name(result), result
         return opts[:verb] == :get ?
           event.render(renderer, name, :views_directory => root) :
@@ -27,7 +27,7 @@ module Sinatra
         
         if accepts[format] or opts[:verb].eql?(:get)
           event.content_type(format) rescue nil
-          object = block.call(event.params)
+          object = actions[name].handle(event)
           result = serializer_for(format).call(object)
           return result unless result.nil?
         end
