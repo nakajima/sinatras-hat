@@ -125,6 +125,17 @@ module Sinatra
         end
       end
       
+      def destroy(&block)
+        if block_given?
+          @destroy = block
+        else
+          @destroy ||= proc do |record, params|
+            record.destroy
+            :destroyed
+          end
+        end
+      end
+      
       def map(name, path, opts={}, &block)
         opts[:verb] ||= :get
         klass = self

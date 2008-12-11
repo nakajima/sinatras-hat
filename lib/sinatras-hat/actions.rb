@@ -46,9 +46,7 @@ module Sinatra
     
       def destroy!
         map :destroy, '/:id', :verb => :delete do |params|
-          result = call(:record, params)
-          result.destroy
-          :ok
+          destroy[call(:record, params), params]
         end
       end
       
