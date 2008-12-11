@@ -34,19 +34,19 @@ module Sinatra
     
       def create!
         map :create, '/', :verb => :post do |params|
-          create[proxy(params), params]
+          create[proxy(params), parse_for_attributes(params)]
         end
       end
     
       def update!
         map :update, '/:id', :verb => :put do |params|
-          update[call(:record, params), params]
+          update[call(:record, params), parse_for_attributes(params)]
         end
       end
     
       def destroy!
         map :destroy, '/:id', :verb => :delete do |params|
-          destroy[call(:record, params), params]
+          destroy[call(:record, params), parse_for_attributes(params)]
         end
       end
       
@@ -54,12 +54,12 @@ module Sinatra
       
       def parse_for_attributes(params, name=model.name.downcase)
         if handler = accepts[params[:format].try(:to_sym)]
-          handler.call params[name]
+          params.merge(name => handler.call(params[name]))
         else
           params.nest!
           params[name] ||= { }
           params[name][parent.model_id] = params[parent.model_id] if parent
-          params[name]
+          params
         end
       end
     end

@@ -108,7 +108,7 @@ module Sinatra
         else
           @create ||= proc do |model, params|
             result = model.new
-            result.attributes = parse_for_attributes(params)
+            result.attributes = params[model_name]
             result.save ? result : nil
           end
         end
@@ -119,7 +119,7 @@ module Sinatra
           @update = block
         else
           @update ||= proc do |record, params|
-            record.attributes = parse_for_attributes(params)
+            record.attributes = params[model_name]
             record.save ? record : false
           end
         end
@@ -187,7 +187,11 @@ module Sinatra
       end
       
       def model_id
-        "#{model.name.downcase}_id".to_sym
+        "#{model_name}_id".to_sym
+      end
+      
+      def model_name
+        model.name.downcase
       end
       
       def options

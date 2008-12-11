@@ -36,6 +36,9 @@ mount(Buzz) do
 end
 mount(Sekret) do
   protect :index, :username => 'spec', :password => 'helper'
+  create do |model, params|
+    model.sekret_create(params[:sekret])
+  end
 end
 
 mount TopSekret, :protect => :all
