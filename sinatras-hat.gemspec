@@ -14,12 +14,12 @@ Gem::Specification.new do |s|
     "lib/core_ext/array.rb",
     "lib/core_ext/object.rb",
     "lib/sinatras-hat",
+    "lib/sinatras-hat.rb",
     "lib/sinatras-hat/maker.rb",
     "lib/sinatras-hat/action.rb",
     "lib/sinatras-hat/actions.rb",
     "lib/sinatras-hat/auth.rb",
-    "lib/sinatras-hat/responses.rb",
-    "lib/sinatras-hat.rb"
+    "lib/sinatras-hat/responses.rb"
   ]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.0}
