@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sinatras-hat}
-  s.version = "0.0.2"
+  s.version = "0.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pat Nakajima"]
@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
     "lib/core_ext/object.rb",
     "lib/sinatras-hat",
     "lib/sinatras-hat/maker.rb",
+    "lib/sinatras-hat/action.rb",
     "lib/sinatras-hat/actions.rb",
     "lib/sinatras-hat/auth.rb",
     "lib/sinatras-hat/responses.rb",
