@@ -48,5 +48,4 @@ describe Sinatra::Hat::Action do
       action.handle(event).should == "bar"
     end
   end
-  
 end
