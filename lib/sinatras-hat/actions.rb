@@ -40,13 +40,17 @@ module Sinatra
     
       def update!
         map :update, '/:id', :verb => :put do |params|
-          update[call(:record, params), parse_for_attributes(params)]
+          call(:record, params).tap do |record|
+            update[record, parse_for_attributes(params)]
+          end
         end
       end
     
       def destroy!
         map :destroy, '/:id', :verb => :delete do |params|
-          destroy[call(:record, params), parse_for_attributes(params)]
+          call(:record, params).tap do |record|
+            destroy[record, parse_for_attributes(params)]
+          end
         end
       end
       
