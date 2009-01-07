@@ -1,7 +1,7 @@
 require 'spec/spec_helper'
 
 describe Sinatra::Hat::Maker do
-  attr_reader :model, :base
+  attr_reader :model, :maker
 
   describe "initializing" do
     it "takes a klass" do
@@ -28,34 +28,34 @@ describe Sinatra::Hat::Maker do
   
   describe "default options" do
     before(:each) do
-      @base = new_maker(Article)
+      @maker = new_maker(Article)
     end
     
     it "has a default options hash" do
-      @base.options.should_not be_nil
+      maker.options.should_not be_nil
     end
     
     describe ":parent" do
       it "is nil" do
-        base.options[:parent].should be_nil
+        maker.options[:parent].should be_nil
       end
       
       it "is methodized" do
-        base.parent.should === base.options[:parent]
+        maker.parent.should === maker.options[:parent]
       end
     end
     
     describe ":finder" do
       it "finds all for the model" do
         mock.proxy(Article).all
-        base.options[:finder][Article, { }]
+        maker.options[:finder][Article, { }]
       end
     end
     
     describe ":record" do
       it "loads a single record" do
         mock.proxy(Article).first(:id => 2)
-        base.options[:record][Article, { :id => 2 }]
+        maker.options[:record][Article, { :id => 2 }]
       end
     end
   end
@@ -70,6 +70,11 @@ describe Sinatra::Hat::Maker do
     context "when it's not specified as an option" do
       it "returns the pluralized, downcased klass name" do
         new_maker(Article).prefix.should == "articles"
+      end
+      
+      it "snakecases" do
+        stub(klass = Class.new).name { "AwesomePerson" }
+        new_maker(klass).prefix.should == 'awesome_people'
       end
     end
   end
@@ -95,6 +100,40 @@ describe Sinatra::Hat::Maker do
         parent = new_maker(Article, :parent => grand_parent)
         child = new_maker(Comment, :parent => parent)
         child.parents.should == [parent, grand_parent]
+      end
+    end
+  end
+  
+  describe "#model" do
+    it "returns an instance of Sinatra::Hat::Model" do
+      maker = new_maker
+      mock.proxy(Sinatra::Hat::Model.new(maker))
+      new_maker.model
+    end
+  end
+  
+  describe "actions" do
+    attr_reader :maker, :request, :app
+    
+    describe "#handle_index" do
+      before(:each) do
+        mock_app {  }
+        @maker = new_maker(Article)
+        stub(@request = Object.new).params.returns({ })
+      end
+      
+      it "takes a request" do
+        maker.handle_index(request)
+      end
+      
+      it "loads all records" do
+        mock.proxy(maker.model).all(anything) { [] }
+        maker.handle_index(request)
+      end
+      
+      it "assigns the proper instance variable in the request" do
+        maker.handle_index(request)
+        request.instance_eval { @articles }.should == [:first_article, :second_article]
       end
     end
   end

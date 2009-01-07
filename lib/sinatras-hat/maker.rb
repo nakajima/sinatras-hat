@@ -9,8 +9,17 @@ module Sinatra
         with(options)
       end
       
+      def handle_index(request)
+        records = model.all(request.params)
+        request.instance_variable_set("@#{prefix}", records)
+      end
+      
+      def model
+        @model ||= Model.new(self)
+      end
+      
       def prefix
-        options[:prefix] || klass.name.downcase.plural
+        options[:prefix] || klass.name.snake_case.plural
       end
       
       def parents
@@ -18,7 +27,7 @@ module Sinatra
       end
       
       def resource_path(suffix)
-        resource.path(suffix)
+        (@resource ||= Resource.new(self)).path(suffix)
       end
       
       def options
@@ -27,12 +36,6 @@ module Sinatra
           :record => proc { |model, params| model.first(:id => params[:id]) },
           :parent => nil
         }
-      end
-      
-      private
-      
-      def resource
-        @resource ||= Resource.new(self)
       end
     end
   end
