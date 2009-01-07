@@ -1,4 +1,7 @@
-h1. Sinatra's Hat
+h2. Sinatra's Hat
+
+h1. NOTE: This branch is a complete rewrite meant to work with Sinatra 0.9.0. It's
+unstable, and hasn't implemented *most* of the features listed in this README.
 
 Mount models as web services in Sinatra with ease.
 
