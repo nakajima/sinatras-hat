@@ -50,7 +50,7 @@ describe Sinatra::Hat::Responder do
       context "when the result is a collection" do
         it "assigns the plural instance variable in the request" do
           request = fake_request
-          responder.render(:index, :request => request, :data => [:articles])
+          responder.render(:index, request, [:articles])
           request.instance_eval { @articles }.should == [:articles]
         end
       end
@@ -58,7 +58,7 @@ describe Sinatra::Hat::Responder do
       context "when the result is not a collection" do
         it "assigns the singular instance variable in the request" do
           request = fake_request
-          responder.render(:show, :request => request, :data => :article)
+          responder.render(:show, request, :article)
           request.instance_eval { @article }.should == :article
         end
       end
@@ -68,13 +68,13 @@ describe Sinatra::Hat::Responder do
       it "renders the index template" do
         request = fake_request
         mock.proxy(request).erb(:index, :views_directory => fixture('views/articles'))
-        responder.render(:index, :request => request, :data => [:articles])
+        responder.render(:index, request, [:articles])
       end
       
       it "renders the show template" do
         request = fake_request
         mock.proxy(request).erb(:show, :views_directory => fixture('views/articles'))
-        responder.render(:show, :request => request, :data => :article)
+        responder.render(:show, request, :article)
       end
     end
   end

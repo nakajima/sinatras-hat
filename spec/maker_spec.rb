@@ -196,7 +196,7 @@ describe Sinatra::Hat::Maker do
           end
           
           it "renders the index template" do
-            mock.proxy(maker.responder).render(:index, :data => [:article], :request => request)
+            mock.proxy(maker.responder).render(:index, request, [:article])
             maker.handle_index(request)
           end
         end
@@ -243,7 +243,7 @@ describe Sinatra::Hat::Maker do
           end
           
           it "renders the index template" do
-            mock.proxy(maker.responder).render(:show, :data => :article, :request => request)
+            mock.proxy(maker.responder).render(:show, request, :article)
             maker.handle_show(request)
           end
         end

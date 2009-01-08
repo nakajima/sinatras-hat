@@ -15,8 +15,7 @@ module Sinatra
         formatter[data]
       end
       
-      def render(name, options={})
-        request, data = options[:request], options[:data]
+      def render(name, request, data)
         request.instance_variable_set(ivar_name(data), data)
         request.erb name.to_sym, :views_directory => File.join(request.options.views, maker.prefix)
       end

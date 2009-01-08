@@ -21,7 +21,7 @@ module Sinatra
         
         request.params[:format] ?
           responder.serialize(data, request) :
-          responder.render(:index, :data => data, :request => request)
+          responder.render(:index, request, data)
       end
       
       def handle_show(request)
@@ -29,7 +29,7 @@ module Sinatra
         
         request.params[:format] ?
           responder.serialize(data, request) :
-          responder.render(:show, :data => data, :request => request)
+          responder.render(:show, request, data)
       end
       
       def prefix
