@@ -1,14 +1,6 @@
 # A fake model class
 class Abstract
   class << self
-    def first(options={})
-      :article
-    end
-  
-    def all
-      [:first_article, :second_article]
-    end
-  
     def new(options={})
       options
     end

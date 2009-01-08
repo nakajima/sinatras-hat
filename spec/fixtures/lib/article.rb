@@ -1,5 +1,13 @@
 # A fake model class
 class Article < Abstract
+  def self.first(options={})
+    :article
+  end
+
+  def self.all
+    [:first_article, :second_article]
+  end
+  
   # fake attributes ========================
   def name
     "The article"

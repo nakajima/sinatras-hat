@@ -22,6 +22,23 @@ describe Sinatra::Hat::Maker do
     end
   end
   
+  describe "setup" do
+    before(:each) do
+      stub.instance_of(Sinatra::Hat::Router).generate(:app)
+    end
+    
+    it "generates routes" do
+      mock.proxy(maker = new_maker).generate_routes(:app)
+      maker.setup(:app)
+    end
+    
+    it "stores reference to app" do
+      maker = new_maker
+      maker.setup(:app)
+      maker.app.should == :app
+    end
+  end
+  
   it "has a klass" do
     new_maker(Article).klass.should == Article
   end

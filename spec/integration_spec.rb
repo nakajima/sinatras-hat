@@ -6,7 +6,9 @@ describe "integration level tests" do
     mock_app do
       set :views, fixture('views')
       
-      maker = mount(Article)
+      mount(Article) do
+        mount(Comment)
+      end
       
       get "/" do
         "Hello!"
@@ -31,6 +33,13 @@ describe "integration level tests" do
       it "returns rendered template" do
         get "/articles"
         body.should == "HEY: [:first_article, :second_article]"
+      end
+    end
+    
+    context "when nested" do
+      it "returns serialized index" do
+        get '/articles/1/comments.yaml'
+        body.should == [:first_comment, :second_comment].to_yaml        
       end
     end
   end

@@ -1,7 +1,9 @@
 module Sinatra
   module Hat
     class Maker
-      attr_reader :klass
+      # include Sinatra::Hat::Extendor
+      
+      attr_reader :klass, :app
       
       def initialize(klass, overrides={})
         @klass = klass
@@ -9,8 +11,9 @@ module Sinatra
         with(options)
       end
       
-      def generate_routes(app)
-        Router.new(self).generate(app)
+      def setup(app)
+        @app = app
+        generate_routes(app)
       end
       
       def handle_index(request)
@@ -41,6 +44,21 @@ module Sinatra
           :parent => nil,
           :formats => { }
         }
+      end
+      
+      def mount(klass, options={}, &block)
+        maker = Maker.new(klass, options.merge(:parent => self))
+        maker.setup(@app)
+        maker.instance_eval(&block) if block_given?
+        maker
+      end
+      
+      def inspect
+        "Maker for #{klass}"
+      end
+      
+      def generate_routes(app)
+        Router.new(self).generate(app)
       end
       
       def responder
