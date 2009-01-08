@@ -1,13 +1,13 @@
 # A fake model class
 class Abstract
   class << self
-    def new(options={})
-      options
-    end
-  
     def create(options={})
       :article
     end
+  end
+  
+  def initialize(options={})
+    options
   end
 
   # just like a real ORM ===================

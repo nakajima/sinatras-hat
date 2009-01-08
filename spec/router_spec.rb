@@ -33,7 +33,6 @@ describe Sinatra::Hat::Router do
       
       it "calls the block, passing the request" do
         router.generate(app)
-        mock.proxy(maker.model).all("format" => "yaml")
         mock.proxy(maker).handle_index(anything) { "" }
         get '/articles.yaml'
       end
@@ -48,9 +47,22 @@ describe Sinatra::Hat::Router do
       
       it "calls the block, passing the request" do
         router.generate(app)
-        mock.proxy(maker.model).find("format" => "yaml", "id" => "1")
         mock.proxy(maker).handle_show(anything) { "" }
         get '/articles/1.yaml'
+      end
+    end
+    
+    describe "generating create route" do
+      it "uses the maker's resource path" do
+        mock.proxy(app).post('/articles')
+        mock.proxy(app).post('/articles.:format')
+        router.generate(app)
+      end
+      
+      it "calls the block, passing the request" do
+        router.generate(app)
+        mock(maker).handle_create(anything)
+        post '/articles', "maker[name]" => "Pat"
       end
     end
   end

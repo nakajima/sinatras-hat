@@ -27,6 +27,10 @@ module Sinatra
           responder.render(:show, request, data)
       end
       
+      action :create do |request|
+        model.new(request.params)
+      end
+      
       # end of actions ================================================
       
       def initialize(klass, overrides={})

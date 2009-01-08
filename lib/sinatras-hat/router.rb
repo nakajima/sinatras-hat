@@ -12,24 +12,35 @@ module Sinatra
       def generate(app)
         @app = app
         
-        map resource_path('/:id') do |request|
+        # CREATE
+        map :post, resource_path('/') do |request|
+          maker.handle_create(request)
+        end
+        
+        # SHOW
+        map :get, resource_path('/:id') do |request|
           maker.handle_show(request)
         end
 
-        map resource_path('/') do |request|
+        # INDEX
+        map :get, resource_path('/') do |request|
           maker.handle_index(request)
         end
       end
       
       private
 
-      def map(path, &handler)
-        get(path, handler)
-        get("#{path}.:format", handler)
+      def map(method, path, &handler)
+        send(method, path, handler)
+        send(method, "#{path}.:format", handler)
       end
       
       def get(path, block)
         app.get(path) { block.call(self) }
+      end
+      
+      def post(path, block)
+        app.post(path) { block.call(self) }
       end
     end
   end

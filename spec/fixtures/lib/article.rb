@@ -16,4 +16,9 @@ class Article < Abstract
   def description
     "This is the article"
   end
+  
+  # fake association
+  def comments
+    [Comment.new]
+  end
 end
