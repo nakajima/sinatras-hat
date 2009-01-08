@@ -1,6 +1,8 @@
 module Sinatra
   module Hat
     class Router
+      delegate :resource_path, :to => :maker
+      
       attr_reader :maker, :app
       
       def initialize(maker)
@@ -9,19 +11,20 @@ module Sinatra
       
       def generate(app)
         @app = app
-        index!
+        
+        map resource_path('/') do |request|
+          maker.handle_index(request)
+        end
       end
       
       private
-      
-      def index!
-        path = maker.resource_path('/')
-        handler = Proc.new { |request| maker.handle_index(request) }
-        get(path, &handler)
-        get("#{path}.:format", &handler)
+
+      def map(path, &handler)
+        get(path, handler)
+        get("#{path}.:format", handler)
       end
       
-      def get(path, &block)
+      def get(path, block)
         app.get(path) { block.call(self) }
       end
     end

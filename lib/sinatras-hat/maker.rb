@@ -18,6 +18,7 @@ module Sinatra
       
       def handle_index(request)
         records = model.all(request.params)
+        
         if request.params[:format]
           responder.serialize(records, request)
         else
