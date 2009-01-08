@@ -15,6 +15,8 @@ module Sinatra
         clean(path + suffix)
       end
       
+      private
+      
       def clean(s)
         s.downcase!
         s.gsub!(%r(/$), '')
