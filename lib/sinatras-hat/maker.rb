@@ -5,6 +5,30 @@ module Sinatra
       
       attr_reader :klass, :app
       
+      def self.action(name, &block)
+        define_method("handle_#{name}", &block)
+      end
+      
+      # Actions =======================================================
+      
+      action :index do |request|
+        data = model.all(request.params)
+        
+        request.params[:format] ?
+          responder.serialize(data, request) :
+          responder.render(:index, request, data)
+      end
+      
+      action :show do |request|
+        data = model.find(request.params)
+        
+        request.params[:format] ?
+          responder.serialize(data, request) :
+          responder.render(:show, request, data)
+      end
+      
+      # end of actions ================================================
+      
       def initialize(klass, overrides={})
         @klass = klass
         options.merge!(overrides)
@@ -14,22 +38,6 @@ module Sinatra
       def setup(app)
         @app = app
         generate_routes(app)
-      end
-      
-      def handle_index(request)
-        data = model.all(request.params)
-        
-        request.params[:format] ?
-          responder.serialize(data, request) :
-          responder.render(:index, request, data)
-      end
-      
-      def handle_show(request)
-        data = model.find(request.params)
-        
-        request.params[:format] ?
-          responder.serialize(data, request) :
-          responder.render(:show, request, data)
       end
       
       def prefix
