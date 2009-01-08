@@ -9,7 +9,11 @@ module Sinatra
         @maker = maker
       end
       
-      def serialize(data, request)
+      def handle(name, request, data)
+        request.params[:format] ? serialize(request, data) : render(name, request, data)
+      end
+      
+      def serialize(request, data)
         name = request.params[:format].to_sym
         maker.formats[name] ||= to_format(name)
         maker.formats[name][data]

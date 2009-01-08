@@ -1,7 +1,7 @@
 require 'spec/spec_helper'
 
 describe Sinatra::Hat::Maker do
-  attr_reader :model, :maker
+  attr_reader :model, :maker, :request
 
   describe "initializing" do
     it "takes a klass" do
@@ -184,7 +184,7 @@ describe Sinatra::Hat::Maker do
           end
           
           it "serializes the data in the appropriate format" do
-            mock.proxy(maker.responder).serialize([:article], request)
+            mock.proxy(maker.responder).serialize(request, [:article])
             maker.handle_index(request)
           end
         end
@@ -228,7 +228,7 @@ describe Sinatra::Hat::Maker do
           end
           
           it "serializes the data in the appropriate format" do
-            mock.proxy(maker.responder).serialize(:article, request)
+            mock.proxy(maker.responder).serialize(request, :article)
             maker.handle_show(request)
           end
         end
@@ -247,5 +247,21 @@ describe Sinatra::Hat::Maker do
         end
       end
     end
+  end
+  
+  describe "#handle_create" do
+    before(:each) do
+      mock_app {  }
+      @maker = new_maker(Article)
+      @request = fake_request("article[title]" => "The article")
+    end
+    
+    it "instantiates a new record and saves it" do
+      mock.proxy(article = Article.new).save
+      mock.proxy(maker.model).new("article[title]" => "The article") { article }
+      maker.handle_create(request)
+    end
+    
+    
   end
 end

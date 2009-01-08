@@ -14,21 +14,18 @@ module Sinatra
       action :index do |request|
         data = model.all(request.params)
         
-        request.params[:format] ?
-          responder.serialize(data, request) :
-          responder.render(:index, request, data)
+        responder.handle(:index, request, data)
       end
       
       action :show do |request|
         data = model.find(request.params)
         
-        request.params[:format] ?
-          responder.serialize(data, request) :
-          responder.render(:show, request, data)
+        responder.handle(:show, request, data)
       end
       
       action :create do |request|
-        model.new(request.params)
+        data = model.new(request.params)
+        data.save
       end
       
       # end of actions ================================================
