@@ -22,10 +22,6 @@ module Sinatra
         proxy(params).new(params[singular])
       end
       
-      def create(params={})
-        new(params).save
-      end
-      
       def plural
         klass.name.snake_case.plural
       end

@@ -104,25 +104,4 @@ describe Sinatra::Hat::Model do
       end
     end
   end
-  
-  describe "create" do
-    it "calls #new" do
-      model = new_model
-      mock.proxy(model).new(anything)
-      model.create
-    end
-    
-    it "passes params through" do
-      model = new_model
-      mock.proxy(model).new("name" => "Pat")
-      model.create("name" => "Pat")
-    end
-    
-    it "saves the result" do
-      model = new_model
-      mock(article = Object.new).save
-      mock.proxy(model).new(anything) { article }
-      model.create
-    end
-  end
 end
