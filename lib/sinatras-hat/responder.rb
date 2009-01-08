@@ -11,8 +11,8 @@ module Sinatra
       
       def serialize(data, request)
         name = request.params[:format].to_sym
-        formatter = maker.formats[name] || to_format(name)
-        formatter[data]
+        maker.formats[name] ||= to_format(name)
+        maker.formats[name][data]
       end
       
       def render(name, request, data)
