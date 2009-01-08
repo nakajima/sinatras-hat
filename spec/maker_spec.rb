@@ -35,6 +35,16 @@ describe Sinatra::Hat::Maker do
       maker.options.should_not be_nil
     end
     
+    describe ":formats" do
+      it "is an empty hash" do
+        maker.options[:formats].should == { }
+      end
+      
+      it "is methodized" do
+        maker.formats.should === maker.options[:formats]
+      end
+    end
+    
     describe ":parent" do
       it "is nil" do
         maker.options[:parent].should be_nil
@@ -108,7 +118,15 @@ describe Sinatra::Hat::Maker do
     it "returns an instance of Sinatra::Hat::Model" do
       maker = new_maker
       mock.proxy(Sinatra::Hat::Model.new(maker))
-      new_maker.model
+      maker.model
+    end
+  end
+  
+  describe "#responder" do
+    it "returns an instance of Sinatra::Hat::Responder" do
+      maker = new_maker
+      mock.proxy(Sinatra::Hat::Responder.new(maker))
+      maker.responder
     end
   end
   
@@ -134,6 +152,26 @@ describe Sinatra::Hat::Maker do
       it "assigns the proper instance variable in the request" do
         maker.handle_index(request)
         request.instance_eval { @articles }.should == [:first_article, :second_article]
+      end
+
+      describe "rendering a response" do
+        context "when there's a :format param" do
+          before(:each) do
+            stub(@request = Object.new).params.returns(:format => "yaml")
+            stub(maker.model).all(anything).returns([:article])
+          end
+          
+          it "serializes the data in the appropriate format" do
+            mock.proxy(maker.responder).serialize([:article], :format => "yaml")
+            maker.handle_index(request)
+          end
+        end
+        
+        context "when there's no :format param" do
+          it "renders a view" do
+            pending "not there yet."
+          end
+        end
       end
     end
   end

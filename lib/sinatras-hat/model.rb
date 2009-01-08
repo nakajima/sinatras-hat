@@ -12,6 +12,14 @@ module Sinatra
       def all(params)
         options[:finder].call(klass, params)
       end
+      
+      def plural
+        klass.name.snake_case.plural
+      end
+      
+      def singular
+        klass.name.snake_case.singular
+      end
     end
   end
 end

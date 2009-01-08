@@ -25,16 +25,17 @@ describe Sinatra::Hat::Router do
 
     describe "generating index route" do
       it "uses the maker's resource path" do
-        mock.proxy(maker).resource_path('/') { '/' }
-        mock.proxy(app).get('/')
+        mock.proxy(maker).resource_path('/') { '/articles' }
+        mock.proxy(app).get('/articles')
+        mock.proxy(app).get('/articles.:format')
         router.generate(app)
       end
       
       it "calls the block, passing the request" do
         router.generate(app)
-        mock.proxy(maker.model).all("with_params" => "true")
+        mock.proxy(maker.model).all("format" => "yaml")
         mock.proxy(maker).handle_index(anything) { "" }
-        get '/articles?with_params=true'
+        get '/articles.yaml'
       end
     end
   end

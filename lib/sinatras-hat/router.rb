@@ -15,9 +15,10 @@ module Sinatra
       private
       
       def index!
-        get(maker.resource_path('/')) do |request|
-          maker.handle_index(request)
-        end
+        path = maker.resource_path('/')
+        handler = Proc.new { |request| maker.handle_index(request) }
+        get(path, &handler)
+        get("#{path}.:format", &handler)
       end
       
       def get(path, &block)

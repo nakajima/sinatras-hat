@@ -11,31 +11,47 @@ module Sinatra
       
       def handle_index(request)
         records = model.all(request.params)
-        request.instance_variable_set("@#{prefix}", records)
-      end
-      
-      def model
-        @model ||= Model.new(self)
+        request.instance_variable_set("@#{model.plural}", records)
+        if request.params[:format]
+          responder.serialize(records, request.params)
+        else
+          
+        end
       end
       
       def prefix
-        options[:prefix] || klass.name.snake_case.plural
+        @prefix ||= options[:prefix] || model.plural
       end
       
       def parents
-        parent ? Array(parent) + parent.parents : []
+        @parents ||= parent ? Array(parent) + parent.parents : []
       end
       
       def resource_path(suffix)
-        (@resource ||= Resource.new(self)).path(suffix)
+        resource.path(suffix)
       end
       
       def options
         @options ||= {
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.first(:id => params[:id]) },
-          :parent => nil
+          :parent => nil,
+          :formats => { }
         }
+      end
+      
+      def responder
+        @responder ||= Responder.new(self)
+      end
+      
+      def model
+        @model ||= Model.new(self)
+      end
+      
+      private
+      
+      def resource
+        @resource ||= Resource.new(self)
       end
     end
   end
