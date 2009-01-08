@@ -1,4 +1,6 @@
-h1. Sinatra's Hat
+h1. NOTE: I'm rewriting this project for Sinatra 0.9.0 "here":http://github.com/nakajima/sinatras-hat/tree/sinatra-0.9.0.
+
+h2. Sinatra's Hat
 
 Mount models as web services in Sinatra with ease.
 
