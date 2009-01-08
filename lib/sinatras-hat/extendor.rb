@@ -4,6 +4,7 @@ module Sinatra
       def mount(klass, options={}, &block)
         maker = Maker.new(klass, options)
         maker.instance_eval(&block) if block_given?
+        maker.generate_routes(self)
         maker
       end
     end

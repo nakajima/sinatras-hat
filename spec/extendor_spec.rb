@@ -24,5 +24,10 @@ describe Sinatra::Hat::Extendor do
       mock.proxy(Sinatra::Hat::Maker).new(Article, { }) { maker }
       mock_app { mount(Article, &proc { }) }
     end
+    
+    it "generates routes" do
+      mock.proxy.instance_of(Sinatra::Hat::Maker).generate_routes(anything)
+      mock_app { mount(Article) }
+    end
   end
 end

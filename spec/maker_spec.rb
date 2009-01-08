@@ -130,6 +130,16 @@ describe Sinatra::Hat::Maker do
     end
   end
   
+  describe "generating routes" do
+    it "generates routes for maker instance" do
+      maker = new_maker
+      router = Sinatra::Hat::Router.new(maker)
+      mock.proxy(Sinatra::Hat::Router).new(maker) { router }
+      mock(router).generate(:app)
+      maker.generate_routes(:app)
+    end
+  end
+  
   describe "actions" do
     attr_reader :maker, :request, :app
     
@@ -137,7 +147,7 @@ describe Sinatra::Hat::Maker do
       before(:each) do
         mock_app {  }
         @maker = new_maker(Article)
-        stub(@request = Object.new).params.returns({ })
+        @request = fake_request
       end
       
       it "takes a request" do
@@ -149,27 +159,28 @@ describe Sinatra::Hat::Maker do
         maker.handle_index(request)
       end
       
-      it "assigns the proper instance variable in the request" do
-        maker.handle_index(request)
-        request.instance_eval { @articles }.should == [:first_article, :second_article]
-      end
-
       describe "rendering a response" do
         context "when there's a :format param" do
           before(:each) do
-            stub(@request = Object.new).params.returns(:format => "yaml")
+            @request = fake_request(:format => "yaml")
             stub(maker.model).all(anything).returns([:article])
           end
           
           it "serializes the data in the appropriate format" do
-            mock.proxy(maker.responder).serialize([:article], :format => "yaml")
+            mock.proxy(maker.responder).serialize([:article], request)
             maker.handle_index(request)
           end
         end
         
         context "when there's no :format param" do
-          it "renders a view" do
-            pending "not there yet."
+          before(:each) do
+            @request = fake_request
+            stub(maker.model).all(anything).returns([:article])
+          end
+          
+          it "renders the index template" do
+            mock.proxy(maker.responder).render(:index, :data => [:article], :request => request)
+            maker.handle_index(request)
           end
         end
       end

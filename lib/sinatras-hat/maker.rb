@@ -9,13 +9,16 @@ module Sinatra
         with(options)
       end
       
+      def generate_routes(app)
+        Router.new(self).generate(app)
+      end
+      
       def handle_index(request)
         records = model.all(request.params)
-        request.instance_variable_set("@#{model.plural}", records)
         if request.params[:format]
-          responder.serialize(records, request.params)
+          responder.serialize(records, request)
         else
-          
+          responder.render(:index, :data => records, :request => request)
         end
       end
       
