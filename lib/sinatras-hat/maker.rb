@@ -19,21 +19,17 @@ module Sinatra
       def handle_index(request)
         data = model.all(request.params)
         
-        if request.params[:format]
-          responder.serialize(data, request)
-        else
+        request.params[:format] ?
+          responder.serialize(data, request) :
           responder.render(:index, :data => data, :request => request)
-        end
       end
       
       def handle_show(request)
         data = model.find(request.params)
         
-        if request.params[:format]
-          responder.serialize(data, request)
-        else
+        request.params[:format] ?
+          responder.serialize(data, request) :
           responder.render(:show, :data => data, :request => request)
-        end
       end
       
       def prefix
@@ -58,7 +54,7 @@ module Sinatra
       end
       
       def inspect
-        "Maker for #{klass}"
+        "maker: #{klass}"
       end
       
       def generate_routes(app)

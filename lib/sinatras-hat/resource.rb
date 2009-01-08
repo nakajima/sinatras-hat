@@ -6,16 +6,23 @@ module Sinatra
       end
       
       def path(suffix)
-        makers = @maker.parents + [@maker]
-        path = makers.inject("") do |memo, maker|
+        path = resources.inject("") do |memo, maker|
           memo += @maker.eql?(maker) ?
             "/#{maker.prefix}" :
-            "/#{maker.prefix}/:#{maker.klass.name}_id"
+            "/#{maker.prefix}/:#{maker.model.singular}_id"
         end
-        (path + suffix).tap do |s|
-          s.downcase!
-          s.gsub!(%r(/$), '')
-        end
+        
+        clean(path + suffix)
+      end
+      
+      def clean(s)
+        s.downcase!
+        s.gsub!(%r(/$), '')
+        s
+      end
+      
+      def resources
+        @maker.parents + [@maker]
       end
     end
   end

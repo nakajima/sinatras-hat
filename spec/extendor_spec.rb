@@ -54,12 +54,12 @@ describe Sinatra::Hat::Extendor do
       end
 
       it "instantiates a new Sinatra::Hat::Maker" do
-        mock.proxy(Sinatra::Hat::Maker).new(Comment, :parent => maker)
+        mock.proxy(Sinatra::Hat::Maker).new(Comment, { })
         maker.mount(Comment)
       end
       
       it "sets the :parent option" do
-        mock.proxy(Sinatra::Hat::Maker).new(Comment, :parent => maker)
+        mock.proxy(Sinatra::Hat::Maker).new(Comment, { })
         maker.mount(Comment).parent.should == maker
       end
 
