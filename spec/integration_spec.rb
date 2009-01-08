@@ -43,4 +43,20 @@ describe "integration level tests" do
       end
     end
   end
+  
+  describe "show" do
+    context "when serialized" do
+      it "returns serialized index" do
+        get "/articles/1.yaml"
+        body.should == :article.to_yaml
+      end
+    end
+    
+    context "when template" do
+      it "returns rendered template" do
+        get "/articles/1"
+        body.should == "SHOW: :article"
+      end
+    end
+  end
 end

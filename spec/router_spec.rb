@@ -17,6 +17,7 @@ describe Sinatra::Hat::Router do
       @app = mock_app { self }
       @maker = new_maker
       @router = Sinatra::Hat::Router.new(maker)
+      stub.proxy(app).get(anything)
     end
     
     it "takes a Sinatra app" do
@@ -25,7 +26,6 @@ describe Sinatra::Hat::Router do
 
     describe "generating index route" do
       it "uses the maker's resource path" do
-        mock.proxy(maker).resource_path('/') { '/articles' }
         mock.proxy(app).get('/articles')
         mock.proxy(app).get('/articles.:format')
         router.generate(app)
@@ -36,6 +36,21 @@ describe Sinatra::Hat::Router do
         mock.proxy(maker.model).all("format" => "yaml")
         mock.proxy(maker).handle_index(anything) { "" }
         get '/articles.yaml'
+      end
+    end
+    
+    describe "generating show route" do
+      it "uses the maker's resource path" do
+        mock.proxy(app).get('/articles/:id')
+        mock.proxy(app).get('/articles/:id.:format')
+        router.generate(app)
+      end
+      
+      it "calls the block, passing the request" do
+        router.generate(app)
+        mock.proxy(maker.model).find("format" => "yaml", "id" => "1")
+        mock.proxy(maker).handle_show(anything) { "" }
+        get '/articles/1.yaml'
       end
     end
   end

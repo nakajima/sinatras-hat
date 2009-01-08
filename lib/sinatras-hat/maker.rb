@@ -17,12 +17,22 @@ module Sinatra
       end
       
       def handle_index(request)
-        records = model.all(request.params)
+        data = model.all(request.params)
         
         if request.params[:format]
-          responder.serialize(records, request)
+          responder.serialize(data, request)
         else
-          responder.render(:index, :data => records, :request => request)
+          responder.render(:index, :data => data, :request => request)
+        end
+      end
+      
+      def handle_show(request)
+        data = model.find(request.params)
+        
+        if request.params[:format]
+          responder.serialize(data, request)
+        else
+          responder.render(:show, :data => data, :request => request)
         end
       end
       

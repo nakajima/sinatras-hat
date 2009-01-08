@@ -12,6 +12,10 @@ module Sinatra
       def generate(app)
         @app = app
         
+        map resource_path('/:id') do |request|
+          maker.handle_show(request)
+        end
+
         map resource_path('/') do |request|
           maker.handle_index(request)
         end

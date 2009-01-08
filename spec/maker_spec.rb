@@ -202,5 +202,52 @@ describe Sinatra::Hat::Maker do
         end
       end
     end
+    
+    describe "#handle_show" do
+      before(:each) do
+        mock_app {  }
+        @maker = new_maker(Article)
+        @request = fake_request(:id => 2)
+      end
+      
+      it "takes a request" do
+        maker.handle_show(request)
+      end
+      
+      it "loads correct record" do
+        mock.proxy(maker.model).find(:id => 2) { :article }
+        maker.handle_show(request)
+      end
+      
+      describe "rendering a response" do
+        attr_reader :params
+        
+        context "when there's a :format param" do
+          before(:each) do
+            @params = { :format => "yaml", :id => 2 }
+            @request = fake_request(params)
+            stub(maker.model).find(params).returns(:article)
+          end
+          
+          it "serializes the data in the appropriate format" do
+            mock.proxy(maker.responder).serialize(:article, request)
+            maker.handle_show(request)
+          end
+        end
+        
+        context "when there's no :format param" do
+          before(:each) do
+            @params = { :id => 2 }
+            @request = fake_request(params)
+            stub(maker.model).find(params).returns(:article)
+          end
+          
+          it "renders the index template" do
+            mock.proxy(maker.responder).render(:show, :data => :article, :request => request)
+            maker.handle_show(request)
+          end
+        end
+      end
+    end
   end
 end

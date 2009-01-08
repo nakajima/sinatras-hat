@@ -18,11 +18,15 @@ module Sinatra
       def render(name, options={})
         data = options[:data]
         request = options[:request]
-        request.instance_variable_set("@#{model.plural}", data)
+        request.instance_variable_set(ivar_name(data), data)
         request.erb name.to_sym, :views_directory => File.join(request.options.views, maker.prefix)
       end
       
       private
+      
+      def ivar_name(data)
+        "@" + (data.respond_to?(:each) ? model.plural : model.singular)
+      end
       
       def to_format(name)
         @default_formatter ||= Proc.new { |data| data.send("to_#{name}") }

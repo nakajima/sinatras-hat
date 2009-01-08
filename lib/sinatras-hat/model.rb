@@ -13,6 +13,10 @@ module Sinatra
         options[:finder].call(klass, params)
       end
       
+      def find(params)
+        options[:record].call(klass, params)
+      end
+      
       def plural
         klass.name.snake_case.plural
       end

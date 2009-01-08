@@ -34,6 +34,24 @@ describe Sinatra::Hat::Model do
     end
   end
   
+  describe "find()" do
+    before(:each) do
+      @maker = new_maker
+      @model = new_model(maker)
+    end
+    
+    it "takes the params" do
+      proc {
+        model.find({ })
+      }.should_not raise_error
+    end
+    
+    it "calls for the :record" do
+      mock.proxy(maker.options[:record]).call(Article, { :id => 2 })
+      model.find(:id => 2).should == :article
+    end
+  end
+  
   describe "plural" do
     it "returns snakecased, pluralized form of model name" do
       new_model(new_maker(Article)).plural.should == "articles"
