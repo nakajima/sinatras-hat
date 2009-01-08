@@ -16,8 +16,7 @@ module Sinatra
       end
       
       def render(name, options={})
-        data = options[:data]
-        request = options[:request]
+        request, data = options[:request], options[:data]
         request.instance_variable_set(ivar_name(data), data)
         request.erb name.to_sym, :views_directory => File.join(request.options.views, maker.prefix)
       end
