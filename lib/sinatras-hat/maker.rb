@@ -1,7 +1,7 @@
 module Sinatra
   module Hat
     class Maker
-      # include Sinatra::Hat::Extendor
+      include Sinatra::Hat::Extendor
       
       attr_reader :klass, :app
       
@@ -44,13 +44,6 @@ module Sinatra
           :parent => nil,
           :formats => { }
         }
-      end
-      
-      def mount(klass, options={}, &block)
-        maker = Maker.new(klass, options.merge(:parent => self))
-        maker.setup(@app)
-        maker.instance_eval(&block) if block_given?
-        maker
       end
       
       def inspect
