@@ -220,11 +220,9 @@ describe Sinatra::Hat::Maker do
       end
       
       describe "rendering a response" do
-        attr_reader :params
-        
         context "when there's a :format param" do
           before(:each) do
-            @params = { :format => "yaml", :id => 2 }
+            params = { :format => "yaml", :id => 2 }
             @request = fake_request(params)
             stub(maker.model).find(params).returns(:article)
           end
@@ -237,7 +235,7 @@ describe Sinatra::Hat::Maker do
         
         context "when there's no :format param" do
           before(:each) do
-            @params = { :id => 2 }
+            params = { :id => 2 }
             @request = fake_request(params)
             stub(maker.model).find(params).returns(:article)
           end
