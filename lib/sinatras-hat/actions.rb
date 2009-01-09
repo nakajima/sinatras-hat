@@ -11,11 +11,8 @@ Sinatra::Hat::Maker.class_eval do
   
   action :create, '/', :verb => :post do |request|
     data = model.new(request.params)
-    if data.save
-      responder.success(:create, request, data)
-    else
-      responder.failure(:create, request, data)
-    end
+    result = data.save ? :success : :failure
+    responder.send(result, :create, request, data)
   end
   
   action :index, '/' do |request|
