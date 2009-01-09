@@ -61,13 +61,37 @@ describe "integration level tests" do
   end
   
   describe "create" do
+    attr_reader :article
+    
+    before(:each) do
+      @article = Article.new
+      stub(Article).new(anything) { article }
+    end
+    
     it "creates a new article" do
-      article = Article.new
       mock.proxy(Article).new("name" => "Hello!") { article }
       mock.proxy(article).save
       post "/articles", "article[name]" => "Hello!"
       status.should == 302
       response['Location'].should == "/articles/#{article.id}"
+    end
+    
+    context "with custom redirect" do
+      before(:each) do
+        mock_app do
+          mount(Article) do
+            after :create do |on|
+              on.success { |data| redirect("/custom/path/#{data.id}") }
+            end
+          end
+        end
+      end
+      
+      it "allows custom redirect" do
+        post "/articles"
+        status.should == 302
+        response['Location'].should == "/custom/path/#{article.id}"
+      end
     end
   end
 end

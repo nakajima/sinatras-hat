@@ -78,4 +78,12 @@ describe Sinatra::Hat::Responder do
       end
     end
   end
+  
+  describe "custom responses using #on" do
+    before(:each) do
+      @responder = new_responder
+    end
+    
+    
+  end
 end

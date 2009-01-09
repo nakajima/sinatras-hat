@@ -29,7 +29,7 @@ describe Sinatra::Hat::Response do
   describe "redirect()" do
     it "redirects to the given path" do
       mock(request).redirect("/articles")
-      new_response.redirect("/")
+      new_response.redirect("/articles")
     end
   end
 end

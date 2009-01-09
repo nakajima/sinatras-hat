@@ -30,6 +30,10 @@ module Sinatra
         instance_exec(request, &self.class.actions[action])
       end
       
+      def after(action)
+        yield HashMutator.new(responder.defaults[action])
+      end
+      
       def prefix
         @prefix ||= options[:prefix] || model.plural
       end

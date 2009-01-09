@@ -156,4 +156,27 @@ describe Sinatra::Hat::Maker do
       maker.generate_routes(:app)
     end
   end
+  
+  describe "#after" do
+    before(:each) do
+      @maker = new_maker
+    end
+    
+    it "takes the name of an action" do
+      proc {
+        maker.after(:create) { }
+      }.should_not raise_error
+    end
+    
+    it "passes a new hash mutator to the block" do
+      maker.after(:create) { |arg| arg }.should be_kind_of(Sinatra::Hat::HashMutator)
+    end
+    
+    it "lets you alter the default options" do
+      maker.after(:create) do |on|
+        on.success { :new_default! }
+      end
+      maker.responder.defaults[:create][:success][].should == :new_default!
+    end
+  end
 end

@@ -3,6 +3,8 @@ module Sinatra
     class Response
       attr_reader :maker
       
+      delegate :resource_path, :to => :maker
+      
       def initialize(maker, request)
         @maker = maker
         @request = request
@@ -12,8 +14,17 @@ module Sinatra
         @request.erb action.to_sym, :views_directory => File.join(@request.options.views, maker.prefix)
       end
       
-      def redirect(path, record=nil)
-        @request.redirect(maker.resource_path(path, record))
+      def redirect(resource)
+        @request.redirect url_for(resource)
+      end
+      
+      private
+      
+      def url_for(resource)
+        case resource
+        when String then resource
+        else resource_path('/:id', resource)
+        end
       end
     end
   end

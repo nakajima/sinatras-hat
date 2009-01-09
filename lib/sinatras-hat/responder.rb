@@ -10,7 +10,7 @@ module Sinatra
       end
       
       def defaults
-        {
+        @defaults ||= {
           :show => {
             :success => proc { |data| render(:show) },
             :failure => proc { |data| redirect('/') }
@@ -22,7 +22,7 @@ module Sinatra
           },
           
           :create => {
-            :success => proc { |data| redirect('/:id', data) },
+            :success => proc { |data| redirect(data) },
             :failure => proc { |data| redirect('/') }
           }
         }

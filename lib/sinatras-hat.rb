@@ -10,6 +10,7 @@ require 'core_ext/object'
 require 'core_ext/module'
 
 require 'sinatras-hat/extendor'
+require 'sinatras-hat/hash_mutator'
 require 'sinatras-hat/resource'
 require 'sinatras-hat/response'
 require 'sinatras-hat/responder'
