@@ -6,6 +6,28 @@ module Sinatra
     class Responder
       delegate :model, :to => :maker
       
+      DEFAULTS = {
+        :show => {
+          :success => proc { |data| render(:show) },
+          :failure => proc { |data| redirect('/') }
+        },
+        
+        :index => {
+          :success => proc { |data| render(:index) },
+          :failure => proc { |data| redirect('/') }
+        },
+        
+        :create => {
+          :success => proc { |data| redirect(data) },
+          :failure => proc { |data| render(:new) }
+        },
+        
+        :new => {
+          :success => proc { |data| render(:new) },
+          :failure => proc { |data| redirect('/') }
+        }
+      }
+      
       attr_reader :maker
       
       def initialize(maker)
@@ -13,27 +35,7 @@ module Sinatra
       end
       
       def defaults
-        @defaults ||= {
-          :show => {
-            :success => proc { |data| render(:show) },
-            :failure => proc { |data| redirect('/') }
-          },
-          
-          :index => {
-            :success => proc { |data| render(:index) },
-            :failure => proc { |data| redirect('/') }
-          },
-          
-          :create => {
-            :success => proc { |data| redirect(data) },
-            :failure => proc { |data| render(:new) }
-          },
-          
-          :new => {
-            :success => proc { |data| render(:new) },
-            :failure => proc { |data| redirect('/') }
-          }
-        }
+        @defaults ||= DEFAULTS.dup
       end
       
       def success(name, request, data)
