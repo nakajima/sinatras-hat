@@ -31,7 +31,7 @@ describe "handle show" do
       end
       
       it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize(request, :article)
+        mock.proxy(maker.responder).serialize("yaml", :article)
         handle(request)
       end
     end

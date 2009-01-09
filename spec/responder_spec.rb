@@ -23,7 +23,7 @@ describe Sinatra::Hat::Responder do
     context "when there's a format" do
       it "serializes the response" do
         request = fake_request(:format => "yaml")
-        mock.proxy(responder = new_responder).serialize(request, :article)
+        mock.proxy(responder = new_responder).serialize("yaml", :article)
         responder.handle(:show, request, :article)
       end
     end
@@ -64,7 +64,7 @@ describe Sinatra::Hat::Responder do
     
     context "when there is no formatter" do
       it "calls to_* on the data" do
-        responder.serialize(fake_request(:format => "yaml"), [:article]).should == [:article].to_yaml
+        responder.serialize("yaml", [:article]).should == [:article].to_yaml
       end
     end
     
@@ -74,7 +74,7 @@ describe Sinatra::Hat::Responder do
       end
       
       it "calls the formatter, passing the data" do
-        responder.serialize(fake_request(:format => "yaml"), :article).should == [:article, :formatted]
+        responder.serialize("yaml", :article).should == [:article, :formatted]
       end
     end
   end

@@ -41,7 +41,7 @@ describe "handle create" do
       
       it "serializes the record" do
         request_with_format = fake_request(:format => "yaml")
-        mock.proxy(maker.responder).serialize(request_with_format, article)
+        mock.proxy(maker.responder).serialize("yaml", article)
         handle(request_with_format)
       end
     end
