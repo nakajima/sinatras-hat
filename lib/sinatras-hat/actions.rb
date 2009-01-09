@@ -1,4 +1,9 @@
 Sinatra::Hat::Maker.class_eval do
+  action :new do |request|
+    data = model.new(request.params)
+    responder.handle(:new, request, data)
+  end
+  
   action :show do |request|
     data = model.find(request.params)
     

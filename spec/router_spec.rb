@@ -14,7 +14,7 @@ describe Sinatra::Hat::Router do
     attr_reader :app, :maker, :router
     
     before(:each) do
-      @app = mock_app { self }
+      @app = mock_app { set :views, fixture('views') }
       @maker = new_maker
       @router = Sinatra::Hat::Router.new(maker)
       stub.proxy(app).get(anything)
@@ -63,6 +63,20 @@ describe Sinatra::Hat::Router do
         router.generate(app)
         mock(maker).handle(:create, anything)
         post '/articles', "maker[name]" => "Pat"
+      end
+    end
+    
+    describe "generating show route" do
+      it "uses the maker's resource path" do
+        mock.proxy(app).get('/articles/new')
+        mock.proxy(app).get('/articles/new.:format')
+        router.generate(app)
+      end
+      
+      it "calls the block, passing the request" do
+        router.generate(app)
+        mock.proxy(maker).handle(:new, anything) { "" }
+        get '/articles/new'
       end
     end
   end

@@ -12,6 +12,8 @@ module Sinatra
       def generate(app)
         @app = app
         
+        get :new, resource_path('/new')
+        
         # CREATE
         post :create, resource_path('/')
         

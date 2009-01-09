@@ -94,4 +94,12 @@ describe "integration level tests" do
       end
     end
   end
+  
+  describe "new" do
+    it "creates a new article" do
+      get "/articles/new"
+      status.should == 200
+      body.should == "New Article!"
+    end
+  end
 end

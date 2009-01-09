@@ -12,18 +12,19 @@ module Sinatra
       def defaults
         @defaults ||= {
           :show => {
-            :success => proc { |data| render(:show) },
-            :failure => proc { |data| redirect('/') }
+            :success => proc { |data| render(:show) }
           },
           
           :index => {
-            :success => proc { |data| render(:index) },
-            :failure => proc { |data| throw(:halt) }
+            :success => proc { |data| render(:index) }
           },
           
           :create => {
-            :success => proc { |data| redirect(data) },
-            :failure => proc { |data| redirect('/') }
+            :success => proc { |data| redirect(data) }
+          },
+          
+          :new => {
+            :success => proc { |data| render(:new) }
           }
         }
       end
@@ -33,7 +34,8 @@ module Sinatra
           serialize(format, data)
         else
           request.instance_variable_set(ivar_name(data), data)
-          Response.new(maker, request).instance_exec(data, &defaults[name][:success])
+          response = Response.new(maker, request)
+          response.instance_exec(data, &defaults[name][:success])
         end
       end
       
