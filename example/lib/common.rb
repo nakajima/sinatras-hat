@@ -1,9 +1,9 @@
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', '..', 'lib')
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', '..')
 $LOAD_PATH << File.join(File.dirname(__FILE__))
 
 require 'rubygems'
 require 'sinatra'
-require 'sinatras-hat'
+require 'lib/sinatras-hat'
 
 # Models
 require 'post'
