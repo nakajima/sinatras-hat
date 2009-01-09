@@ -1,5 +1,7 @@
 module Sinatra
   module Hat
+    # Handles the logic of generating a path for a given resource,
+    # taking any and all parents into consideration.
     class Resource
       def initialize(maker)
         @maker = maker

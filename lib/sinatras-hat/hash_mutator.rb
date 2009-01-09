@@ -1,5 +1,6 @@
 module Sinatra
   module Hat
+    # Used for specifying custom responses using a corny DSL.
     class HashMutator
       def initialize(hash)
         @hash = hash

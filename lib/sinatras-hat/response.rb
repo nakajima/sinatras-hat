@@ -1,5 +1,6 @@
 module Sinatra
   module Hat
+    # Tells Sinatra what to do next.
     class Response
       attr_reader :maker
       

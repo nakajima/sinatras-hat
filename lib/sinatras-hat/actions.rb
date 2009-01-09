@@ -1,5 +1,12 @@
 module Sinatra
   module Hat
+    # Contains all of the actions that Sinatra's Hat supports.
+    # Each action states a name, a path, optionally, the HTTP
+    # verb, then a block which takes a request object, optionally
+    # loads data using the :finder or :record options, then
+    # responds, based on whether or not the action was a success
+    # 
+    # NOTE: only the :create action renders a different :failure
     module Actions
       def self.included(map)
         map.action :new, '/new' do |request|

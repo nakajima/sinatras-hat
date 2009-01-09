@@ -1,5 +1,8 @@
 module Sinatra
   module Hat
+    # The responder assigns data to instance variables, then either
+    # gets the appropriate response proc and instance_exec's it in the
+    # context of a new Response object, or serializes the data.
     class Responder
       delegate :model, :to => :maker
       

@@ -1,5 +1,7 @@
 module Sinatra
   module Hat
+    # Tells Sinatra which routes to generate. The routes
+    # created automatically when the actions are loaded.
     class Router
       delegate :resource_path, :to => :maker
       
