@@ -69,12 +69,10 @@ describe "integration level tests" do
     
     before(:each) do
       @article = Article.new
-      stub(Article).new(anything) { article }
+      stub(Article).new { article }
     end
     
     it "creates a new article" do
-      mock.proxy(Article).new("name" => "Hello!") { article }
-      mock.proxy(article).save
       post "/articles", "article[name]" => "Hello!"
       status.should == 302
       response['Location'].should == "/articles/#{article.id}"

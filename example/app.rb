@@ -4,7 +4,7 @@ class MountedApp < Sinatra::Base
   set :app_file, __FILE__
   
   get '/' do
-    @env['sinatra.error']
+    "You created a post, and this is a custom response."
   end
   
   mount(Post) do
@@ -12,7 +12,7 @@ class MountedApp < Sinatra::Base
     mount(Comment)
 
     after :create do |on|
-      on.success { |post| redirect("/posts/#{post.id}") }
+      on.success { |post| redirect("/") }
     end
   end
 end
