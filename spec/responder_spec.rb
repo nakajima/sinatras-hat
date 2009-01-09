@@ -103,7 +103,5 @@ describe Sinatra::Hat::Responder do
     before(:each) do
       @responder = new_responder
     end
-    
-    
   end
 end

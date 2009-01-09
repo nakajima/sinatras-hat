@@ -65,11 +65,7 @@ module Sinatra
       end
       
       def generate_routes(app)
-        router.generate(app)
-      end
-      
-      def router
-        @router ||= Router.new(self)
+        Router.new(self).generate(app)
       end
       
       def responder
