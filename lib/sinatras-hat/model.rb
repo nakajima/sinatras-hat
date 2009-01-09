@@ -1,5 +1,6 @@
 module Sinatra
   module Hat
+    # A wrapper around the model class that we're mounting
     class Model
       attr_reader :maker
       

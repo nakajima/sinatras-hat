@@ -1,5 +1,6 @@
 module Sinatra
   module Hat
+    # This is where it all comes together
     class Maker
       include Sinatra::Hat::Extendor
       
@@ -14,8 +15,10 @@ module Sinatra
         Router.cache << [verb, name, path]
         actions[name] = block
       end
+
+      include Sinatra::Hat::Actions
       
-      # end of actions ================================================
+      #  ======================================================
       
       def initialize(klass, overrides={})
         @klass = klass
