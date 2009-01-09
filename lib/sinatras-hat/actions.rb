@@ -1,10 +1,4 @@
 Sinatra::Hat::Maker.class_eval do
-  action :index do |request|
-    data = model.all(request.params)
-
-    responder.handle(:index, request, data)
-  end
-  
   action :show do |request|
     data = model.find(request.params)
     
@@ -17,5 +11,10 @@ Sinatra::Hat::Maker.class_eval do
     responder.handle(:create, request, data) do |response|
       response.redirect(request, resource_path("/:id", data))
     end
+  end
+  
+  action :index do |request|
+    data = model.all(request.params)
+    responder.handle(:index, request, data)
   end
 end

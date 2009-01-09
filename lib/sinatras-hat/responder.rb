@@ -29,18 +29,18 @@ module Sinatra
       end
       
       def handle(name, request, data, &block)
-        if request.params[:format]
-          serialize(request, data)
+        if format = request.params[:format]
+          serialize(format, data)
         else
           request.instance_variable_set(ivar_name(data), data)
           Response.new(maker, request).instance_exec(data, &defaults[name][:success])
         end
       end
       
-      def serialize(request, data)
-        name = request.params[:format].to_sym
-        maker.formats[name] ||= to_format(name)
-        maker.formats[name][data]
+      def serialize(format, data)
+        name = format.to_sym
+        formatter = maker.formats[name] || to_format(name)
+        formatter[data]
       end
       
       private
@@ -50,7 +50,7 @@ module Sinatra
       end
       
       def to_format(name)
-        @default_formatter ||= Proc.new { |data| data.send("to_#{name}") }
+        Proc.new { |data| data.send("to_#{name}") }
       end
     end
   end

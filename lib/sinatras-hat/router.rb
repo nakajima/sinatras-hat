@@ -33,7 +33,10 @@ module Sinatra
       end
 
       def map(method, action, path)
-        handler = lambda { |request| maker.handle(action, request) }
+        handler = lambda do |request|
+          maker.handle(action, request)
+        end
+        
         app.send(method, path) { handler.call(self) }
         app.send(method, "#{path}.:format") { handler.call(self) }
       end

@@ -11,7 +11,7 @@ module Sinatra
       end
       
       def render(action)
-        @request.erb action.to_sym, :views_directory => File.join(@request.options.views, maker.prefix)
+        @request.erb action.to_sym, :views_directory => views
       end
       
       def redirect(resource)
@@ -19,6 +19,10 @@ module Sinatra
       end
       
       private
+      
+      def views
+        File.join(@request.options.views, maker.prefix)
+      end
       
       def url_for(resource)
         case resource
