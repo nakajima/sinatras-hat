@@ -5,6 +5,10 @@ module Sinatra
       
       attr_reader :maker, :app
       
+      def self.cache
+        @cache ||= []
+      end
+      
       def initialize(maker)
         @maker = maker
       end
@@ -12,29 +16,16 @@ module Sinatra
       def generate(app)
         @app = app
         
-        get :new, resource_path('/new')
-        
-        # CREATE
-        post :create, resource_path('/')
-        
-        # SHOW
-        get :show, resource_path('/:id')
-
-        # INDEX
-        get :index, resource_path('/')
+        Router.cache.each do |route|
+          map(*route)
+        end
       end
       
       private
       
-      def get(action, path)
-        map :get, action, path
-      end
-      
-      def post(action, path)
-        map :post, action, path
-      end
-
       def map(method, action, path)
+        path = resource_path(path)
+        
         handler = lambda do |request|
           maker.handle(action, request)
         end

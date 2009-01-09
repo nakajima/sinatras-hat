@@ -9,7 +9,9 @@ module Sinatra
         @actions ||= { }
       end
       
-      def self.action(name, &block)
+      def self.action(name, path, options={}, &block)
+        verb = options[:verb] || :get
+        Router.cache << [verb, name, path]
         actions[name] = block
       end
       
@@ -60,7 +62,11 @@ module Sinatra
       end
       
       def generate_routes(app)
-        Router.new(self).generate(app)
+        router.generate(app)
+      end
+      
+      def router
+        @router ||= Router.new(self)
       end
       
       def responder
