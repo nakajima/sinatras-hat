@@ -1,7 +1,7 @@
 Sinatra::Hat::Maker.class_eval do
   action :index do |request|
     data = model.all(request.params)
-    
+
     responder.handle(:index, request, data)
   end
   
@@ -18,5 +18,4 @@ Sinatra::Hat::Maker.class_eval do
       response.redirect(request, resource_path("/:id", data))
     end
   end
-  
 end

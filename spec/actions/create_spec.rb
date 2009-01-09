@@ -27,8 +27,9 @@ describe "handle create" do
     
     context "when there's no format" do
       it "redirects to that record's path" do
+        mock(Article).new(anything).returns(article)
         mock(request).redirect("/articles/#{article.id}")
-        mock.proxy(maker.responder).redirect(request, "/articles/#{article.id}")
+        mock.proxy(maker.responder).handle(:create, request, article)
         handle(request)
       end
     end

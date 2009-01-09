@@ -11,6 +11,7 @@ require 'core_ext/module'
 
 require 'sinatras-hat/extendor'
 require 'sinatras-hat/resource'
+require 'sinatras-hat/response'
 require 'sinatras-hat/responder'
 require 'sinatras-hat/router'
 require 'sinatras-hat/model'

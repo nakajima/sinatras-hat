@@ -9,11 +9,31 @@ module Sinatra
         @maker = maker
       end
       
+      def defaults
+        {
+          :show => {
+            :success => proc { |data| render(:show) },
+            :failure => proc { |data| redirect('/') }
+          },
+          
+          :index => {
+            :success => proc { |data| render(:index) },
+            :failure => proc { |data| throw(:halt) }
+          },
+          
+          :create => {
+            :success => proc { |data| redirect('/:id', data) },
+            :failure => proc { |data| redirect('/') }
+          }
+        }
+      end
+      
       def handle(name, request, data, &block)
         if request.params[:format]
           serialize(request, data)
         else
-          block_given? ? block[self] : render(name, request, data)
+          request.instance_variable_set(ivar_name(data), data)
+          Response.new(maker, request).instance_exec(data, &defaults[name][:success])
         end
       end
       
@@ -21,15 +41,6 @@ module Sinatra
         name = request.params[:format].to_sym
         maker.formats[name] ||= to_format(name)
         maker.formats[name][data]
-      end
-      
-      def redirect(request, path)
-        request.redirect(path)
-      end
-      
-      def render(name, request, data)
-        request.instance_variable_set(ivar_name(data), data)
-        request.erb name.to_sym, :views_directory => File.join(request.options.views, maker.prefix)
       end
       
       private
