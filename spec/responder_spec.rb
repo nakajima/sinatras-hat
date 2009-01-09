@@ -19,22 +19,22 @@ describe Sinatra::Hat::Responder do
     end
   end
   
-  describe "handle" do
+  describe "success" do
     context "when there's a format" do
       it "serializes the response" do
         request = fake_request(:format => "yaml")
         mock.proxy(responder = new_responder).serialize("yaml", :article)
-        responder.handle(:show, request, :article)
+        responder.success(:show, request, :article)
       end
     end
     
     context "when there's no format" do
-      it "renders a template" do
+      it "calls that action's :success proc" do
         request = fake_request
         mock.proxy(Sinatra::Hat::Response).new(maker, request) do |response|
           mock.proxy(response).render(anything)
         end
-        new_responder.handle(:show, request, :article)
+        new_responder.success(:show, request, :article)
       end
     end
     
@@ -42,7 +42,7 @@ describe Sinatra::Hat::Responder do
       context "when the result is a collection" do
         it "assigns the plural instance variable in the request" do
           request = fake_request
-          new_responder.handle(:index, request, [:articles])
+          new_responder.success(:index, request, [:articles])
           request.instance_eval { @articles }.should == [:articles]
         end
       end
@@ -50,9 +50,29 @@ describe Sinatra::Hat::Responder do
       context "when the result is not a collection" do
         it "assigns the singular instance variable in the request" do
           request = fake_request
-          new_responder.handle(:show, request, :article)
+          new_responder.success(:show, request, :article)
           request.instance_eval { @article }.should == :article
         end
+      end
+    end
+  end
+  
+  describe "failure" do
+    # context "when there's a format" do
+    #   it "serializes the response" do
+    #     request = fake_request(:format => "yaml")
+    #     mock.proxy(responder = new_responder).serialize("yaml", :article)
+    #     responder.success(:show, request, :article)
+    #   end
+    # end
+    
+    context "when there's no format" do
+      it "calls that action's :failure proc" do
+        request = fake_request
+        mock.proxy(Sinatra::Hat::Response).new(maker, request) do |response|
+          mock(response).redirect(anything)
+        end
+        new_responder.failure(:show, request, :article)
       end
     end
   end

@@ -12,31 +12,33 @@ module Sinatra
       def defaults
         @defaults ||= {
           :show => {
-            :success => proc { |data| render(:show) }
+            :success => proc { |data| render(:show) },
+            :failure => proc { |data| redirect('/') }
           },
           
           :index => {
-            :success => proc { |data| render(:index) }
+            :success => proc { |data| render(:index) },
+            :failure => proc { |data| redirect('/') }
           },
           
           :create => {
-            :success => proc { |data| redirect(data) }
+            :success => proc { |data| redirect(data) },
+            :failure => proc { |data| render(:new) }
           },
           
           :new => {
-            :success => proc { |data| render(:new) }
+            :success => proc { |data| render(:new) },
+            :failure => proc { |data| redirect('/') }
           }
         }
       end
       
-      def handle(name, request, data, &block)
-        if format = request.params[:format]
-          serialize(format, data)
-        else
-          request.instance_variable_set(ivar_name(data), data)
-          response = Response.new(maker, request)
-          response.instance_exec(data, &defaults[name][:success])
-        end
+      def success(name, request, data)
+        handle(:success, name, request, data)
+      end
+      
+      def failure(name, request, data)
+        handle(:failure, name, request, data)
       end
       
       def serialize(format, data)
@@ -46,6 +48,16 @@ module Sinatra
       end
       
       private
+      
+      def handle(result, name, request, data)
+        if format = request.params[:format]
+          serialize(format, data)
+        else
+          request.instance_variable_set(ivar_name(data), data)
+          response = Response.new(maker, request)
+          response.instance_exec(data, &defaults[name][result])
+        end
+      end
       
       def ivar_name(data)
         "@" + (data.respond_to?(:each) ? model.plural : model.singular)

@@ -30,7 +30,7 @@ describe "handle index" do
       end
       
       it "renders the index template" do
-        mock.proxy(maker.responder).handle(:new, request, :article)
+        mock.proxy(maker.responder).success(:new, request, :article)
         handle(request)
       end
     end

@@ -43,8 +43,8 @@ describe "handle show" do
         stub(maker.model).find(params).returns(:article)
       end
       
-      it "renders the index template" do
-        mock.proxy(maker.responder).handle(:show, request, :article)
+      it "renders the show template" do
+        mock.proxy(maker.responder).success(:show, request, :article)
         handle(request)
       end
     end
