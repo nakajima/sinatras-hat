@@ -160,20 +160,24 @@ describe Sinatra::Hat::Maker do
   describe "actions" do
     attr_reader :maker, :request, :app
     
-    describe "#handle_index" do
+    describe "handle index" do
       before(:each) do
         mock_app {  }
         @maker = new_maker(Article)
         @request = fake_request
       end
       
+      def handle(*args)
+        maker.handle(:index, *args)
+      end
+      
       it "takes a request" do
-        maker.handle_index(request)
+        maker.handle(:index, request)
       end
       
       it "loads all records" do
         mock.proxy(maker.model).all(anything) { [] }
-        maker.handle_index(request)
+        handle(request)
       end
       
       describe "rendering a response" do
@@ -185,7 +189,7 @@ describe Sinatra::Hat::Maker do
           
           it "serializes the data in the appropriate format" do
             mock.proxy(maker.responder).serialize(request, [:article])
-            maker.handle_index(request)
+            handle(request)
           end
         end
         
@@ -197,26 +201,30 @@ describe Sinatra::Hat::Maker do
           
           it "renders the index template" do
             mock.proxy(maker.responder).render(:index, request, [:article])
-            maker.handle_index(request)
+            handle(request)
           end
         end
       end
     end
     
-    describe "#handle_show" do
+    describe "handle show" do
       before(:each) do
         mock_app {  }
         @maker = new_maker(Article)
         @request = fake_request(:id => 2)
       end
       
+      def handle(*args)
+        maker.handle(:show, *args)
+      end
+      
       it "takes a request" do
-        maker.handle_show(request)
+        handle(request)
       end
       
       it "loads correct record" do
         mock.proxy(maker.model).find(:id => 2) { :article }
-        maker.handle_show(request)
+        handle(request)
       end
       
       describe "rendering a response" do
@@ -229,7 +237,7 @@ describe Sinatra::Hat::Maker do
           
           it "serializes the data in the appropriate format" do
             mock.proxy(maker.responder).serialize(request, :article)
-            maker.handle_show(request)
+            handle(request)
           end
         end
         
@@ -242,7 +250,7 @@ describe Sinatra::Hat::Maker do
           
           it "renders the index template" do
             mock.proxy(maker.responder).render(:show, request, :article)
-            maker.handle_show(request)
+            handle(request)
           end
         end
       end
@@ -256,10 +264,14 @@ describe Sinatra::Hat::Maker do
       @request = fake_request("article[title]" => "The article")
     end
     
+    def handle(*args)
+      maker.handle(:create, *args)
+    end
+    
     it "instantiates a new record and saves it" do
       mock.proxy(article = Article.new).save
       mock.proxy(maker.model).new("article[title]" => "The article") { article }
-      maker.handle_create(request)
+      handle(request)
     end
     
     

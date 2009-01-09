@@ -5,8 +5,12 @@ module Sinatra
       
       attr_reader :klass, :app
       
+      def self.actions
+        @actions ||= { }
+      end
+      
       def self.action(name, &block)
-        define_method("handle_#{name}", &block)
+        actions[name] = block
       end
       
       # Actions =======================================================
@@ -39,6 +43,10 @@ module Sinatra
       def setup(app)
         @app = app
         generate_routes(app)
+      end
+      
+      def handle(action, request)
+        instance_exec(request, &self.class.actions[action])
       end
       
       def prefix

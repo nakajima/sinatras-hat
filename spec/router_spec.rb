@@ -33,7 +33,7 @@ describe Sinatra::Hat::Router do
       
       it "calls the block, passing the request" do
         router.generate(app)
-        mock.proxy(maker).handle_index(anything) { "" }
+        mock.proxy(maker).handle(:index, anything) { "" }
         get '/articles.yaml'
       end
     end
@@ -47,7 +47,7 @@ describe Sinatra::Hat::Router do
       
       it "calls the block, passing the request" do
         router.generate(app)
-        mock.proxy(maker).handle_show(anything) { "" }
+        mock.proxy(maker).handle(:show, anything) { "" }
         get '/articles/1.yaml'
       end
     end
@@ -61,7 +61,7 @@ describe Sinatra::Hat::Router do
       
       it "calls the block, passing the request" do
         router.generate(app)
-        mock(maker).handle_create(anything)
+        mock(maker).handle(:create, anything)
         post '/articles', "maker[name]" => "Pat"
       end
     end
