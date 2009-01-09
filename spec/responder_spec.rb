@@ -90,11 +90,11 @@ describe Sinatra::Hat::Responder do
     
     context "when there is a formatter" do
       before(:each) do
-        maker.formats[:yaml] = proc { |data| [data, :formatted] }
+        maker.formats[:ruby] = proc { |data| [data, :formatted].inspect }
       end
       
       it "calls the formatter, passing the data" do
-        responder.serialize("yaml", :article).should == [:article, :formatted]
+        responder.serialize("ruby", :article).should == [:article, :formatted].inspect
       end
     end
   end
