@@ -19,6 +19,11 @@ module Sinatra
           data = model.new(request.params)
           responder.success(:new, request, data)
         end
+        
+        map.action :edit, '/:id/edit' do |request|
+          data = model.find(request.params)
+          responder.success(:edit, request, data)
+        end
 
         map.action :show, '/:id' do |request|
           data = model.find(request.params)

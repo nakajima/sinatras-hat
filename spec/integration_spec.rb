@@ -100,10 +100,18 @@ describe "integration level tests" do
   end
   
   describe "new" do
-    it "creates a new article" do
+    it "shows a new template" do
       get "/articles/new"
       status.should == 200
       body.should == "New Article!"
+    end
+  end
+  
+  describe "edit" do
+    it "shows a edit template" do
+      get "/articles/2/edit"
+      status.should == 200
+      body.should == "Edit Article!"
     end
   end
 end
