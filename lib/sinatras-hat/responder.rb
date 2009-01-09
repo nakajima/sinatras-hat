@@ -9,8 +9,12 @@ module Sinatra
         @maker = maker
       end
       
-      def handle(name, request, data)
-        request.params[:format] ? serialize(request, data) : render(name, request, data)
+      def handle(name, request, data, &block)
+        if request.params[:format]
+          serialize(request, data)
+        else
+          block_given? ? block[self] : render(name, request, data)
+        end
       end
       
       def serialize(request, data)

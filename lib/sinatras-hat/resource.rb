@@ -5,12 +5,14 @@ module Sinatra
         @maker = maker
       end
       
-      def path(suffix)
+      def path(suffix, record=nil)
         path = resources.inject("") do |memo, maker|
           memo += @maker.eql?(maker) ?
             "/#{maker.prefix}" :
             "/#{maker.prefix}/:#{maker.model.singular}_id"
         end
+        
+        suffix.gsub!(/:id/, record.id.to_s) if record
         
         clean(path + suffix)
       end

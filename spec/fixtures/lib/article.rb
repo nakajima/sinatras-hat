@@ -9,6 +9,10 @@ class Article < Abstract
   end
   
   # fake attributes ========================
+  def id
+    2
+  end
+  
   def name
     "The article"
   end

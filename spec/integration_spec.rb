@@ -59,4 +59,15 @@ describe "integration level tests" do
       end
     end
   end
+  
+  describe "create" do
+    it "creates a new article" do
+      article = Article.new
+      mock.proxy(Article).new("name" => "Hello!") { article }
+      mock.proxy(article).save
+      post "/articles", "article[name]" => "Hello!"
+      status.should == 302
+      response['Location'].should == "/articles/#{article.id}"
+    end
+  end
 end
