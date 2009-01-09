@@ -6,6 +6,8 @@ class Abstract
     end
   end
   
+  attr_accessor :attributes
+  
   def initialize(options={})
     options
   end

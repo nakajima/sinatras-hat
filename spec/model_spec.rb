@@ -68,6 +68,15 @@ describe Sinatra::Hat::Model do
     end
   end
   
+  describe "update" do
+    it "finds the record" do
+      article = Article.new
+      mock.proxy(model = new_model).find(anything) { article }
+      mock.proxy(article).attributes = { "title" => "Hooray!" }
+      model.update("article[title]" => "Hooray!")
+    end
+  end
+  
   describe "new" do
     context "when there is no parent" do
       it "instantiates a new model object" do

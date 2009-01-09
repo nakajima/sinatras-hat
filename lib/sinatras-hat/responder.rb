@@ -33,6 +33,11 @@ module Sinatra
         
         :destroy => {
           :success => proc { |data| redirect(resource_path('/')) }
+        },
+        
+        :update => {
+          :success => proc { |data| redirect(data) },
+          :failure => proc { |data| render(:edit) }
         }
       }
       

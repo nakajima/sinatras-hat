@@ -20,6 +20,12 @@ module Sinatra
           responder.success(:new, request, data)
         end
         
+        map.action :update, '/:id', :verb => :put do |request|
+          data = model.update(request.params)
+          result = data.save ? :success : :failure
+          responder.send(result, :update, request, data)
+        end
+        
         map.action :edit, '/:id/edit' do |request|
           data = model.find(request.params)
           responder.success(:edit, request, data)

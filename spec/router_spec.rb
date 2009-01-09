@@ -107,5 +107,19 @@ describe Sinatra::Hat::Router do
         get '/articles/2/edit'
       end
     end
+    
+    describe "generating update route" do
+      it "uses the maker's resource path" do
+        mock.proxy(app).put('/articles/:id')
+        mock.proxy(app).put('/articles/:id.:format')
+        router.generate(app)
+      end
+      
+      it "calls the block, passing the request" do
+        router.generate(app)
+        mock.proxy(maker).handle(:update, anything) { "" }
+        put '/articles/2'
+      end
+    end
   end
 end
