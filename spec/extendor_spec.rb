@@ -8,6 +8,12 @@ describe Sinatra::Hat::Extendor do
           mock_app { mount(Article) }
         }.should_not raise_error
       end
+      
+      it "uses Rack::MethodOverride" do
+        app = mock_app
+        mock.proxy(app).use(Rack::MethodOverride)
+        app.class_eval { mount(Article) }
+      end
 
       it "takes an options hash" do
         proc {

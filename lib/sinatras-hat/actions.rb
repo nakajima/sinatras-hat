@@ -9,6 +9,12 @@ module Sinatra
     # NOTE: only the :create action renders a different :failure
     module Actions
       def self.included(map)
+        map.action :destroy, '/:id', :verb => :delete do |request|
+          data = model.find(request.params)
+          data.destroy
+          responder.success(:destroy, request, data)
+        end
+        
         map.action :new, '/new' do |request|
           data = model.new(request.params)
           responder.success(:new, request, data)
@@ -18,7 +24,7 @@ module Sinatra
           data = model.find(request.params)
           responder.success(:show, request, data)
         end
-
+        
         map.action :create, '/', :verb => :post do |request|
           data = model.new(request.params)
           result = data.save ? :success : :failure

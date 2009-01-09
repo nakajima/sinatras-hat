@@ -79,5 +79,19 @@ describe Sinatra::Hat::Router do
         get '/articles/new'
       end
     end
+    
+    describe "generating destroy route" do
+      it "uses the maker's resource path" do
+        mock.proxy(app).delete('/articles/:id')
+        mock.proxy(app).delete('/articles/:id.:format')
+        router.generate(app)
+      end
+      
+      it "calls the block, passing the request" do
+        router.generate(app)
+        mock.proxy(maker).handle(:destroy, anything) { "" }
+        delete '/articles/2'
+      end
+    end
   end
 end

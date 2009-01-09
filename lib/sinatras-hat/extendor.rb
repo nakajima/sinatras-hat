@@ -6,6 +6,8 @@ module Sinatra
     # instance's parent.
     module Extendor
       def mount(klass, options={}, &block)
+        use Rack::MethodOverride unless kind_of?(Sinatra::Hat::Maker)
+        
         Maker.new(klass, options).tap do |maker|
           maker.parent = self if kind_of?(Sinatra::Hat::Maker)
           maker.setup(@app || self)

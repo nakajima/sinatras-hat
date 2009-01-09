@@ -32,6 +32,7 @@ module Sinatra
       end
       
       def handle(action, request)
+        # puts ">> #{action.to_s.upcase}: #{request.params.inspect}"
         instance_exec(request, &self.class.actions[action])
       end
       

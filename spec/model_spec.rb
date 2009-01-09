@@ -35,9 +35,13 @@ describe Sinatra::Hat::Model do
   end
   
   describe "find()" do
+    attr_reader :article
+    
     before(:each) do
       @maker = new_maker
       @model = new_model(maker)
+      @article = Article.new
+      stub(Article).new { article }
     end
     
     it "takes the params" do
@@ -48,7 +52,7 @@ describe Sinatra::Hat::Model do
     
     it "calls for the :record" do
       mock.proxy(maker.options[:record]).call(Article, { :id => 2 })
-      model.find(:id => 2).should == :article
+      model.find(:id => 2).should == article
     end
   end
   

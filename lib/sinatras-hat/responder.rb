@@ -25,6 +25,10 @@ module Sinatra
         :new => {
           :success => proc { |data| render(:new) },
           :failure => proc { |data| redirect('/') }
+        },
+        
+        :destroy => {
+          :success => proc { |data| redirect(resource_path('/')) }
         }
       }
       

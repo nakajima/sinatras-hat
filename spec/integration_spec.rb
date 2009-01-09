@@ -45,6 +45,10 @@ describe "integration level tests" do
   end
   
   describe "show" do
+    before(:each) do
+      stub(Article).first { :article }
+    end
+    
     context "when serialized" do
       it "returns serialized index" do
         get "/articles/1.yaml"

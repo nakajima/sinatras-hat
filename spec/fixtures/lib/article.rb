@@ -1,7 +1,7 @@
 # A fake model class
 class Article < Abstract
   def self.first(options={})
-    :article
+    new
   end
 
   def self.all
