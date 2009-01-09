@@ -96,4 +96,16 @@ describe Sinatra::Hat::Responder do
       end
     end
   end
+  
+  describe "redirect()" do
+    before(:each) do
+      @responder = new_responder
+    end
+    
+    it "redirects to the given path" do
+      request = fake_request
+      mock(request).redirect("/articles")
+      responder.redirect(request, "/articles")
+    end
+  end
 end
