@@ -32,8 +32,8 @@ module Sinatra
           maker.handle(action, request)
         end
         
-        app.send(method, path) { handler.call(self) }
-        app.send(method, "#{path}.:format") { handler.call(self) }
+        app.send(method, path) { handler[self] }
+        app.send(method, "#{path}.:format") { handler[self] }
       end
     end
   end

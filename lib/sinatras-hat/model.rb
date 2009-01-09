@@ -20,7 +20,7 @@ module Sinatra
       
       def new(params={})
         params.nest!
-        proxy(params).new(params[singular])
+        proxy(params).new(params[singular] || { })
       end
       
       def plural

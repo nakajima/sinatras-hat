@@ -1,4 +1,6 @@
 module Sinatra
+  class NoTemplateError < StandardError; end
+  
   module Hat
     # Tells Sinatra what to do next.
     class Response
@@ -12,7 +14,11 @@ module Sinatra
       end
       
       def render(action)
-        @request.erb action.to_sym, :views_directory => views
+        begin
+          @request.erb action.to_sym, :views_directory => views
+        rescue Errno::ENOENT
+          no_template! "Can't find #{File.expand_path(File.join(views, action.to_s))}.erb"
+        end
       end
       
       def redirect(resource)
@@ -21,8 +27,18 @@ module Sinatra
       
       private
       
+      def no_template!(msg)
+        raise NoTemplateError.new(msg)
+      end
+      
       def views
-        File.join(@request.options.views, maker.prefix)
+        @views ||= begin
+          if views_dir = @request.options.views
+            File.join(views_dir, maker.prefix)
+          else
+            no_template! "Make sure you set the :views option!"
+          end
+        end
       end
       
       def url_for(resource)
