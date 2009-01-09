@@ -53,9 +53,9 @@ module Sinatra
       
       def options
         @options ||= {
+          :parent => nil,
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.first(:id => params[:id]) },
-          :parent => nil,
           :formats => { }
         }
       end
