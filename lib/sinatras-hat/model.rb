@@ -18,9 +18,12 @@ module Sinatra
         options[:record].call(klass, params)
       end
       
-      def update(record, params)
-        params.nest!
-        record.attributes = (params[singular] || { })
+      def update(params)
+        if record = find(params)
+          params.nest!
+          record.attributes = (params[singular] || { })
+          record
+        end
       end
       
       def new(params={})

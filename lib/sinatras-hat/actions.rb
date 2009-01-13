@@ -21,8 +21,7 @@ module Sinatra
         end
         
         map.action :update, '/:id', :verb => :put do |request|
-          record = model.find(request.params) || responder.not_found(request)
-          model.update(record, request.params)
+          record = model.update(request.params) || responder.not_found(request)
           result = record.save ? :success : :failure
           responder.send(result, :update, request, record)
         end

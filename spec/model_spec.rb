@@ -72,8 +72,9 @@ describe Sinatra::Hat::Model do
     it "finds the record" do
       model = new_model
       article = Article.new
+      mock.proxy(model).find(anything) { article }
       mock.proxy(article).attributes = { "title" => "Hooray!" }
-      model.update(article, "article[title]" => "Hooray!")
+      model.update("article[title]" => "Hooray!")
     end
   end
   

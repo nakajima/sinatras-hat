@@ -68,7 +68,7 @@ module Sinatra
       def not_found(request)
         request.not_found
       end
-      
+            
       private
       
       def handle(result, name, request, data)
