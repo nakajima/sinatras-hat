@@ -1,6 +1,6 @@
-Story: Update action
+Story: Generating an "update" action
   As a developer
-  I want to mount an update action
+  I want to generate an "update" action
   So that I don't have to manually code it
 
   Scenario: A PUT request with Railsy form params and no format

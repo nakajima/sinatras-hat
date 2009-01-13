@@ -1,6 +1,6 @@
-Story: New action
+Story: Generating a "new" action
   As a developer
-  I want to mount a "new" action
+  I want to generate a "new" action
   So that I don't have to manually code it
 
   Scenario: Getting the new action without a format

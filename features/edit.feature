@@ -1,6 +1,6 @@
-Story: New action
+Story: Generating an "edit" action
   As a developer
-  I want to mount an "edit" action
+  I want to generate an "edit" action
   So that I don't have to manually code it
 
   Scenario: Getting the edit page for a record

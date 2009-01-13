@@ -1,6 +1,6 @@
-Story: Show action
+Story: Generating a "show" action
   As a developer
-  I want to mount a show action
+  I want to generate a "show" action
   So that I don't have to manually code it
 
   Scenario: A valid request without a format

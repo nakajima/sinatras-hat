@@ -1,6 +1,6 @@
-Story: Index Action
+Story: Generating an "index" action
   As a developer
-  I want to mount an index action
+  I want to generate an "index" action
   So that I don't have to manually code it
 
   Scenario: A request without a format specified
