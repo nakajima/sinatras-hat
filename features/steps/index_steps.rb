@@ -1,7 +1,7 @@
 # TODO Use acts_as_fu to build some actual models to test
 
 Given /^the model has some records$/ do
-  @pat = Person.create :name => "Pat"
+  @record = Person.create :name => "Pat"
   @frank = Person.create :name => "Frank"
 end
 

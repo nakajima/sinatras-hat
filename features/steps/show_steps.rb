@@ -1,7 +1,7 @@
 # TODO Use acts_as_fu to build some actual models to test
 
 When /^I get the show page for that record$/ do
-  get "/people/#{@pat.to_param}"
+  get "/people/#{@record.to_param}"
 end
 
 When /^I get the show page for the non\-existent record$/ do
@@ -9,7 +9,7 @@ When /^I get the show page for the non\-existent record$/ do
 end
 
 When /^I make a request for that record with a format$/ do
-  get "/people/#{@pat.to_param}.xml"
+  get "/people/#{@record.to_param}.xml"
 end
 
 When /^I get the show page for the non\-existent record with a format$/ do
@@ -17,11 +17,11 @@ When /^I get the show page for the non\-existent record with a format$/ do
 end
 
 Then /^the show\.erb template is rendered$/ do
-  body.should == "The person: #{@pat.name}."
+  body.should == "The person: #{@record.name}."
 end
 
 Then /^the body is the serialized record$/ do
-  body.should == @pat.to_xml
+  body.should == @record.to_xml
 end
 
 # Then /^the body is the custom serialized record$/ do

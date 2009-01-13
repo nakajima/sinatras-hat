@@ -11,11 +11,11 @@ end
 # end
 
 Then /^a record is created$/ do
-  @pat = Person.find_by_name("Pat")
-  @pat.should_not be_nil
+  @record = Person.find_by_name("Pat")
+  @record.should_not be_nil
 end
 
 Then /^a record is not created$/ do
-  @pat = Person.find_by_name("Pat")
-  @pat.should be_nil
+  @record = Person.find_by_name("Pat")
+  @record.should be_nil
 end

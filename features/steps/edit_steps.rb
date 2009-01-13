@@ -1,5 +1,5 @@
 When /^I get the edit page for that record$/ do
-  get "/people/#{@pat.to_param}/edit"
+  get "/people/#{@record.to_param}/edit"
 end
 
 When /^I get the show page for a non\-existent record$/ do
@@ -7,5 +7,5 @@ When /^I get the show page for a non\-existent record$/ do
 end
 
 Then /^the edit\.erb template is rendered$/ do
-  body.should == "Editing person with id: #{@pat.id}."
+  body.should == "Editing person with id: #{@record.id}."
 end

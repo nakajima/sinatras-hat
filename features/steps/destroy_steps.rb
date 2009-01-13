@@ -1,5 +1,5 @@
 When /^I make a DELETE request to that record$/ do
-  delete "/people/#{@pat.to_param}"
+  delete "/people/#{@record.to_param}"
 end
 
 When /^I make a DELETE request to the non\-existent record$/ do
@@ -7,7 +7,7 @@ When /^I make a DELETE request to the non\-existent record$/ do
 end
 
 Then /^the record gets destroyed$/ do
-  Person.find_by_id(@pat.id).should be_nil
+  Person.find_by_id(@record.id).should be_nil
 end
 
 Then /^I am redirected to the index action$/ do

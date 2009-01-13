@@ -12,7 +12,7 @@ Before do
 end
 
 Given /^a model that has a record$/ do
-  @pat = Person.create! :name => "Pat"
+  @record = Person.create! :name => "Pat"
 end
 
 Given /^a model that does not have a record$/ do
@@ -28,7 +28,7 @@ Given /^I mount the model$/ do
 end
 
 When /^I make a request for that record using the '(\w+)' format$/ do |format|
-  get "/people/#{@pat.to_param}.#{format}"
+  get "/people/#{@record.to_param}.#{format}"
 end
 
 Then /^the body is empty$/ do
