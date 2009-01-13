@@ -14,3 +14,4 @@ Story: Show action
     And I mount the model
     When I get the show page for the invalid record
     Then the status code is 404
+    And the body is empty

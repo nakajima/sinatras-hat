@@ -30,7 +30,7 @@ describe "handle index" do
       end
       
       it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize("yaml", [:article])
+        mock.proxy(maker.responder).serialize(request, [:article])
         handle(request)
       end
     end

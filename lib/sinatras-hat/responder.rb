@@ -59,17 +59,21 @@ module Sinatra
         handle(:failure, name, request, data)
       end
       
-      def serialize(format, data)
-        name = format.to_sym
-        formatter = maker.formats[name] || to_format(name)
-        formatter[data]
+      def serialize(request, data)
+        name = request.params[:format].to_sym
+        formatter = to_format(name)
+        formatter[data] || request.error(406)
+      end
+      
+      def not_found(request)
+        request.not_found
       end
       
       private
       
       def handle(result, name, request, data)
         if format = request.params[:format]
-          serialize(format, data)
+          serialize(request, data)
         else
           request.instance_variable_set(ivar_name(data), data)
           response = Response.new(maker, request)
@@ -82,7 +86,10 @@ module Sinatra
       end
       
       def to_format(name)
-        Proc.new { |data| data.send("to_#{name}") }
+        maker.formats[name] || Proc.new do |data|
+          method_name = "to_#{name}"
+          data.respond_to?(method_name) ? data.send(method_name) : nil
+        end
       end
     end
   end

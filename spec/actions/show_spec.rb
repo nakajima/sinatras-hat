@@ -22,7 +22,7 @@ describe "handle show" do
     handle(request)
   end
   
-  describe "rendering a response" do
+  describe "rendering a successful response" do
     context "when there's a :format param" do
       before(:each) do
         params = { :format => "yaml", :id => 2 }
@@ -31,7 +31,7 @@ describe "handle show" do
       end
       
       it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize("yaml", :article)
+        mock.proxy(maker.responder).serialize(request, :article)
         handle(request)
       end
     end
@@ -47,6 +47,18 @@ describe "handle show" do
         mock.proxy(maker.responder).success(:show, request, :article)
         handle(request)
       end
+    end
+  end
+  
+  describe "rendering not_found" do
+    before(:each) do
+      stub(maker.model).find(request.params).returns(nil)
+      stub(request).not_found # because it throws :halt otherwise
+    end
+    
+    it "returns not_found" do
+      mock.proxy(maker.responder).not_found(request)
+      handle(request)
     end
   end
 end

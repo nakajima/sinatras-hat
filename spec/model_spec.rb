@@ -70,10 +70,10 @@ describe Sinatra::Hat::Model do
   
   describe "update" do
     it "finds the record" do
+      model = new_model
       article = Article.new
-      mock.proxy(model = new_model).find(anything) { article }
       mock.proxy(article).attributes = { "title" => "Hooray!" }
-      model.update("article[title]" => "Hooray!")
+      model.update(article, "article[title]" => "Hooray!")
     end
   end
   

@@ -19,5 +19,5 @@ Story: Index Action
     Given a model that has some records
     And I mount the model
     When I get the index with an unknown format
-    Then the result should render a good error message
-    And the status code should reflect the unknown format
+    Then the body is empty
+    And the status code is 406

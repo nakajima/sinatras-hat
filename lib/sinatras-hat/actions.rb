@@ -21,9 +21,9 @@ module Sinatra
         end
         
         map.action :update, '/:id', :verb => :put do |request|
-          data = model.update(request.params)
-          result = data.save ? :success : :failure
-          responder.send(result, :update, request, data)
+          record = model.find(request.params)
+          model.update(record, request.params)
+          responder.send((record.save ? :success : :failure), :update, request, record)
         end
         
         map.action :edit, '/:id/edit' do |request|
@@ -32,8 +32,11 @@ module Sinatra
         end
 
         map.action :show, '/:id' do |request|
-          data = model.find(request.params)
-          responder.success(:show, request, data)
+          if data = model.find(request.params)
+            responder.success(:show, request, data)
+          else
+            responder.not_found(request)
+          end
         end
         
         map.action :create, '/', :verb => :post do |request|

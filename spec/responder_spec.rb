@@ -23,7 +23,7 @@ describe Sinatra::Hat::Responder do
     context "when there's a format" do
       it "serializes the response" do
         request = fake_request(:format => "yaml")
-        mock.proxy(responder = new_responder).serialize("yaml", :article)
+        mock.proxy(responder = new_responder).serialize(request, :article)
         responder.success(:show, request, :article)
       end
     end
@@ -57,6 +57,13 @@ describe Sinatra::Hat::Responder do
     end
   end
   
+  describe "not_found" do
+    it "calls not_found on the request" do
+      mock(request = fake_request).not_found
+      new_responder.not_found(request)
+    end
+  end
+  
   describe "failure" do
     # context "when there's a format" do
     #   it "serializes the response" do
@@ -83,8 +90,17 @@ describe Sinatra::Hat::Responder do
     end
     
     context "when there is no formatter" do
-      it "calls to_* on the data" do
-        responder.serialize("yaml", [:article]).should == [:article].to_yaml
+      context "when the data responds to to_*" do
+        it "calls to_* on the data" do
+          responder.serialize(fake_request(:format => "yaml"), [:article]).should == [:article].to_yaml
+        end
+      end
+
+      context "when the data doesn't respond to to_*" do
+        it "returns a 406 error code for the response" do
+          mock(bad_request = fake_request(:format => "say_what")).error(406)
+          responder.serialize(bad_request, [:article])
+        end
       end
     end
     
@@ -94,7 +110,7 @@ describe Sinatra::Hat::Responder do
       end
       
       it "calls the formatter, passing the data" do
-        responder.serialize("ruby", :article).should == [:article, :formatted].inspect
+        responder.serialize(fake_request(:format => "ruby"), :article).should == [:article, :formatted].inspect
       end
     end
   end
