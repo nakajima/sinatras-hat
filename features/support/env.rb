@@ -7,8 +7,15 @@ end
 
 def mock_app(&block)
   @app = super
-  @app.set :views, fixture('views')
+  @app.set :views, File.join(File.dirname(__FILE__), 'views')
   @app
 end
 
 require 'spec/expectations'
+require 'acts_as_fu'
+
+include ActsAsFu
+
+build_model(:people) do
+  string :name
+end

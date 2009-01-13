@@ -87,6 +87,42 @@ describe Sinatra::Hat::Maker do
     end
   end
   
+  describe "finder" do
+    context "when no block is provided" do
+      it "returns the finder option" do
+        maker = new_maker
+        maker.finder.should == maker.options[:finder]
+      end
+    end
+    
+    context "when a block is provided" do
+      it "sets the finder option" do
+        maker = new_maker
+        block = proc { |model, params| model.find_by_id(params[:id]) }
+        maker.finder(&block)
+        maker.options[:finder].should == block
+      end
+    end
+  end
+  
+  describe "record" do
+    context "when no block is provided" do
+      it "returns the record option" do
+        maker = new_maker
+        maker.record.should == maker.options[:record]
+      end
+    end
+    
+    context "when a block is provided" do
+      it "sets the record option" do
+        maker = new_maker
+        block = proc { |model, params| model.find_by_id(params[:id]) }
+        maker.record(&block)
+        maker.options[:record].should == block
+      end
+    end
+  end
+  
   describe "prefix" do
     context "when specified as an option" do
       it "returns the option value" do

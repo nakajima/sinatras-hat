@@ -41,6 +41,22 @@ module Sinatra
         yield HashMutator.new(responder.defaults[action])
       end
       
+      def finder(&block)
+        if block_given?
+          options[:finder] = block
+        else
+          options[:finder]
+        end
+      end
+      
+      def record(&block)
+        if block_given?
+          options[:record] = block
+        else
+          options[:record]
+        end
+      end
+      
       def prefix
         @prefix ||= options[:prefix] || model.plural
       end
