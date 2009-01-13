@@ -1,3 +1,12 @@
+def mount!
+  mock_app do
+    mount Person do
+      finder { |model, params| model.all }
+      record { |model, params| model.find_by_id(params[:id]) }
+    end
+  end
+end
+
 Before do
   Person.delete_all
 end
@@ -11,21 +20,11 @@ Given /^a model that does not have a record$/ do
 end
 
 Given /^a mounted model$/ do
-  mock_app do
-    mount Person do
-      finder { |model, params| model.all }
-      record { |model, params| model.find_by_id(params[:id]) }
-    end
-  end
+  mount!
 end
 
 Given /^I mount the model$/ do
-  mock_app do
-    mount Person do
-      finder { |model, params| model.all }
-      record { |model, params| model.find_by_id(params[:id]) }
-    end
-  end
+  mount!
 end
 
 When /^I make a request for that record using the '(\w+)' format$/ do |format|
