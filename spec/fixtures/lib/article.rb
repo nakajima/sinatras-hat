@@ -1,7 +1,11 @@
 # A fake model class
 class Article < Abstract
   def self.first(options={})
-    new
+    if options[:id].to_i == 2
+      @first ||= new
+    else
+      nil
+    end
   end
 
   def self.all

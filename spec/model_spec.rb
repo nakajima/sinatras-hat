@@ -52,7 +52,7 @@ describe Sinatra::Hat::Model do
     
     it "calls for the :record" do
       mock.proxy(maker.options[:record]).call(Article, { :id => 2 })
-      model.find(:id => 2).should == article
+      model.find(:id => 2).should == Article.first(:id => 2)
     end
   end
   
