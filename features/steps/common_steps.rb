@@ -26,6 +26,10 @@ Given /^I mount the model$/ do
   end
 end
 
+When /^I make a request for that record using the '(\w+)' format$/ do |format|
+  get "/people/#{@pat.to_param}.#{format}"
+end
+
 Then /^the body is empty$/ do
   body.should be_empty
 end

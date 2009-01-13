@@ -16,12 +16,20 @@ Story: Generating a "show" action
     Then the status code is 404
     And the body is empty
   
-  Scenario: A valid request with a format
+  Scenario: A valid request with a built-in format
     Given a model that has a record
     And I mount the model
-    When I make a request for that record with a format
+    When I make a request for that record using the 'xml' format
     Then the status code is 200
     And the body is the serialized record
+    
+  Scenario: A valid request with a custom format
+    Given a model that has a record
+    And I mount the model
+    And specify a custom 'ruby' formatter
+    When I make a request for that record using the 'ruby' format
+    Then the status code is 200
+    And the body is the custom serialized record
   
   Scenario: An invalid request with a format
     Given a model that does not have a record
