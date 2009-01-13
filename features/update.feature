@@ -16,6 +16,13 @@ Story: Generating an "update" action
     When I make a PUT request with invalid form params
     Then the edit.erb template is rendered
     And the record is not updated
+
+  Scenario: Trying to update a record that does not exist
+    Given a model that does not have a record
+    And I mount the model
+    When I make a put request with valid form params
+    Then the status code is 404
+    And the body is empty
   
   Scenario: A PUT request with format serialized attributes
     Given a model that has a record

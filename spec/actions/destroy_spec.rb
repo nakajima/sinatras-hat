@@ -48,12 +48,11 @@ describe "handle destroy" do
   context "when the record does not exist" do
     before(:each) do
       stub(maker.model).find(:id => 2) { nil }
-      stub(request).not_found # because it throws :halt otherwise
     end
     
     it "returns not_found" do
       mock.proxy(maker.responder).not_found(request)
-      handle(request)
+      catch(:halt) { handle(request) }
     end
   end
 end

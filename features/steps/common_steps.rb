@@ -17,6 +17,12 @@ end
 
 Given /^a model that does not have a record$/ do
   Person.all.should be_empty
+  @record = Person.new
+  class << @record
+    def to_param
+      "230934509834"
+    end
+  end
 end
 
 Given /^a mounted model$/ do

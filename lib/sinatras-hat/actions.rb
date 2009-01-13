@@ -10,12 +10,9 @@ module Sinatra
     module Actions
       def self.included(map)
         map.action :destroy, '/:id', :verb => :delete do |request|
-          if record = model.find(request.params)
-            record.destroy
-            responder.success(:destroy, request, record)
-          else
-            responder.not_found(request)
-          end
+          record = model.find(request.params) || responder.not_found(request)
+          record.destroy
+          responder.success(:destroy, request, record)
         end
         
         map.action :new, '/new' do |request|
@@ -24,26 +21,20 @@ module Sinatra
         end
         
         map.action :update, '/:id', :verb => :put do |request|
-          record = model.find(request.params)
+          record = model.find(request.params) || responder.not_found(request)
           model.update(record, request.params)
           result = record.save ? :success : :failure
           responder.send(result, :update, request, record)
         end
         
         map.action :edit, '/:id/edit' do |request|
-          if record = model.find(request.params)
-            responder.success(:edit, request, record)
-          else
-            responder.not_found(request)
-          end
+          record = model.find(request.params) || responder.not_found(request)
+          responder.success(:edit, request, record)
         end
 
         map.action :show, '/:id' do |request|
-          if data = model.find(request.params)
-            responder.success(:show, request, data)
-          else
-            responder.not_found(request)
-          end
+          record = model.find(request.params) || responder.not_found(request)
+          responder.success(:show, request, record)
         end
         
         map.action :create, '/', :verb => :post do |request|

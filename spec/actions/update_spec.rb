@@ -14,16 +14,27 @@ describe "handle create" do
     maker.handle(:update, *args)
   end
   
-  it "finds a record and updates its attributes" do
-    mock.proxy(article = Article.new).attributes = { "title" => "Hooray!" }
-    mock.proxy(article).save
-    mock.proxy(maker.model).find(anything) { article }
-    handle(request)
+  describe "when the record doesn't exist" do
+    before(:each) do
+      stub(maker.model).find(anything) { nil }
+    end
+    
+    it "returns not_found" do
+      mock.proxy(maker.responder).not_found(request)
+      catch(:halt) { handle(request) }
+    end
   end
   
-  describe "responding" do
+  describe "attempting to update a record" do
     before(:each) do
       @article = Article.new
+    end
+    
+    it "finds a record and updates its attributes" do
+      mock.proxy(article).attributes = { "title" => "Hooray!" }
+      mock.proxy(article).save
+      mock.proxy(maker.model).find(anything) { article }
+      handle(request)
     end
     
     context "when the save is successful" do
