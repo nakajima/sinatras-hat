@@ -18,7 +18,7 @@ Given /^I mount the model$/ do
 end
 
 When /^I get the index with a known format$/ do
-  get '/people.yaml'
+  get '/people.xml'
 end
 
 When /^I get the index without a format$/ do
@@ -30,13 +30,9 @@ When /^I get the index with an unknown format$/ do
 end
 
 Then /^the result should be serialized$/ do
-  @response.body.should == Person.all.to_yaml
+  @response.body.should == Person.all.to_xml
 end
 
 Then /^the index\.erb template should be rendered$/ do
   @response.body.should == "The people: #{Person.all.map(&:name).join(', ')}."
-end
-
-Then /^the status code is 406$/ do
-  response.status.should == 406
 end
