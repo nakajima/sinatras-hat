@@ -16,15 +16,6 @@ Given /^a mounted model$/ do
   end
 end
 
-Given /^I mount the model$/ do
-  mock_app do
-    mount Person do
-      finder { |model, params| model.all }
-      record { |model, params| model.find_by_id(params[:id]) }
-    end
-  end
-end
-
 Then /^the body is empty$/ do
   body.should be_empty
 end
