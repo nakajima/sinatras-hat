@@ -16,8 +16,8 @@ module Sinatra
         end
         
         map.action :new, '/new' do |request|
-          data = model.new(request.params)
-          responder.success(:new, request, data)
+          new_record = model.new(request.params)
+          responder.success(:new, request, new_record)
         end
         
         map.action :update, '/:id', :verb => :put do |request|
@@ -38,14 +38,14 @@ module Sinatra
         end
         
         map.action :create, '/', :verb => :post do |request|
-          data = model.new(request.params)
-          result = data.save ? :success : :failure
-          responder.send(result, :create, request, data)
+          record = model.new(request.params)
+          result = record.save ? :success : :failure
+          responder.send(result, :create, request, record)
         end
 
         map.action :index, '/' do |request|
-          data = model.all(request.params)
-          responder.success(:index, request, data)
+          records = model.all(request.params)
+          responder.success(:index, request, records)
         end
       end
     end
