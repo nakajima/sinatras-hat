@@ -1,3 +1,5 @@
+# TODO Use acts_as_fu to build some actual models to test
+
 Given /^a model that has a record$/ do
   Article.first(:id => 2).should_not be_nil
 end

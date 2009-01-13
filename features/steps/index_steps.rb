@@ -1,3 +1,5 @@
+# TODO Use acts_as_fu to build some actual models to test
+
 Given /^a model that has some records$/ do
   Article.all.should == [:first_article, :second_article]
 end
