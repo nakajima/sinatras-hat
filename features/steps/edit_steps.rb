@@ -7,5 +7,5 @@ When /^I get the show page for a non\-existent record$/ do
 end
 
 Then /^the edit\.erb template is rendered$/ do
-  body.should == "Editing #{@pat.name}."
+  body.should == "Editing person with id: #{@pat.id}."
 end
