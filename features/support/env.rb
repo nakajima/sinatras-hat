@@ -18,4 +18,6 @@ include ActsAsFu
 
 build_model(:people) do
   string :name
+  
+  validates_presence_of :name
 end

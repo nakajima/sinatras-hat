@@ -8,6 +8,7 @@ Given /^a model that does not have a record$/ do
 end
 
 Given /^a mounted model$/ do
+  Person.delete_all
   mock_app do
     mount Person do
       finder { |model, params| model.all }
@@ -31,4 +32,8 @@ end
 
 Then /^the status code is (\d+)$/ do |code|
   response.status.should == code.to_i
+end
+
+Then /^the new\.erb template is rendered$/ do
+  body.should == "So, you want to create a new Person?"
 end
