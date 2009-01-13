@@ -1,11 +1,8 @@
 # TODO Use acts_as_fu to build some actual models to test
 
 Given /^the model has some records$/ do
-  Person.delete_all
   @pat = Person.create :name => "Pat"
   @frank = Person.create :name => "Frank"
-  Person.all.should have(2).people
-  Person.all.should include(@pat, @frank)
 end
 
 When /^I get the index with a known format$/ do

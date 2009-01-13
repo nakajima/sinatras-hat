@@ -1,14 +1,16 @@
-Given /^a model that has a record$/ do
+Before do
   Person.delete_all
+end
+
+Given /^a model that has a record$/ do
   @pat = Person.create! :name => "Pat"
 end
 
 Given /^a model that does not have a record$/ do
-  Person.delete_all
+  Person.all.should be_empty
 end
 
 Given /^a mounted model$/ do
-  Person.delete_all
   mock_app do
     mount Person do
       finder { |model, params| model.all }

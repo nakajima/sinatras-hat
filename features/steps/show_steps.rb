@@ -24,5 +24,5 @@ Then /^the body is the serialized record$/ do
   body.should == @pat.to_xml
 end
 
-Then /^the body is the custom serialized record$/ do
-end
+# Then /^the body is the custom serialized record$/ do
+# end
