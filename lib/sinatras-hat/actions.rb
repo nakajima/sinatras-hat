@@ -23,12 +23,16 @@ module Sinatra
         map.action :update, '/:id', :verb => :put do |request|
           record = model.find(request.params)
           model.update(record, request.params)
-          responder.send((record.save ? :success : :failure), :update, request, record)
+          result = record.save ? :success : :failure
+          responder.send(result, :update, request, record)
         end
         
         map.action :edit, '/:id/edit' do |request|
-          data = model.find(request.params)
-          responder.success(:edit, request, data)
+          if record = model.find(request.params)
+            responder.success(:edit, request, record)
+          else
+            responder.not_found(request)
+          end
         end
 
         map.action :show, '/:id' do |request|

@@ -8,15 +8,6 @@ Given /^a model that has some records$/ do
   Person.all.should include(@pat, @frank)
 end
 
-Given /^I mount the model$/ do
-  mock_app do
-    mount Person do
-      finder { |model, params| model.all }
-      record { |model, params| model.find_by_id(params[:id]) }
-    end
-  end
-end
-
 When /^I get the index with a known format$/ do
   get '/people.xml'
 end

@@ -17,12 +17,24 @@ describe "handle show" do
     handle(request)
   end
   
-  it "loads correct record" do
-    mock.proxy(maker.model).find(:id => 2) { :article }
-    handle(request)
+  describe "rendering not_found" do
+    before(:each) do
+      stub(maker.model).find(request.params).returns(nil)
+      stub(request).not_found # because it throws :halt otherwise
+    end
+    
+    it "returns not_found" do
+      mock.proxy(maker.responder).not_found(request)
+      handle(request)
+    end
   end
   
-  describe "rendering a response" do
+  describe "rendering a successful response" do
+    it "loads correct record" do
+      mock.proxy(maker.model).find(:id => 2) { :article }
+      handle(request)
+    end
+    
     context "when there's no :format param" do
       before(:each) do
         params = { :id => 2 }
