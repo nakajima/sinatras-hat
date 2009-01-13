@@ -32,8 +32,7 @@ end
 Given /^I mount the model$/ do
   mount!
 end
-
-When /^I make a request for that record using the '(\w+)' format$/ do |format|
+When /^I make a GET request for that record using the '(\w+)' format$/ do |format|
   get "/people/#{@record.to_param}.#{format}"
 end
 

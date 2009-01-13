@@ -6,7 +6,7 @@ Story: Generating a "new" action
   Scenario: Getting the new action without a format
     Given a mounted model
     When I get the new page for that record
-    Then the new.erb template is rendered  
+    Then the new.erb template is rendered 
   
   Scenario: Getting the new action with a valid format
     Given a mounted model

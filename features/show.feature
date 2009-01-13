@@ -19,7 +19,7 @@ Story: Generating a "show" action
   Scenario: A valid request with a built-in format
     Given a model that has a record
     And I mount the model
-    When I make a request for that record using the 'xml' format
+    When I make a GET request for that record using the 'xml' format
     Then the status code is 200
     And the body is the serialized record
     
@@ -27,13 +27,13 @@ Story: Generating a "show" action
     Given a model that has a record
     And I mount the model
     And specify a custom 'ruby' formatter
-    When I make a request for that record using the 'ruby' format
+    When I make a GET request for that record using the 'ruby' format
     Then the status code is 200
     And the body is the custom serialized record
   
   Scenario: An invalid request with a format
     Given a model that does not have a record
     And I mount the model
-    When I get the show page for the non-existent record with a format
+    When I get the GET request for a non-existent record with a format
     Then the status code is 404
     And the body is empty

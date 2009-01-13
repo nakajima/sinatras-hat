@@ -5,15 +5,15 @@ Given /^the model has some records$/ do
   @frank = Person.create :name => "Frank"
 end
 
-When /^I get the index with a known format$/ do
-  get '/people.xml'
-end
-
-When /^I get the index without a format$/ do
+When /^Make a GET request to the index without a format$/ do
   get '/people'
 end
 
-When /^I get the index with an unknown format$/ do
+When /^Make a GET request to the index with a known format$/ do
+  get '/people.xml'
+end
+
+When /^I make a GET request to the index with an unknown format$/ do
   get '/people.say_wha'
 end
 

@@ -1,8 +1,8 @@
-When /^I make a DELETE request to that record$/ do
+When /^I make a DELETE request to the path for that record$/ do
   delete "/people/#{@record.to_param}"
 end
 
-When /^I make a DELETE request to the non\-existent record$/ do
+When /^I make a DELETE request to a path for a non\-existent record$/ do
   delete "/people/345345435"
 end
 

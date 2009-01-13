@@ -12,7 +12,7 @@ When /^I make a request for that record with a format$/ do
   get "/people/#{@record.to_param}.xml"
 end
 
-When /^I get the show page for the non\-existent record with a format$/ do
+When /^I get the GET request for a non\-existent record with a format$/ do
   get "/people/87345873485763485.xml"
 end
 
