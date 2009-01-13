@@ -10,3 +10,9 @@ Story: Generating a "destroy" action
     Then the record gets destroyed
     And I am redirected to the index action
   
+  Scenario: Trying to delete a non-existent record
+    Given a model that does not have a record
+    And I mount the model
+    When I make a DELETE request to the non-existent record
+    Then the status code is 404
+    And the body is empty

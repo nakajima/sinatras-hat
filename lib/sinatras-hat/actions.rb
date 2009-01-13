@@ -10,9 +10,12 @@ module Sinatra
     module Actions
       def self.included(map)
         map.action :destroy, '/:id', :verb => :delete do |request|
-          data = model.find(request.params)
-          data.destroy
-          responder.success(:destroy, request, data)
+          if record = model.find(request.params)
+            record.destroy
+            responder.success(:destroy, request, record)
+          else
+            responder.not_found(request)
+          end
         end
         
         map.action :new, '/new' do |request|

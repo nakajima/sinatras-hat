@@ -20,25 +20,39 @@ describe "handle destroy" do
     handle(request)
   end
   
-  it "loads correct record" do
-    mock.proxy(maker.model).find(:id => 2) { article }
-    handle(request)
+  context "when the record exists" do
+    it "loads correct record" do
+      mock.proxy(maker.model).find(:id => 2) { article }
+      handle(request)
+    end
+
+    it "destroys the record" do
+      mock.proxy(article).destroy
+      handle(request)
+    end
+
+    describe "rendering a response" do
+      before(:each) do
+        params = { :id => 2 }
+        @request = fake_request(params)
+        stub(maker.model).find(params).returns(article)
+      end
+
+      it "redirects to the index" do
+        mock(request).redirect('/articles')
+        handle(request)
+      end
+    end
   end
   
-  it "destroys the record" do
-    mock.proxy(article).destroy
-    handle(request)
-  end
-  
-  describe "rendering a response" do
+  context "when the record does not exist" do
     before(:each) do
-      params = { :id => 2 }
-      @request = fake_request(params)
-      stub(maker.model).find(params).returns(article)
+      stub(maker.model).find(:id => 2) { nil }
+      stub(request).not_found # because it throws :halt otherwise
     end
     
-    it "redirects to the index" do
-      mock(request).redirect('/articles')
+    it "returns not_found" do
+      mock.proxy(maker.responder).not_found(request)
       handle(request)
     end
   end
