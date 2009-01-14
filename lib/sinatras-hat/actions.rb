@@ -1,69 +1,50 @@
 module Sinatra
   module Hat
+    # Contains all of the actions that Sinatra's Hat supports.
+    # Each action states a name, a path, optionally, the HTTP
+    # verb, then a block which takes a request object, optionally
+    # loads data using the :finder or :record options, then
+    # responds, based on whether or not the action was a success
+    # 
+    # NOTE: only the :create action renders a different :failure
     module Actions
-      def generate_actions!
-        only.each { |action| send("#{action}!") }
-        children.each do |resource|
-          mount(resource)
+      def self.included(map)
+        map.action :destroy, '/:id', :verb => :delete do |request|
+          record = model.find(request.params) || responder.not_found(request)
+          record.destroy
+          responder.success(:destroy, request, record)
         end
-      end
-      
-      def index!
-        map :index, '/' do |params|
-          call(:finder, params)
+        
+        map.action :new, '/new' do |request|
+          new_record = model.new(request.params)
+          responder.success(:new, request, new_record)
         end
-      end
-    
-      def new!
-        map :new, '/new' do |params|
-          proxy(params).new
+        
+        map.action :update, '/:id', :verb => :put do |request|
+          record = model.update(request.params) || responder.not_found(request)
+          result = record.save ? :success : :failure
+          responder.send(result, :update, request, record)
         end
-      end
-      
-      def edit!
-        map :edit, '/:id/edit' do |params|
-          call(:record, params)
+        
+        map.action :edit, '/:id/edit' do |request|
+          record = model.find(request.params) || responder.not_found(request)
+          responder.success(:edit, request, record)
         end
-      end
-    
-      def show!
-        map :show, '/:id' do |params|
-          call(:record, params)
+
+        map.action :show, '/:id' do |request|
+          record = model.find(request.params) || responder.not_found(request)
+          responder.success(:show, request, record)
         end
-      end
-    
-      def create!
-        map :create, '/', :verb => :post do |params|
-          create[proxy(params), parse_for_attributes(params)]
+        
+        map.action :create, '/', :verb => :post do |request|
+          record = model.new(request.params)
+          result = record.save ? :success : :failure
+          responder.send(result, :create, request, record)
         end
-      end
-    
-      def update!
-        map :update, '/:id', :verb => :put do |params|
-          call(:record, params).tap do |record|
-            update[record, parse_for_attributes(params)]
-          end
-        end
-      end
-    
-      def destroy!
-        map :destroy, '/:id', :verb => :delete do |params|
-          call(:record, params).tap do |record|
-            destroy[record, parse_for_attributes(params)]
-          end
-        end
-      end
-      
-      private
-      
-      def parse_for_attributes(params, name=model.name.downcase)
-        if handler = accepts[params[:format].try(:to_sym)]
-          params.merge(name => handler.call(params[name]))
-        else
-          params.nest!
-          params[name] ||= { }
-          params[name][parent.model_id] = params[parent.model_id] if parent
-          params
+
+        map.action :index, '/' do |request|
+          records = model.all(request.params)
+          responder.success(:index, request, records)
         end
       end
     end

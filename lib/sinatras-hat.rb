@@ -1,23 +1,20 @@
-$LOAD_PATH << File.join(File.dirname(__FILE__), 'core_ext')
-$LOAD_PATH << File.join(File.dirname(__FILE__), 'sinatras-hat')
+$LOAD_PATH << File.join(File.dirname(__FILE__))
 
-require 'erb'
+require 'rubygems'
+require 'sinatra/base'
 require 'extlib'
-require 'dm-core'
-require 'dm-serializer'
-require 'array'
-require 'hash'
-require 'object'
-require 'action'
-require 'actions'
-require 'responses'
-require 'maker'
 
-load 'auth.rb'
+require 'core_ext/array'
+require 'core_ext/hash'
+require 'core_ext/object'
+require 'core_ext/module'
 
-Rack::File::MIME_TYPES['json'] = 'text/x-json'
-Rack::File::MIME_TYPES['yaml'] = 'text/x-yaml'
-
-def mount(model, opts={}, &block)
-  Sinatra::Hat::Maker.new(model).define(self, opts, &block)
-end
+require 'sinatras-hat/extendor'
+require 'sinatras-hat/hash_mutator'
+require 'sinatras-hat/resource'
+require 'sinatras-hat/response'
+require 'sinatras-hat/responder'
+require 'sinatras-hat/model'
+require 'sinatras-hat/router'
+require 'sinatras-hat/actions'
+require 'sinatras-hat/maker'

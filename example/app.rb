@@ -1,15 +1,20 @@
 require File.dirname(__FILE__) + '/lib/common.rb'
 
-mount(Post) do
-  # Mount children as a nested resource
-  mount(Comment)
+class MountedApp < Sinatra::Base
+  set :app_file, __FILE__
   
-  # Allows for params[:post] to just be a YAML string which will
-  # get parsed into an attributes hash for updating a record
-  accepts[:yaml] = proc { |content| YAML.load(content) }
+  get '/' do
+    "You created a post, and this is a custom response."
+  end
   
-  # Allows for a custom response format for when requests come in
-  # as .ruby
-  Rack::File::MIME_TYPES['ruby'] = 'text/x-ruby'
-  formats[:ruby] = proc { |content| content.inspect }
+  mount(Post) do
+    # Mount children as a nested resource
+    mount(Comment)
+
+    after :create do |on|
+      on.success { |post| redirect("/") }
+    end
+  end
 end
+
+MountedApp.run!

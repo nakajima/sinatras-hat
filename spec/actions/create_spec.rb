@@ -1,83 +1,74 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require 'spec/spec_helper'
 
-describe Sinatra::Hat::Actions, '#create' do
-  attr_reader :response, :record
-  it "should create a record via json" do
-    mock(record).attributes = { "name" => "Frank" }
-    mock(record).to_json.returns(:a_result)
-    mock(record).save.returns(true)
-    mock(Foo).new.returns(record)
-    post_it '/foos.json', "foo" => { "name" => "Frank" }.to_json
-    response.should be_ok
-  end
-
-  it "should create a record via xml" do
-    mock(record).attributes = { "name" => "Frank" }
-    mock(record).to_xml.returns(:a_result)
-    mock(record).save.returns(true)
-    mock(Foo).new.returns(record)
-    post_it '/foos.xml', "foo" => FOO_XML
-    response.should be_ok
-  end
-
-  it "should create a record via yaml" do
-    mock(record).attributes = { "name" => "Frank" }
-    mock(record).to_yaml.returns(:a_result)
-    mock(record).save.returns(true)
-    mock(Foo).new.returns(record)
-    post_it '/foos.yaml', "foo" => { "name" => "Frank" }.to_yaml
-    response.should be_ok
-  end
-
-  it "should create a record using regular url params" do
-    mock(record).attributes = { "name" => "Frank" }
-    mock(record).save.returns(true)
-    mock(Foo).new.returns(record)
-    post_it '/foos', "foo[name]" => "Frank"
-    response.should be_redirection
-  end
-
-  it "should return 406 when format unknown" do
-    post_it '/foos.silly', "foo" => FOO_XML
-    response.status.should == 406
+describe "handle create" do
+  attr_reader :maker, :app, :request, :article
+  
+  before(:each) do
+    mock_app {  }
+    @maker = new_maker(Article)
+    @request = fake_request("article[title]" => "The article")
+    stub(request).redirect(anything)
   end
   
-  describe "custom creation blocks" do
-    it "should create a record via json" do
-      mock(Sekret).sekret_create({ "name" => "Frank" }).returns(record)
-      post_it '/sekrets.json', "sekret" => { "name" => "Frank" }.to_json
-      response.should be_ok
+  def handle(*args)
+    maker.handle(:create, *args)
+  end
+  
+  it "instantiates a new record and saves it" do
+    mock.proxy(article = Article.new).save
+    mock.proxy(maker.model).new("article[title]" => "The article") { article }
+    handle(request)
+  end
+  
+  describe "responding" do
+    before(:each) do
+      @article = Article.new
+    end
+    
+    context "when the save is successful" do
+      before(:each) do
+        stub(Article).new(anything).returns(article)
+        stub(article).save { true }
+      end
+      
+      context "when there's no format" do
+        it "redirects to that record's path" do
+          mock(request).redirect("/articles/#{article.id}")
+          mock.proxy(maker.responder).success(:create, request, article)
+          handle(request)
+        end
+      end
+
+      context "when there is a format" do
+        it "serializes the record" do
+          request_with_format = fake_request(:format => "yaml")
+          mock.proxy(maker.responder).serialize(request_with_format, article)
+          handle(request_with_format)
+        end
+      end
     end
 
-    # it "should create a record via xml" do
-    #   mock(record).attributes = { "name" => "Frank" }
-    #   mock(record).to_xml.returns(:a_result)
-    #   mock(record).save.returns(true)
-    #   mock(Foo).new.returns(record)
-    #   post_it '/foos.xml', "foo" => FOO_XML
-    #   response.should be_ok
-    # end
-    # 
-    # it "should create a record via yaml" do
-    #   mock(record).attributes = { "name" => "Frank" }
-    #   mock(record).to_yaml.returns(:a_result)
-    #   mock(record).save.returns(true)
-    #   mock(Foo).new.returns(record)
-    #   post_it '/foos.yaml', "foo" => { "name" => "Frank" }.to_yaml
-    #   response.should be_ok
-    # end
-    # 
-    # it "should create a record using regular url params" do
-    #   mock(record).attributes = { "name" => "Frank" }
-    #   mock(record).save.returns(true)
-    #   mock(Foo).new.returns(record)
-    #   post_it '/foos', "foo[name]" => "Frank"
-    #   response.should be_redirection
-    # end
-    # 
-    # it "should return 406 when format unknown" do
-    #   post_it '/foos.silly', "foo" => FOO_XML
-    #   response.status.should == 406
-    # end
+    context "when the save is not successful" do
+      before(:each) do
+        stub(Article).new(anything).returns(article)
+        stub(article).save { false }
+      end
+      
+      context "when there's no format" do
+        it "renders edit template" do
+          mock(request).erb(:new, :views_directory => fixture('views/articles'))
+          mock.proxy(maker.responder).failure(:create, request, article)
+          handle(request)
+        end
+      end
+
+      # context "when there is a format" do
+      #   it "serializes the record" do
+      #     request_with_format = fake_request(:format => "yaml")
+      #     mock.proxy(maker.responder).serialize("yaml", article)
+      #     handle(request_with_format)
+      #   end
+      # end
+    end
   end
 end

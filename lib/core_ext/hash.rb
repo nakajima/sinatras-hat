@@ -10,7 +10,7 @@ class Hash
     new_params = Hash.new.make_indifferent!
     each_pair do |full_key, value| 
       this_param = new_params
-      split_keys = full_key.split(/\]\[|\]|\[/) 
+      split_keys = full_key.to_s.split(/\]\[|\]|\[/)
       split_keys.each_index do |index| 
         break if split_keys.length == index + 1 
         this_param[split_keys[index]] ||= Hash.new.make_indifferent!

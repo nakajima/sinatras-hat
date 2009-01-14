@@ -1,20 +1,51 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require 'spec/spec_helper'
 
-describe Sinatra::Hat::Actions, '#edit' do
-  attr_reader :response, :record
-
+describe "handle show" do
+  attr_reader :maker, :app, :request
+  
   before(:each) do
-    stub(record).name { "EDIT A FOO" }
-    stub(Foo).first(:id => '3').returns(record)
+    mock_app {  }
+    @maker = new_maker(Article)
+    @request = fake_request(:id => 2)
   end
   
-  it "should generate edit route" do
-    get_it '/foos/3/edit'
-    response.should be_ok
+  def handle(*args)
+    maker.handle(:edit, *args)
   end
   
-  it "renders edit template" do
-    get_it '/foos/3/edit'
-    response.body.should == "EDIT A FOO"
+  it "takes a request" do
+    handle(request)
+  end
+  
+  describe "rendering not_found" do
+    before(:each) do
+      stub(maker.model).find(request.params).returns(nil)
+      stub(request).not_found # because it throws :halt otherwise
+    end
+    
+    it "returns not_found" do
+      mock.proxy(maker.responder).not_found(request)
+      handle(request)
+    end
+  end
+  
+  describe "rendering a successful response" do
+    it "loads correct record" do
+      mock.proxy(maker.model).find(:id => 2) { :article }
+      handle(request)
+    end
+    
+    context "when there's no :format param" do
+      before(:each) do
+        params = { :id => 2 }
+        @request = fake_request(params)
+        stub(maker.model).find(params).returns(:article)
+      end
+      
+      it "renders the show template" do
+        mock.proxy(maker.responder).success(:edit, request, :article)
+        handle(request)
+      end
+    end
   end
 end

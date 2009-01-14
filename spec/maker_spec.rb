@@ -1,211 +1,218 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require 'spec/spec_helper'
 
-describe "sinatra's hat" do
-  attr_reader :hat, :app, :child, :maker, :model, :child_klass, :grand_child_klass
-  
-  before(:each) do
-    @app = Object.new
-    @model = Class.new
-    @grand_child_klass = Class.new
-    @child_klass = Class.new
-    stub(model).name { "Post" }
-    stub(child_klass).name { "Comment" }
-  end
-  
-  def new_maker(options={}, &block)
-    hat = Sinatra::Hat::Maker.new(model)
-    hat.define(app, options, &block)
-    hat
-  end
-  
-  it "can be instantiated" do
-    proc {
-      new_maker
-    }.should_not raise_error
-  end
-  
-  describe "#only" do
-    it "can be specified in options hash" do
-      new_maker(:only => [:create, :show]).only.should == [:create, :show]
-    end
-    
-    it "can be specified in block" do
-      new_maker { only :create, :show }.only.should == [:create, :show]
-    end
-    
-    it "always ensures :index is last for routing purposes" do
-      new_maker(:only => [:index, :show]).only.should == [:show, :index]
-      new_maker(:only => [:update, :index, :show]).only.should == [:update, :show, :index]
-    end
-    
-    it "always ensures :new is first for routing purposes" do
-      new_maker(:only => [:show, :new]).only.should == [:new, :show]
-      new_maker(:only => [:show, :index, :new]).only.should == [:new, :show, :index]
-    end
+describe Sinatra::Hat::Maker do
+  attr_reader :model, :maker, :request
 
-    it "always ensures :edit is first for routing purposes" do
-      new_maker(:only => [:show, :edit]).only.should == [:edit, :show]
-      new_maker(:only => [:show, :index, :edit]).only.should == [:edit, :show, :index]
+  describe "initializing" do
+    it "takes a klass" do
+      proc {
+        new_maker(Article)
+      }.should_not raise_error
+    end
+    
+    it "takes options" do
+      proc {
+        new_maker(Article, :only => :index)
+      }.should_not raise_error
+    end
+    
+    it "merges options hash with defaults" do
+      maker = new_maker(Article, :only => :index)
+      maker.options[:only].should == :index
     end
   end
   
-  describe "#authenticator" do
-    it "defaults to checking username and password" do
-      maker = new_maker do
-        credentials[:username] = :user
-        credentials[:password] = :pass
+  describe "setup" do
+    before(:each) do
+      stub.instance_of(Sinatra::Hat::Router).generate(:app)
+    end
+    
+    it "generates routes" do
+      mock.proxy(maker = new_maker).generate_routes(:app)
+      maker.setup(:app)
+    end
+    
+    it "stores reference to app" do
+      maker = new_maker
+      maker.setup(:app)
+      maker.app.should == :app
+    end
+  end
+  
+  it "has a klass" do
+    new_maker(Article).klass.should == Article
+  end
+  
+  describe "default options" do
+    before(:each) do
+      @maker = new_maker(Article)
+    end
+    
+    it "has a default options hash" do
+      maker.options.should_not be_nil
+    end
+    
+    describe ":formats" do
+      it "is an empty hash" do
+        maker.options[:formats].should == { }
       end
       
-      maker.authenticator.call(:user, :pass).should be_true
-      maker.authenticator.call(:wrong, :nogood).should be_false
+      it "is methodized" do
+        maker.formats.should === maker.options[:formats]
+      end
     end
     
-    it "can be overridden with custom authenticator" do
-      mock(checker = Object.new).call!(:user, :pass)
-      
-      maker = new_maker do
-        authenticator do |username, password|
-          checker.call!(username, password)
-        end
+    describe ":parent" do
+      it "is nil" do
+        maker.options[:parent].should be_nil
       end
       
-      maker.authenticator.call(:user, :pass)
+      it "is methodized" do
+        maker.parent.should === maker.options[:parent]
+      end
+    end
+    
+    describe ":finder" do
+      it "finds all for the model" do
+        mock.proxy(Article).all
+        maker.options[:finder][Article, { }]
+      end
+    end
+    
+    describe ":record" do
+      it "loads a single record" do
+        mock.proxy(Article).first(:id => 2)
+        maker.options[:record][Article, { :id => 2 }]
+      end
     end
   end
   
-  describe "#protected" do
+  describe "finder" do
+    context "when no block is provided" do
+      it "returns the finder option" do
+        maker = new_maker
+        maker.finder.should == maker.options[:finder]
+      end
+    end
+    
+    context "when a block is provided" do
+      it "sets the finder option" do
+        maker = new_maker
+        block = proc { |model, params| model.find_by_id(params[:id]) }
+        maker.finder(&block)
+        maker.options[:finder].should == block
+      end
+    end
+  end
+  
+  describe "record" do
+    context "when no block is provided" do
+      it "returns the record option" do
+        maker = new_maker
+        maker.record.should == maker.options[:record]
+      end
+    end
+    
+    context "when a block is provided" do
+      it "sets the record option" do
+        maker = new_maker
+        block = proc { |model, params| model.find_by_id(params[:id]) }
+        maker.record(&block)
+        maker.options[:record].should == block
+      end
+    end
+  end
+  
+  describe "prefix" do
+    context "when specified as an option" do
+      it "returns the option value" do
+        new_maker(Article, :prefix => "posts").prefix.should == "posts"
+      end
+    end
+    
+    context "when it's not specified as an option" do
+      it "returns the pluralized, downcased klass name" do
+        new_maker(Article).prefix.should == "articles"
+      end
+      
+      it "snakecases" do
+        stub(klass = Class.new).name { "AwesomePerson" }
+        new_maker(klass).prefix.should == 'awesome_people'
+      end
+    end
+  end
+  
+  describe "parents" do
     context "when there are none" do
-      it "should be empty" do
-        new_maker.protect.should be_empty
-      end
-    end
-    
-    context "when there are some" do
-      it "can be specified in options hash" do
-        new_maker(:protect => [:create, :show]).protect.should == [:create, :show]
-      end
-      
-      it "can be specified in block" do
-        new_maker { protect :create, :show }.protect.should == [:create, :show]
-      end
-    end
-  end
-  
-  describe "#mount" do
-    attr_reader :child_klass
-    
-    before(:each) do
-      @maker = new_maker
-    end
-    
-    it "returns a new instance of Maker" do
-      maker.mount(child_klass).should be_kind_of(Sinatra::Hat::Maker)
-    end
-    
-    it "should set self as the parent" do
-      maker.mount(child_klass).parent.should == maker
-    end
-  end
-  
-  describe "#parents" do
-    before(:each) do
-      @maker = new_maker
-    end
-    
-    context "when there are no parents" do
       it "is empty" do
-        maker.parents.should be_empty
+        new_maker.parents.should be_empty
       end
     end
     
-    context "when there is one parent" do
-      it "returns the one parent" do
-        maker.mount(child_klass).parents.should == [maker]
+    context "when there is one" do
+      it "includes the parent" do
+        parent = new_maker(Article)
+        child = new_maker(Comment, :parent => parent)
+        child.parents.should == [parent]
       end
     end
     
-    context "when there are many parents" do
-      it "returns all the parents" do
-        child = maker.mount(child_klass)
-        grand_child = child.mount(grand_child_klass)
-        grand_child.parents.should == [child, maker]
-      end
-    end
-    it "should set self as the parent" do
-      maker.mount(child_klass).parent.should == maker
-    end
-  end
-  
-  describe "#proxy" do
-    context "when there's no parent" do
-      it "returns the model" do
-        new_maker.proxy.should == model
-      end
-    end
-    
-    context "when there is a parent" do
-      before(:each) do
-        @maker = new_maker
-        @child = maker.mount(child_klass)
-      end
-      
-      context "with an association proxy" do
-        it "returns the association proxy" do
-          mock(model).first(:id => :foo) do
-            mock(comments_proxy = Object.new).comments { :comments_proxy }
-            comments_proxy
-          end
-
-          child.proxy(:post_id => :foo).should == :comments_proxy
-        end
-      end
-      
-      context "without an association proxy" do
-        it "returns the model" do
-          mock(model).first(:id => :foo) { Object.new }
-
-          child.proxy(:post_id => :foo).should == child_klass
-        end
+    context "when there are many" do
+      it "includes all ancestors" do
+        grand_parent = new_maker(Article)
+        parent = new_maker(Article, :parent => grand_parent)
+        child = new_maker(Comment, :parent => parent)
+        child.parents.should == [parent, grand_parent]
       end
     end
   end
   
-  describe "path helpers" do
-    describe "#prefix" do
-      it "returns the tableized model name" do
-        new_maker.prefix.should == "posts"
-      end
+  describe "#model" do
+    it "returns an instance of Sinatra::Hat::Model" do
+      maker = new_maker
+      mock.proxy(Sinatra::Hat::Model.new(maker))
+      maker.model
     end
-
-    describe "#resource_path" do
-      context "with no parent" do
-        it "returns normal resource path" do
-          new_maker.resource_path('/:id').should == "/posts/:id"
-        end
-        
-        it "can return :root path" do
-          new_maker.resource_path('/').should == "/posts"
-        end
+  end
+  
+  describe "#responder" do
+    it "returns an instance of Sinatra::Hat::Responder" do
+      maker = new_maker
+      mock.proxy(Sinatra::Hat::Responder.new(maker))
+      maker.responder
+    end
+  end
+  
+  describe "generating routes" do
+    it "generates routes for maker instance" do
+      maker = new_maker
+      router = Sinatra::Hat::Router.new(maker)
+      mock.proxy(Sinatra::Hat::Router).new(maker) { router }
+      mock(router).generate(:app)
+      maker.generate_routes(:app)
+    end
+  end
+  
+  describe "#after" do
+    before(:each) do
+      @maker = new_maker
+    end
+    
+    it "takes the name of an action" do
+      proc {
+        maker.after(:create) { }
+      }.should_not raise_error
+    end
+    
+    it "passes a new hash mutator to the block" do
+      maker.after(:create) { |arg| arg }.should be_kind_of(Sinatra::Hat::HashMutator)
+    end
+    
+    it "lets you alter the default options" do
+      maker.after(:create) do |on|
+        on.success { :new_default! }
       end
-      
-      context "with parents" do
-        it "returns nested resource path" do
-          child = new_maker.mount(child_klass)
-          child.resource_path('/:id').should == "/posts/:post_id/comments/:id"
-        end
-        
-        it "doesn't change parents" do # regression test
-          child = new_maker.mount(child_klass)
-          child.resource_path('/:id').should == "/posts/:post_id/comments/:id"
-          child.resource_path('/:id').should == "/posts/:post_id/comments/:id"
-        end
-      end
-      
-      describe "#model_id" do
-        it "returns parent param value" do
-          new_maker.model_id.should == :post_id
-        end
-      end
+      maker.responder.defaults[:create][:success][].should == :new_default!
     end
   end
 end

@@ -1,48 +1,40 @@
 ARGV.clear
 
-$LOAD_PATH << File.join(File.dirname(__FILE__), 'fixtures')
-$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..')
 
 require 'rubygems'
 require 'spec'
 require 'rr'
-require 'json'
-require 'sinatra'
+require 'sinatra/base'
+require 'sinatra/test'
 require 'sinatra/test/rspec'
-require 'app'
 
-unless defined?(FOO_XML)
-  FOO_XML = <<-XML
-  <?xml version="1.0" encoding="UTF-8"?>
-  <hash>
-    <name>Frank</name>
-  </hash>
-  XML
-  
-  COMMENT_XML = <<-XML
-  <?xml version="1.0" encoding="UTF-8"?>
-  <hash>
-    <name>Frank</name>
-    <post_id>3</post_id>
-  </hash>
-  XML
-end
+# What we're testing:
+require 'lib/sinatras-hat'
 
-def stub_record
-  @response = nil
-  @record = Object.new
-  stub(@record).id.returns(3)
-  stub(@record).name.returns("Frank")
-  stub(@record).to_json.returns(:a_result)
-  stub(@record).to_xml.returns(:a_result)
-  stub(Foo).first(:id => '3').returns(@record)
+# Fixture models/views:
+require 'spec/fixtures/lib/abstract'
+require 'spec/fixtures/lib/comment'
+require 'spec/fixtures/lib/article'
+
+def fixture(path)
+  File.join(File.dirname(__FILE__), 'fixtures', path)
 end
 
 Spec::Runner.configure do |config|
   config.mock_with :rr
-  config.before(:each) { stub_record }
+  config.include Sinatra::Test
 end
 
-def log(msg)
-  puts "<pre>" + msg + "</pre>"
+def new_maker(klass=Article, *args, &block)
+  Sinatra::Hat::Maker.new(klass, *args, &block)
 end
+
+def fake_request(options={})
+  app = Sinatra.new
+  app.set :views, fixture("views")
+  request = app.new
+  stub(request).params.returns(options)
+  request
+end
+

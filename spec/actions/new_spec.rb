@@ -1,31 +1,38 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require 'spec/spec_helper'
 
-describe Sinatra::Hat::Actions, '#new' do
-  attr_reader :response, :new_foo
-
+describe "handle index" do
+  attr_reader :maker, :app, :request
+  
   before(:each) do
-    @new_foo = Object.new
-    stub(new_foo).hello { "The new foo" }
-    stub(Foo).new.returns { new_foo }
+    mock_app {  }
+    @maker = new_maker(Article)
+    @request = fake_request
   end
-
-  it "should generate new action" do
-    get_it '/foos/new'
-    response.should be_ok
+  
+  def handle(*args)
+    maker.handle(:new, *args)
   end
-
-  it "assigns a new model object" do
-    mock(new_foo).hello
-    get_it '/foos/new'
+  
+  it "takes a request" do
+    maker.handle(:new, request)
   end
-
-  it "should render proper view template" do
-    get_it '/foos/new'
-    body.should == "The new foo"
+  
+  it "loads a new record" do
+    mock.proxy(maker.model).new(anything) { :article }
+    handle(request)
   end
-
-  it "should return 406 when format unknown" do
-    get_it '/foos/new.bars'
-    response.status.should == 406
+  
+  describe "rendering a response" do
+    context "when there's no :format param" do
+      before(:each) do
+        @request = fake_request
+        stub(maker.model).new(anything).returns(:article)
+      end
+      
+      it "renders the index template" do
+        mock.proxy(maker.responder).success(:new, request, :article)
+        handle(request)
+      end
+    end
   end
 end

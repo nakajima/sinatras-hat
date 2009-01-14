@@ -1,45 +1,86 @@
-require File.join(File.dirname(__FILE__), '..', 'spec_helper')
+require 'spec/spec_helper'
 
-describe Sinatra::Hat::Actions, '#update' do
-  attr_reader :response, :record
+describe "handle create" do
+  attr_reader :maker, :app, :request, :article
+  
+  before(:each) do
+    mock_app {  }
+    @maker = new_maker(Article)
+    @request = fake_request("article[title]" => "Hooray!")
+    stub(request).redirect(anything)
+  end
+  
+  def handle(*args)
+    maker.handle(:update, *args)
+  end
+  
+  describe "when the record doesn't exist" do
+    before(:each) do
+      stub(maker.model).find(anything) { nil }
+    end
+    
+    it "returns not_found" do
+      mock.proxy(maker.responder).not_found(request)
+      catch(:halt) { handle(request) }
+    end
+  end
+  
+  describe "attempting to update a record" do
+    before(:each) do
+      @article = Article.new
+    end
+    
+    it "finds a record and updates its attributes" do
+      mock.proxy(article).attributes = { "title" => "Hooray!" }
+      mock.proxy(article).save
+      mock.proxy(maker.model).find(anything) { article }
+      handle(request)
+    end
+    
+    context "when the save is successful" do
+      before(:each) do
+        stub(Article).first(anything).returns(article)
+        stub(article).save { true }
+      end
+      
+      context "when there's no format" do
+        it "redirects to that record's path" do
+          mock(request).redirect("/articles/#{article.id}")
+          mock.proxy(maker.responder).success(:update, request, article)
+          handle(request)
+        end
+      end
 
-  describe "update" do
-    it "should update a record via json" do
-      mock(record).attributes = { "name" => "Frank" }
-      mock(record).to_json.returns(:a_result)
-      mock(record).save.returns(true)
-      mock(Foo).first(:id => '3').returns(record)
-      put_it '/foos/3.json', "foo" => { "name" => "Frank" }.to_json
-      response.should be_ok
+      # context "when there is a format" do
+      #   it "serializes the record" do
+      #     request_with_format = fake_request(:format => "yaml")
+      #     mock.proxy(maker.responder).serialize("yaml", article)
+      #     handle(request_with_format)
+      #   end
+      # end
     end
-    
-    it "should update a record via xml" do
-      mock(record).attributes = { "name" => "Frank" }
-      mock(record).to_xml.returns(:a_result)
-      mock(record).save.returns(true)
-      mock(Foo).first(:id => '3').returns(record)
-      put_it '/foos/3.xml', "foo" => FOO_XML
-      response.should be_ok
-    end
-    
-    it "should update a record via yaml" do
-      mock(record).attributes = { "name" => "Frank" }
-      mock(record).to_yaml.returns(:a_result)
-      mock(record).save.returns(true)
-      put_it '/foos/3.yaml', "foo" => { "name" => "Frank" }.to_yaml
-      response.should be_ok
-    end
-    
-    it "should update a record using regular url params" do
-      mock(record).attributes = { "name" => "Frank" }
-      mock(record).save.returns(true)
-      put_it '/foos/3', "foo[name]" => "Frank"
-      response.should be_redirection
-    end
-    
-    it "should return 406 when format unknown" do
-      put_it '/foos/3.silly', "foo" => FOO_XML
-      response.status.should == 406
+
+    context "when the save is not successful" do
+      before(:each) do
+        stub(Article).first(anything).returns(article)
+        stub(article).save { false }
+      end
+      
+      context "when there's no format" do
+        it "renders edit template" do
+          mock(request).erb(:edit, :views_directory => fixture('views/articles'))
+          mock.proxy(maker.responder).failure(:update, request, article)
+          handle(request)
+        end
+      end
+
+      # context "when there is a format" do
+      #   it "serializes the record" do
+      #     request_with_format = fake_request(:format => "yaml")
+      #     mock.proxy(maker.responder).serialize("yaml", article)
+      #     handle(request_with_format)
+      #   end
+      # end
     end
   end
 end
