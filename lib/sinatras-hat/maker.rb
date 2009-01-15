@@ -80,6 +80,8 @@ module Sinatra
       end
       
       def protect(*actions)
+        credentials.merge!(actions.extract_options!)
+        
         if actions.empty?
           options[:protect] ||= Set.new([])
         else
