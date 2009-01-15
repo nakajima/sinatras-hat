@@ -23,6 +23,8 @@ module Sinatra
         end
       end
       
+      private
+      
       def map(method, action, path)
         path = resource_path(path)
         
