@@ -61,9 +61,9 @@ module Sinatra
       
       def only(*actions)
         if actions.empty?
-          options[:only]
+          @only ||= Set.new(options[:only])
         else
-          options[:only] = actions
+          Set.new(@only = options[:only] = actions)
         end
       end
       
@@ -81,7 +81,7 @@ module Sinatra
       
       def options
         @options ||= {
-          :only => [:index, :show, :new, :create, :edit, :update, :destroy],
+          :only => Set.new([:index, :show, :new, :create, :edit, :update, :destroy]),
           :parent => nil,
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.find_by_id(params[:id]) },
