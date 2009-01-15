@@ -29,11 +29,10 @@ module Sinatra
       
       def setup(app)
         @app = app
-        generate_routes(app)
       end
       
       def handle(action, request)
-        # puts ">> #{action.to_s.upcase}: #{request.params.inspect}"
+        logger.info ">> #{action.to_s.upcase}: #{request.params.inspect}"
         instance_exec(request, &self.class.actions[action])
       end
       
@@ -65,15 +64,15 @@ module Sinatra
         @parents ||= parent ? Array(parent) + parent.parents : []
       end
       
-      def resource_path(suffix, record=nil)
-        resource.path(suffix, record)
+      def resource_path(*args)
+        resource.path(*args)
       end
       
       def options
         @options ||= {
           :parent => nil,
           :finder => proc { |model, params| model.all },
-          :record => proc { |model, params| model.first(:id => params[:id]) },
+          :record => proc { |model, params| model.find_by_id(params[:id]) },
           :formats => { }
         }
       end
@@ -82,8 +81,8 @@ module Sinatra
         "maker: #{klass}"
       end
       
-      def generate_routes(app)
-        Router.new(self).generate(app)
+      def generate_routes!
+        Router.new(self).generate(@app)
       end
       
       def responder
@@ -92,6 +91,10 @@ module Sinatra
       
       def model
         @model ||= Model.new(self)
+      end
+      
+      def logger
+        @logger ||= Logger.new(self)
       end
       
       private

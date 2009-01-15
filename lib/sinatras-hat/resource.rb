@@ -11,10 +11,10 @@ module Sinatra
         path = resources.inject("") do |memo, maker|
           memo += @maker.eql?(maker) ?
             "/#{maker.prefix}" :
-            "/#{maker.prefix}/:#{maker.model.singular}_id"
+            "/#{maker.prefix}/#{record ? record.id : maker.model.foreign_key.inspect}"
         end
         
-        suffix.gsub!(/:id/, record.id.to_s) if record
+        suffix.gsub!('/:id', "/#{record.id}") if record
         
         clean(path + suffix)
       end

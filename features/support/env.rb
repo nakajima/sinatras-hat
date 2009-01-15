@@ -5,12 +5,6 @@ Sinatra::Test.tap do |mod|
   include mod
 end
 
-def mock_app(&block)
-  @app = super
-  @app.set :views, File.join(File.dirname(__FILE__), 'views')
-  @app
-end
-
 require 'spec/expectations'
 require 'acts_as_fu'
 
@@ -19,5 +13,14 @@ include ActsAsFu
 build_model(:people) do
   string :name
   
+  has_many :comments
+  
   validates_presence_of :name
+end
+
+build_model(:comments) do
+  integer :person_id
+  string :name
+  
+  belongs_to :person
 end

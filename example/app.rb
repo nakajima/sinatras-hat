@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/lib/common.rb'
 
 class MountedApp < Sinatra::Base
   set :app_file, __FILE__
+  set :logging, true
   
   get '/' do
     "You created a post, and this is a custom response."
@@ -10,10 +11,6 @@ class MountedApp < Sinatra::Base
   mount(Post) do
     # Mount children as a nested resource
     mount(Comment)
-
-    after :create do |on|
-      on.success { |post| redirect("/") }
-    end
   end
 end
 

@@ -3,7 +3,7 @@ module Sinatra
     # Tells Sinatra which routes to generate. The routes
     # created automatically when the actions are loaded.
     class Router
-      delegate :resource_path, :to => :maker
+      delegate :resource_path, :logger, :to => :maker
       
       attr_reader :maker, :app
       
@@ -31,6 +31,8 @@ module Sinatra
         handler = lambda do |request|
           maker.handle(action, request)
         end
+        
+        logger.info "ROUTE: #{action.to_s.upcase}\t[#{method.to_s.upcase} #{path}]"
         
         app.send(method, path) { handler[self] }
         app.send(method, "#{path}.:format") { handler[self] }

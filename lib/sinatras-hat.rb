@@ -9,6 +9,7 @@ require 'core_ext/hash'
 require 'core_ext/object'
 require 'core_ext/module'
 
+require 'sinatras-hat/logger'
 require 'sinatras-hat/extendor'
 require 'sinatras-hat/hash_mutator'
 require 'sinatras-hat/resource'
