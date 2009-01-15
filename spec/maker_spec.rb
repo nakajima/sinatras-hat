@@ -47,6 +47,21 @@ describe Sinatra::Hat::Maker do
       maker.options.should_not be_nil
     end
     
+    describe ":only" do
+      it "returns all actions" do
+        maker.options[:only].should include(:index, :show, :new, :create, :edit, :update, :destroy)
+      end
+      
+      it "is methodized" do
+        maker.only.should == maker.options[:only]
+      end
+      
+      it "has methodized setter" do
+        maker.only :index, :show
+        maker.only.should == [:index, :show]
+      end
+    end
+    
     describe ":formats" do
       it "is an empty hash" do
         maker.options[:formats].should == { }

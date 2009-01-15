@@ -23,6 +23,24 @@ describe Sinatra::Hat::Router do
     it "takes a Sinatra app" do
       router.generate(app)
     end
+    
+    describe "abiding by the maker's :only option" do
+      before(:each) do
+        maker.only :index, :show
+        router.generate(app)
+      end
+      
+      it "should only have the limited options" do
+        mock(app).put(anything).never
+        mock(app).delete(anything).never
+        post '/articles'
+        response.status.should == 404
+        put "/articles/#{@article.to_param}"
+        response.status.should == 404
+        delete "/articles/#{@article.to_param}"
+        response.status.should == 404
+      end
+    end
 
     describe "generating index route" do
       it "uses the maker's resource path" do

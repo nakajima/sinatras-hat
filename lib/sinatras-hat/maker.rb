@@ -32,7 +32,10 @@ module Sinatra
       end
       
       def handle(action, request)
-        logger.info ">> #{action.to_s.upcase}: #{request.params.inspect}"
+        logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['REQUEST_METHOD']}"
+        logger.info "   action: #{action.to_s.upcase}"
+        logger.info "   params: #{request.params.inspect}"
+        request.error(404) unless only.include?(action)
         instance_exec(request, &self.class.actions[action])
       end
       
@@ -56,6 +59,14 @@ module Sinatra
         end
       end
       
+      def only(*actions)
+        if actions.empty?
+          options[:only]
+        else
+          options[:only] = actions
+        end
+      end
+      
       def prefix
         @prefix ||= options[:prefix] || model.plural
       end
@@ -70,6 +81,7 @@ module Sinatra
       
       def options
         @options ||= {
+          :only => [:index, :show, :new, :create, :edit, :update, :destroy],
           :parent => nil,
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.find_by_id(params[:id]) },

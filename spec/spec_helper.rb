@@ -51,6 +51,7 @@ def fake_request(options={})
   app = Sinatra.new
   app.set :views, fixture("views")
   request = app.new
+  stub(request).env.returns({ })
   stub(request).params.returns(options)
   request
 end
