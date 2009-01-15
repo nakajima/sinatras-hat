@@ -13,6 +13,10 @@ When /^Make a GET request to the index with a known format$/ do
   get '/people.xml'
 end
 
+When /^Make a GET request to the index using the '(\w+)' format$/ do |format|
+  get "/people.#{format}"
+end
+
 When /^I make a GET request to the index with an unknown format$/ do
   get '/people.say_wha'
 end

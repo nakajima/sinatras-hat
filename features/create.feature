@@ -14,9 +14,3 @@ Story: Generating a "create" action
     When I make a POST request with invalid form params
     Then a record is not created
     And the new.erb template is rendered
-
-  Scenario: POSTing serialized attributes for a valid format
-    Given a mounted model
-    When I make a POST request with valid serialized attributes for a valid format
-    Then a record is created
-    And the body is the serialized record

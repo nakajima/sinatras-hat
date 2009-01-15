@@ -41,6 +41,57 @@ describe Sinatra::Hat::Maker do
     new_maker(Article).klass.should == Article
   end
   
+  describe "handling actions" do
+    before(:each) do
+      @request = fake_request
+      @maker = new_maker
+      stub(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request| [self, passed_request] }
+    end
+    
+    it "takes an action and instance_exec's its event handler" do
+      mock(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request| [self, passed_request] }
+      maker.handle(:index, request).should == [maker, request]
+    end
+    
+    context "when the action is protected" do
+      before(:each) do
+        maker.protect :index
+      end
+      
+      context "when the user is not authenticated" do
+        it "protects the action" do
+          proc {
+            maker.handle(:index, request)
+          }.should throw_symbol(:halt)
+        end
+      end
+      
+      context "when the user is authenticated" do
+        before(:each) do
+          request.env['REMOTE_USER'] = 'hello'
+        end
+        
+        it "allows the request" do
+          proc {
+            maker.handle(:index, request)
+          }.should_not throw_symbol(:halt)
+        end
+      end
+    end
+    
+    context "when the action is not part of the :only list" do
+      before(:each) do
+        maker.only :show
+      end
+      
+      it "returns 404" do
+        mock.proxy(request).error(404)
+        catch(:halt) { maker.handle(:index, request) }
+      end
+    end
+
+  end
+  
   describe "default options" do
     before(:each) do
       @maker = new_maker(Article)
@@ -85,7 +136,29 @@ describe Sinatra::Hat::Maker do
       end
     end
     
+    describe ":protect" do
+      it "is empty by default" do
+        maker.options[:protect].should be_empty
+      end
+      
+      it "is methodized" do
+        maker.protect.should === maker.options[:protect]
+      end
+      
+      it "has methodized setter" do
+        maker.protect :index, :show
+        maker.protect.should == [:index, :show]
+      end
+    end
+    
     describe ":finder" do
+      it "finds all for the model" do
+        mock(Article).all
+        maker.options[:finder][Article, { }]
+      end
+    end
+    
+    describe ":authenticator" do
       it "finds all for the model" do
         mock(Article).all
         maker.options[:finder][Article, { }]

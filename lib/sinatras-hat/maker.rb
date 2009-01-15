@@ -3,6 +3,7 @@ module Sinatra
     # This is where it all comes together
     class Maker
       include Sinatra::Hat::Extendor
+      include Sinatra::Authorization::Helpers
       
       attr_reader :klass, :app
       
@@ -33,9 +34,12 @@ module Sinatra
       
       def handle(action, request)
         request.error(404) unless only.include?(action)
+        protect!(request) if protect.include?(action)
+        
         logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
         logger.info "   action: #{action.to_s.upcase}"
         logger.info "   params: #{request.params.inspect}"
+        
         instance_exec(request, &self.class.actions[action][:fn])
       end
       
@@ -59,11 +63,27 @@ module Sinatra
         end
       end
       
+      def authenticator(&block)
+        if block_given?
+          options[:authenticator] = block
+        else
+          options[:authenticator]
+        end
+      end
+      
       def only(*actions)
         if actions.empty?
-          @only ||= Set.new(options[:only])
+          options[:only] ||= Set.new(options[:only])
         else
-          Set.new(@only = options[:only] = actions)
+          Set.new(options[:only] = actions)
+        end
+      end
+      
+      def protect(*actions)
+        if actions.empty?
+          options[:protect] ||= Set.new([])
+        else
+          Set.new(options[:protect] = actions)
         end
       end
       
@@ -85,7 +105,10 @@ module Sinatra
           :parent => nil,
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.find_by_id(params[:id]) },
-          :formats => { }
+          :protect => [ ],
+          :formats => { },
+          :credentials => { :username => 'username', :password => 'password' },
+          :authenticator => proc { |username, password| [username, password] == [:username, :password].map(&credentials.method(:[])) }
         }
       end
       

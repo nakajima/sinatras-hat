@@ -11,6 +11,7 @@ require 'core_ext/module'
 
 require 'sinatras-hat/logger'
 require 'sinatras-hat/extendor'
+require 'sinatras-hat/authentication'
 require 'sinatras-hat/hash_mutator'
 require 'sinatras-hat/resource'
 require 'sinatras-hat/response'

@@ -5,6 +5,8 @@ def mount!
     
     mount Person do
       mount Comment
+      
+      formats[:ruby] = proc { |data| data.inspect }
     end
   end
 end

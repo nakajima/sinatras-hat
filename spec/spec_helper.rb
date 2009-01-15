@@ -55,6 +55,7 @@ def fake_request(options={})
   request = app.new
   stub(request).env.returns({ })
   stub(request).params.returns(options)
+  stub(request).response.returns(Sinatra::Response.new)
   request
 end
 
