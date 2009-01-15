@@ -63,8 +63,7 @@ module Sinatra
       end
       
       def parent_params(params)
-        _params = params.dup
-        _params.symbolize_keys!
+        _params = params.dup.to_mash
         _params.merge! :id => _params.delete(foreign_key)
         _params
       end

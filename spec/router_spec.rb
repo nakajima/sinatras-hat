@@ -1,6 +1,10 @@
 require 'spec/spec_helper'
 
 describe Sinatra::Hat::Router do
+  before(:each) do
+    build_models!
+  end
+  
   describe "initialization" do
     it "takes an instance of Maker" do
       proc {

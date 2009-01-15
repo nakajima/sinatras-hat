@@ -8,6 +8,7 @@ describe Sinatra::Hat::Responder do
   end
   
   before(:each) do
+    build_models!
     @maker = new_maker
   end
   

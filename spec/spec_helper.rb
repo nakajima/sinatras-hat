@@ -25,7 +25,7 @@ Spec::Runner.configure do |config|
   config.include ActsAsFu
 end
 
-Spec::Runner.configuration.before(:each) do
+def build_models!
   build_model(:articles) do
     string :name
     string :description
@@ -41,6 +41,8 @@ Spec::Runner.configuration.before(:each) do
   end
   
   @article = Article.create! :name => "An article"
+  @non_child = @article.comments.create! :name => "Non child!"
+  @comment = @article.comments.create! :name => "The child comment"
 end
 
 def new_maker(klass=Article, *args, &block)

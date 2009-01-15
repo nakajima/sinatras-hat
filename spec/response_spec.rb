@@ -1,5 +1,7 @@
 require 'spec/spec_helper'
 
+class Article; end
+
 describe Sinatra::Hat::Response do
   attr_reader :maker, :response, :request
   

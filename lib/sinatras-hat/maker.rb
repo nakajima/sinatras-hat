@@ -32,7 +32,7 @@ module Sinatra
       end
       
       def handle(action, request)
-        logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['REQUEST_METHOD']}"
+        logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
         logger.info "   action: #{action.to_s.upcase}"
         logger.info "   params: #{request.params.inspect}"
         request.error(404) unless only.include?(action)
@@ -105,6 +105,7 @@ module Sinatra
         @model ||= Model.new(self)
       end
       
+      # TODO Hook this into Rack::CommonLogger
       def logger
         @logger ||= Logger.new(self)
       end

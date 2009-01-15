@@ -9,9 +9,7 @@ module Sinatra
       
       def path(suffix, record=nil)
         path = resources.inject("") do |memo, maker|
-          memo += @maker.eql?(maker) ?
-            "/#{maker.prefix}" :
-            "/#{maker.prefix}/#{record ? record.id : maker.model.foreign_key.inspect}"
+          memo += fragment(record, maker)
         end
         
         suffix.gsub!('/:id', "/#{record.id}") if record
@@ -20,6 +18,18 @@ module Sinatra
       end
       
       private
+      
+      def fragment(record, maker)
+        @maker.eql?(maker) ?
+          "/#{maker.prefix}" :
+          "/#{maker.prefix}/" + interpolate(maker, record)
+      end
+      
+      def interpolate(maker, record)
+        foreign_key = maker.model.foreign_key
+        result = record ? record.send(foreign_key) : foreign_key
+        result.inspect
+      end
       
       def clean(s)
         s.downcase!

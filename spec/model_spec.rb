@@ -3,6 +3,10 @@ require 'spec/spec_helper'
 describe Sinatra::Hat::Model do
   attr_reader :model, :maker, :fake_request
   
+  before(:each) do
+    build_models!
+  end
+  
   def new_model(maker=new_maker)
     Sinatra::Hat::Model.new(maker)
   end

@@ -1,6 +1,10 @@
 require 'spec/spec_helper'
 
 describe Sinatra::Hat::Resource do
+  before(:each) do
+    build_models!
+  end
+  
   describe "initialization" do
     it "takes an instance of Maker" do
       proc {
@@ -23,6 +27,10 @@ describe Sinatra::Hat::Resource do
       it "can return :root path" do
         @resource.path('/:id').should == "/articles/:id"
       end
+      
+      it "can return path for model object" do
+        @resource.path('/:id', @article).should == "/articles/#{@article.to_param}"
+      end
     end
     
     context "when maker has parents" do
@@ -38,6 +46,10 @@ describe Sinatra::Hat::Resource do
       it "doesn't mutate parents" do # regression test
         @resource.path('/:id').should == "/articles/:article_id/comments/:id"
         @resource.path('/:id').should == "/articles/:article_id/comments/:id"
+      end
+      
+      it "can return path for model object" do
+        @resource.path('/:id', @comment).should == "/articles/#{@article.to_param}/comments/#{@comment.to_param}"
       end
     end
   end

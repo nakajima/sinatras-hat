@@ -4,6 +4,7 @@ describe "handle create" do
   attr_reader :maker, :app, :request, :article
   
   before(:each) do
+    build_models!
     mock_app {  }
     @maker = new_maker(Article)
     @request = fake_request("article[name]" => "Hooray!")

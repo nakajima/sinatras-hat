@@ -4,6 +4,7 @@ describe "handle show" do
   attr_reader :maker, :app, :request
   
   before(:each) do
+    build_models!
     mock_app {  }
     @maker = new_maker(Article)
     @request = fake_request(:id => @article.to_param)

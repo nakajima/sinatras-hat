@@ -1,5 +1,8 @@
 require 'spec/spec_helper'
 
+class Article; end
+class Comment; end
+
 describe Sinatra::Hat::Maker do
   attr_reader :model, :maker, :request
 
@@ -84,15 +87,15 @@ describe Sinatra::Hat::Maker do
     
     describe ":finder" do
       it "finds all for the model" do
-        mock.proxy(Article).all
+        mock(Article).all
         maker.options[:finder][Article, { }]
       end
     end
     
     describe ":record" do
       it "loads a single record" do
-        mock.proxy(Article).find_by_id(@article.to_param)
-        maker.options[:record][Article, { :id => @article.to_param }]
+        mock(Article).find_by_id(2)
+        maker.options[:record][Article, { :id => 2 }]
       end
     end
   end
