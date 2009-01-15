@@ -11,11 +11,18 @@ module Sinatra
       end
       
       def all(params)
-        options[:finder].call(klass, params)
+        params.make_indifferent!
+        options[:finder].call(proxy(params), params)
       end
       
       def find(params)
-        options[:record].call(klass, params)
+        params.make_indifferent!
+        options[:record].call(proxy(params), params)
+      end
+      
+      def find_owner(params)
+        params = parent_params(params)
+        options[:record].call(proxy(params), params)
       end
       
       def update(params)
@@ -39,16 +46,26 @@ module Sinatra
         klass.name.snake_case.singular
       end
       
+      def foreign_key
+        "#{singular}_id".to_sym
+      end
+      
       private
       
       def proxy(params)
         return klass unless parent
-        owner = parent.find(params)
+        owner = parent.find_owner(params)
         if owner and owner.respond_to?(plural)
           owner.send(plural)
         else
           klass
         end
+      end
+      
+      def parent_params(params)
+        _params = params.dup.to_mash
+        _params.merge! :id => _params.delete(foreign_key)
+        _params
       end
       
       def parent

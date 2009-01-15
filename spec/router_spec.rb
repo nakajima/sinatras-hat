@@ -1,6 +1,10 @@
 require 'spec/spec_helper'
 
 describe Sinatra::Hat::Router do
+  before(:each) do
+    build_models!
+  end
+  
   describe "initialization" do
     it "takes an instance of Maker" do
       proc {
@@ -22,6 +26,24 @@ describe Sinatra::Hat::Router do
     
     it "takes a Sinatra app" do
       router.generate(app)
+    end
+    
+    describe "abiding by the maker's :only option" do
+      before(:each) do
+        maker.only :index, :show
+        router.generate(app)
+      end
+      
+      it "should only have the limited options" do
+        mock(app).put(anything).never
+        mock(app).delete(anything).never
+        post '/articles'
+        response.status.should == 404
+        put "/articles/#{@article.to_param}"
+        response.status.should == 404
+        delete "/articles/#{@article.to_param}"
+        response.status.should == 404
+      end
     end
 
     describe "generating index route" do
@@ -90,7 +112,7 @@ describe Sinatra::Hat::Router do
       it "calls the block, passing the request" do
         router.generate(app)
         mock.proxy(maker).handle(:destroy, anything) { "" }
-        delete '/articles/2'
+        delete "/articles/#{@article.to_param}"
       end
     end
     
@@ -104,7 +126,7 @@ describe Sinatra::Hat::Router do
       it "calls the block, passing the request" do
         router.generate(app)
         mock.proxy(maker).handle(:edit, anything) { "" }
-        get '/articles/2/edit'
+        get "/articles/#{@article.to_param}/edit"
       end
     end
     
@@ -118,7 +140,7 @@ describe Sinatra::Hat::Router do
       it "calls the block, passing the request" do
         router.generate(app)
         mock.proxy(maker).handle(:update, anything) { "" }
-        put '/articles/2'
+        put "/articles/#{@article.to_param}"
       end
     end
   end

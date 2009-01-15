@@ -8,18 +8,30 @@ module Sinatra
       end
       
       def path(suffix, record=nil)
+        suffix = suffix.dup
+        
         path = resources.inject("") do |memo, maker|
-          memo += @maker.eql?(maker) ?
-            "/#{maker.prefix}" :
-            "/#{maker.prefix}/:#{maker.model.singular}_id"
+          memo += fragment(record, maker)
         end
         
-        suffix.gsub!(/:id/, record.id.to_s) if record
+        suffix.gsub!('/:id', "/#{record.id}") if record
         
         clean(path + suffix)
       end
       
       private
+      
+      def fragment(record, maker)
+        @maker.eql?(maker) ?
+          "/#{maker.prefix}" :
+          "/#{maker.prefix}/" + interpolate(maker, record)
+      end
+      
+      def interpolate(maker, record)
+        foreign_key = maker.model.foreign_key
+        result = record ? record.send(foreign_key) : foreign_key
+        result.inspect
+      end
       
       def clean(s)
         s.downcase!

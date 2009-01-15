@@ -1,5 +1,7 @@
 require 'spec/spec_helper'
 
+class Article; end
+
 describe Sinatra::Hat::Response do
   attr_reader :maker, :response, :request
   
@@ -48,9 +50,48 @@ describe Sinatra::Hat::Response do
   end
   
   describe "redirect()" do
-    it "redirects to the given path" do
-      mock(request).redirect("/articles")
-      new_response.redirect("/articles")
+    context "when passed a path" do
+      it "redirects to the given path" do
+        mock(request).redirect("/articles")
+        new_response.redirect("/articles")
+      end
+    end
+    
+    context "when passed some data" do
+      before(:each) do
+        stub(@article = Article.new).id { 2 }
+      end
+      
+      it "redirects to the resource path for that data" do
+        mock(request).redirect("/articles/2")
+        new_response.redirect(@article)
+      end
+    end
+    
+    context "when passed a symbol" do
+      before(:each) do
+        stub(@article = Article.new).id { 2 }
+      end
+      
+      it "can redirect to the :index path" do
+        mock(request).redirect("/articles")
+        new_response.redirect(:index)
+      end
+      
+      it "can redirect to the :show path" do
+        mock(request).redirect("/articles/2")
+        new_response.redirect(:show, @article)
+      end
+      
+      it "can redirect to the :new path" do
+        mock(request).redirect("/articles/new")
+        new_response.redirect(:new)
+      end
+      
+      it "can redirect to the :edit path" do
+        mock(request).redirect("/articles/2/edit")
+        new_response.redirect(:edit, @article)
+      end
     end
   end
 end

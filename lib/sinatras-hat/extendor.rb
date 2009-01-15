@@ -12,6 +12,7 @@ module Sinatra
           maker.parent = self if kind_of?(Sinatra::Hat::Maker)
           maker.setup(@app || self)
           maker.instance_eval(&block) if block_given?
+          maker.generate_routes!
         end
       end
     end

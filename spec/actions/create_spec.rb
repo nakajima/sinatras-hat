@@ -4,9 +4,10 @@ describe "handle create" do
   attr_reader :maker, :app, :request, :article
   
   before(:each) do
+    build_models!
     mock_app {  }
     @maker = new_maker(Article)
-    @request = fake_request("article[title]" => "The article")
+    @request = fake_request("article[name]" => "The article")
     stub(request).redirect(anything)
   end
   
@@ -16,25 +17,26 @@ describe "handle create" do
   
   it "instantiates a new record and saves it" do
     mock.proxy(article = Article.new).save
-    mock.proxy(maker.model).new("article[title]" => "The article") { article }
+    mock.proxy(maker.model).new("article[name]" => "The article") { article }
     handle(request)
   end
   
   describe "responding" do
+    attr_reader :new_article
+    
     before(:each) do
-      @article = Article.new
+      @new_article = Article.new
     end
     
     context "when the save is successful" do
       before(:each) do
-        stub(Article).new(anything).returns(article)
-        stub(article).save { true }
+        stub(Article).new(anything).returns(new_article)
       end
       
       context "when there's no format" do
         it "redirects to that record's path" do
-          mock(request).redirect("/articles/#{article.id}")
-          mock.proxy(maker.responder).success(:create, request, article)
+          mock(request).redirect("/articles/2")
+          mock.proxy(maker.responder).success(:create, request, new_article)
           handle(request)
         end
       end
@@ -42,7 +44,7 @@ describe "handle create" do
       context "when there is a format" do
         it "serializes the record" do
           request_with_format = fake_request(:format => "yaml")
-          mock.proxy(maker.responder).serialize(request_with_format, article)
+          mock.proxy(maker.responder).serialize(request_with_format, new_article)
           handle(request_with_format)
         end
       end
@@ -50,14 +52,14 @@ describe "handle create" do
 
     context "when the save is not successful" do
       before(:each) do
-        stub(Article).new(anything).returns(article)
-        stub(article).save { false }
+        stub(Article).new(anything).returns(new_article)
+        stub(new_article).save { false }
       end
       
       context "when there's no format" do
         it "renders edit template" do
           mock(request).erb(:new, :views_directory => fixture('views/articles'))
-          mock.proxy(maker.responder).failure(:create, request, article)
+          mock.proxy(maker.responder).failure(:create, request, new_article)
           handle(request)
         end
       end

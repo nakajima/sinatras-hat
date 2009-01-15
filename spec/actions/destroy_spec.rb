@@ -4,11 +4,11 @@ describe "handle destroy" do
   attr_reader :maker, :app, :request, :article
   
   before(:each) do
+    build_models!
     mock_app {  }
     @maker = new_maker(Article)
-    @request = fake_request(:id => 2)
-    @article = Article.new
-    stub(maker.model).find(:id => 2) { article }
+    @request = fake_request(:id => @article.to_param)
+    stub(maker.model).find(:id => @article.to_param) { @article }
     stub(request).redirect(anything)
   end
   
@@ -22,7 +22,7 @@ describe "handle destroy" do
   
   context "when the record exists" do
     it "loads correct record" do
-      mock.proxy(maker.model).find(:id => 2) { article }
+      mock.proxy(maker.model).find(:id => @article.to_param) { article }
       handle(request)
     end
 
@@ -33,7 +33,7 @@ describe "handle destroy" do
 
     describe "rendering a response" do
       before(:each) do
-        params = { :id => 2 }
+        params = { :id => @article.to_param }
         @request = fake_request(params)
         stub(maker.model).find(params).returns(article)
       end
@@ -47,7 +47,7 @@ describe "handle destroy" do
   
   context "when the record does not exist" do
     before(:each) do
-      stub(maker.model).find(:id => 2) { nil }
+      stub(maker.model).find(:id => @article.to_param) { nil }
     end
     
     it "returns not_found" do

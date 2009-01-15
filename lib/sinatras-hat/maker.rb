@@ -3,6 +3,7 @@ module Sinatra
     # This is where it all comes together
     class Maker
       include Sinatra::Hat::Extendor
+      include Sinatra::Authorization::Helpers
       
       attr_reader :klass, :app
       
@@ -14,7 +15,7 @@ module Sinatra
       def self.action(name, path, options={}, &block)
         verb = options[:verb] || :get
         Router.cache << [verb, name, path]
-        actions[name] = block
+        actions[name] = { :path => path, :verb => verb, :fn => block }
       end
 
       include Sinatra::Hat::Actions
@@ -29,12 +30,17 @@ module Sinatra
       
       def setup(app)
         @app = app
-        generate_routes(app)
       end
       
       def handle(action, request)
-        # puts ">> #{action.to_s.upcase}: #{request.params.inspect}"
-        instance_exec(request, &self.class.actions[action])
+        request.error(404) unless only.include?(action)
+        protect!(request) if protect.include?(action)
+        
+        logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
+        logger.info "   action: #{action.to_s.upcase}"
+        logger.info "   params: #{request.params.inspect}"
+        
+        instance_exec(request, &self.class.actions[action][:fn])
       end
       
       def after(action)
@@ -57,6 +63,32 @@ module Sinatra
         end
       end
       
+      def authenticator(&block)
+        if block_given?
+          options[:authenticator] = block
+        else
+          options[:authenticator]
+        end
+      end
+      
+      def only(*actions)
+        if actions.empty?
+          options[:only] ||= Set.new(options[:only])
+        else
+          Set.new(options[:only] = actions)
+        end
+      end
+      
+      def protect(*actions)
+        credentials.merge!(actions.extract_options!)
+        
+        if actions.empty?
+          options[:protect] ||= Set.new([])
+        else
+          Set.new(options[:protect] = actions)
+        end
+      end
+      
       def prefix
         @prefix ||= options[:prefix] || model.plural
       end
@@ -65,16 +97,20 @@ module Sinatra
         @parents ||= parent ? Array(parent) + parent.parents : []
       end
       
-      def resource_path(suffix, record=nil)
-        resource.path(suffix, record)
+      def resource_path(*args)
+        resource.path(*args)
       end
       
       def options
         @options ||= {
+          :only => Set.new([:index, :show, :new, :create, :edit, :update, :destroy]),
           :parent => nil,
           :finder => proc { |model, params| model.all },
-          :record => proc { |model, params| model.first(:id => params[:id]) },
-          :formats => { }
+          :record => proc { |model, params| model.find_by_id(params[:id]) },
+          :protect => [ ],
+          :formats => { },
+          :credentials => { :username => 'username', :password => 'password' },
+          :authenticator => proc { |username, password| [username, password] == [:username, :password].map(&credentials.method(:[])) }
         }
       end
       
@@ -82,8 +118,8 @@ module Sinatra
         "maker: #{klass}"
       end
       
-      def generate_routes(app)
-        Router.new(self).generate(app)
+      def generate_routes!
+        Router.new(self).generate(@app)
       end
       
       def responder
@@ -92,6 +128,11 @@ module Sinatra
       
       def model
         @model ||= Model.new(self)
+      end
+      
+      # TODO Hook this into Rack::CommonLogger
+      def logger
+        @logger ||= Logger.new(self)
       end
       
       private

@@ -1,5 +1,8 @@
 require 'spec/spec_helper'
 
+class Article; end
+class Comment; end
+
 describe Sinatra::Hat::Maker do
   attr_reader :model, :maker, :request
 
@@ -27,11 +30,6 @@ describe Sinatra::Hat::Maker do
       stub.instance_of(Sinatra::Hat::Router).generate(:app)
     end
     
-    it "generates routes" do
-      mock.proxy(maker = new_maker).generate_routes(:app)
-      maker.setup(:app)
-    end
-    
     it "stores reference to app" do
       maker = new_maker
       maker.setup(:app)
@@ -43,6 +41,57 @@ describe Sinatra::Hat::Maker do
     new_maker(Article).klass.should == Article
   end
   
+  describe "handling actions" do
+    before(:each) do
+      @request = fake_request
+      @maker = new_maker
+      stub(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request| [self, passed_request] }
+    end
+    
+    it "takes an action and instance_exec's its event handler" do
+      mock(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request| [self, passed_request] }
+      maker.handle(:index, request).should == [maker, request]
+    end
+    
+    context "when the action is protected" do
+      before(:each) do
+        maker.protect :index
+      end
+      
+      context "when the user is not authenticated" do
+        it "protects the action" do
+          proc {
+            maker.handle(:index, request)
+          }.should throw_symbol(:halt)
+        end
+      end
+      
+      context "when the user is authenticated" do
+        before(:each) do
+          request.env['REMOTE_USER'] = 'hello'
+        end
+        
+        it "allows the request" do
+          proc {
+            maker.handle(:index, request)
+          }.should_not throw_symbol(:halt)
+        end
+      end
+    end
+    
+    context "when the action is not part of the :only list" do
+      before(:each) do
+        maker.only :show
+      end
+      
+      it "returns 404" do
+        mock.proxy(request).error(404)
+        catch(:halt) { maker.handle(:index, request) }
+      end
+    end
+
+  end
+  
   describe "default options" do
     before(:each) do
       @maker = new_maker(Article)
@@ -50,6 +99,21 @@ describe Sinatra::Hat::Maker do
     
     it "has a default options hash" do
       maker.options.should_not be_nil
+    end
+    
+    describe ":only" do
+      it "returns all actions" do
+        maker.options[:only].should include(:index, :show, :new, :create, :edit, :update, :destroy)
+      end
+      
+      it "is methodized" do
+        maker.only.should == maker.options[:only]
+      end
+      
+      it "has methodized setter" do
+        maker.only :index, :show
+        maker.only.should == [:index, :show]
+      end
     end
     
     describe ":formats" do
@@ -72,16 +136,38 @@ describe Sinatra::Hat::Maker do
       end
     end
     
+    describe ":protect" do
+      it "is empty by default" do
+        maker.options[:protect].should be_empty
+      end
+      
+      it "is methodized" do
+        maker.protect.should === maker.options[:protect]
+      end
+      
+      it "has methodized setter" do
+        maker.protect :index, :show
+        maker.protect.should == [:index, :show]
+      end
+    end
+    
     describe ":finder" do
       it "finds all for the model" do
-        mock.proxy(Article).all
+        mock(Article).all
+        maker.options[:finder][Article, { }]
+      end
+    end
+    
+    describe ":authenticator" do
+      it "finds all for the model" do
+        mock(Article).all
         maker.options[:finder][Article, { }]
       end
     end
     
     describe ":record" do
       it "loads a single record" do
-        mock.proxy(Article).first(:id => 2)
+        mock(Article).find_by_id(2)
         maker.options[:record][Article, { :id => 2 }]
       end
     end
@@ -188,8 +274,8 @@ describe Sinatra::Hat::Maker do
       maker = new_maker
       router = Sinatra::Hat::Router.new(maker)
       mock.proxy(Sinatra::Hat::Router).new(maker) { router }
-      mock(router).generate(:app)
-      maker.generate_routes(:app)
+      mock(router).generate(maker.app)
+      maker.generate_routes!
     end
   end
   

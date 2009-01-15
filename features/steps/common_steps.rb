@@ -1,18 +1,28 @@
 def mount!
   mock_app do
+    set :views, File.join(File.dirname(__FILE__), '..', 'support', 'views')
+    # set :logging, true
+    
     mount Person do
-      finder { |model, params| model.all }
-      record { |model, params| model.find_by_id(params[:id]) }
+      mount Comment
+      
+      formats[:ruby] = proc { |data| data.inspect }
     end
   end
 end
 
 Before do
   Person.delete_all
+  Comment.delete_all
 end
 
 Given /^a model that has a record$/ do
   @record = Person.create! :name => "Pat"
+end
+
+Given /^the record has children$/ do
+  @not_a_child = Comment.create! :name => "I should never show up!"
+  @child_record = @record.comments.create! :name => "Commented!"
 end
 
 Given /^a model that does not have a record$/ do

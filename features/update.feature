@@ -23,10 +23,3 @@ Story: Generating an "update" action
     When I make a put request with valid form params
     Then the status code is 404
     And the body is empty
-  
-  Scenario: A PUT request with format serialized attributes
-    Given a model that has a record
-    And I mount the model
-    When I make a put request with format serialized attributes
-    Then the record is updated
-    And the body is the serialized record
