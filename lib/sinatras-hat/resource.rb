@@ -8,6 +8,8 @@ module Sinatra
       end
       
       def path(suffix, record=nil)
+        suffix = suffix.dup
+        
         path = resources.inject("") do |memo, maker|
           memo += fragment(record, maker)
         end
