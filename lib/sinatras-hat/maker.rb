@@ -14,7 +14,7 @@ module Sinatra
       def self.action(name, path, options={}, &block)
         verb = options[:verb] || :get
         Router.cache << [verb, name, path]
-        actions[name] = block
+        actions[name] = { :path => path, :verb => verb, :fn => block }
       end
 
       include Sinatra::Hat::Actions
@@ -36,7 +36,7 @@ module Sinatra
         logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
         logger.info "   action: #{action.to_s.upcase}"
         logger.info "   params: #{request.params.inspect}"
-        instance_exec(request, &self.class.actions[action])
+        instance_exec(request, &self.class.actions[action][:fn])
       end
       
       def after(action)

@@ -21,8 +21,8 @@ module Sinatra
         end
       end
       
-      def redirect(resource)
-        @request.redirect url_for(resource)
+      def redirect(*args)
+        @request.redirect url_for(*args)
       end
       
       private
@@ -41,9 +41,10 @@ module Sinatra
         end
       end
       
-      def url_for(resource)
+      def url_for(resource, *args)
         case resource
         when String then resource
+        when Symbol then resource_path(Maker.actions[resource][:path], *args)
         else resource_path('/:id', resource)
         end
       end
