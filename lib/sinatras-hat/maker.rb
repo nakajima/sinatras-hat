@@ -32,10 +32,10 @@ module Sinatra
       end
       
       def handle(action, request)
+        request.error(404) unless only.include?(action)
         logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
         logger.info "   action: #{action.to_s.upcase}"
         logger.info "   params: #{request.params.inspect}"
-        request.error(404) unless only.include?(action)
         instance_exec(request, &self.class.actions[action])
       end
       
