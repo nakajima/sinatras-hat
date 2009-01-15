@@ -6,7 +6,7 @@ describe "handle create" do
   before(:each) do
     mock_app {  }
     @maker = new_maker(Article)
-    @request = fake_request("article[title]" => "Hooray!")
+    @request = fake_request("article[name]" => "Hooray!")
     stub(request).redirect(anything)
   end
   
@@ -26,12 +26,8 @@ describe "handle create" do
   end
   
   describe "attempting to update a record" do
-    before(:each) do
-      @article = Article.new
-    end
-    
     it "finds a record and updates its attributes" do
-      mock.proxy(article).attributes = { "title" => "Hooray!" }
+      mock.proxy(article).attributes = { "name" => "Hooray!" }
       mock.proxy(article).save
       mock.proxy(maker.model).find(anything) { article }
       handle(request)
@@ -39,7 +35,7 @@ describe "handle create" do
     
     context "when the save is successful" do
       before(:each) do
-        stub(Article).first(anything).returns(article)
+        stub(maker.model).find(anything).returns(article)
         stub(article).save { true }
       end
       
@@ -62,7 +58,7 @@ describe "handle create" do
 
     context "when the save is not successful" do
       before(:each) do
-        stub(Article).first(anything).returns(article)
+        stub(maker.model).find(anything).returns(article)
         stub(article).save { false }
       end
       

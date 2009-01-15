@@ -12,10 +12,8 @@ require 'sinatra/test/rspec'
 # What we're testing:
 require 'lib/sinatras-hat'
 
-# Fixture models/views:
-require 'spec/fixtures/lib/abstract'
-require 'spec/fixtures/lib/comment'
-require 'spec/fixtures/lib/article'
+# Tired of stupid mocks
+require 'acts_as_fu'
 
 def fixture(path)
   File.join(File.dirname(__FILE__), 'fixtures', path)
@@ -24,6 +22,25 @@ end
 Spec::Runner.configure do |config|
   config.mock_with :rr
   config.include Sinatra::Test
+  config.include ActsAsFu
+end
+
+Spec::Runner.configuration.before(:each) do
+  build_model(:articles) do
+    string :name
+    string :description
+    
+    has_many :comments
+  end
+  
+  build_model(:comments) do
+    string :name
+    integer :article_id
+    
+    belongs_to :article
+  end
+  
+  @article = Article.create! :name => "An article"
 end
 
 def new_maker(klass=Article, *args, &block)

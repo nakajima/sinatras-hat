@@ -6,7 +6,7 @@ describe "handle show" do
   before(:each) do
     mock_app {  }
     @maker = new_maker(Article)
-    @request = fake_request(:id => 2)
+    @request = fake_request(:id => @article.to_param)
   end
   
   def handle(*args)
@@ -31,13 +31,13 @@ describe "handle show" do
   
   describe "rendering a successful response" do
     it "loads correct record" do
-      mock.proxy(maker.model).find(:id => 2) { :article }
+      mock.proxy(maker.model).find(:id => @article.to_param) { :article }
       handle(request)
     end
     
     context "when there's no :format param" do
       before(:each) do
-        params = { :id => 2 }
+        params = { :id => @article.to_param }
         @request = fake_request(params)
         stub(maker.model).find(params).returns(:article)
       end

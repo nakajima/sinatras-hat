@@ -54,6 +54,14 @@ describe Sinatra::Hat::Responder do
           request.instance_eval { @article }.should == :article
         end
       end
+      
+      describe "assigning parent instance variables" do
+        before(:each) do
+          @parent_maker = new_maker(Article)
+          @child_maker = new_maker(Comment)
+          @responder = @child_maker.responder
+        end
+      end
     end
   end
   

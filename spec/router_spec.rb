@@ -90,7 +90,7 @@ describe Sinatra::Hat::Router do
       it "calls the block, passing the request" do
         router.generate(app)
         mock.proxy(maker).handle(:destroy, anything) { "" }
-        delete '/articles/2'
+        delete "/articles/#{@article.to_param}"
       end
     end
     
@@ -104,7 +104,7 @@ describe Sinatra::Hat::Router do
       it "calls the block, passing the request" do
         router.generate(app)
         mock.proxy(maker).handle(:edit, anything) { "" }
-        get '/articles/2/edit'
+        get "/articles/#{@article.to_param}/edit"
       end
     end
     
@@ -118,7 +118,7 @@ describe Sinatra::Hat::Router do
       it "calls the block, passing the request" do
         router.generate(app)
         mock.proxy(maker).handle(:update, anything) { "" }
-        put '/articles/2'
+        put "/articles/#{@article.to_param}"
       end
     end
   end

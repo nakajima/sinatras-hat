@@ -27,11 +27,6 @@ describe Sinatra::Hat::Maker do
       stub.instance_of(Sinatra::Hat::Router).generate(:app)
     end
     
-    it "generates routes" do
-      mock.proxy(maker = new_maker).generate_routes(:app)
-      maker.setup(:app)
-    end
-    
     it "stores reference to app" do
       maker = new_maker
       maker.setup(:app)
@@ -81,8 +76,8 @@ describe Sinatra::Hat::Maker do
     
     describe ":record" do
       it "loads a single record" do
-        mock.proxy(Article).first(:id => 2)
-        maker.options[:record][Article, { :id => 2 }]
+        mock.proxy(Article).find_by_id(@article.to_param)
+        maker.options[:record][Article, { :id => @article.to_param }]
       end
     end
   end
@@ -188,8 +183,8 @@ describe Sinatra::Hat::Maker do
       maker = new_maker
       router = Sinatra::Hat::Router.new(maker)
       mock.proxy(Sinatra::Hat::Router).new(maker) { router }
-      mock(router).generate(:app)
-      maker.generate_routes(:app)
+      mock(router).generate(maker.app)
+      maker.generate_routes!
     end
   end
   

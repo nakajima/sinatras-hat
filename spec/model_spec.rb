@@ -30,7 +30,29 @@ describe Sinatra::Hat::Model do
     
     it "calls the finder" do
       mock.proxy(maker.options[:finder]).call(Article, { })
-      model.all({ }).should == [:first_article, :second_article]
+      model.all({ }).should == Article.all
+    end
+  end
+  
+  describe "foreign_key" do
+    before(:each) do
+      @maker = new_maker
+      @model = new_model(maker)
+    end
+    
+    it "returns the singular name with _id" do
+      model.foreign_key.should == "#{model.singular}_id".to_sym
+    end
+  end
+  
+  describe "find_owner" do
+    before(:each) do
+      @maker = new_maker
+      @model = new_model(maker)
+    end
+    
+    it "uses the foreign key to search the params" do
+      model.find_owner(model.foreign_key => @article.to_param).should == @article
     end
   end
   
@@ -40,19 +62,17 @@ describe Sinatra::Hat::Model do
     before(:each) do
       @maker = new_maker
       @model = new_model(maker)
-      @article = Article.new
-      stub(Article).new { article }
     end
     
     it "takes the params" do
       proc {
-        model.find({ })
+        model.find(:id => @article.to_param)
       }.should_not raise_error
     end
     
     it "calls for the :record" do
-      mock.proxy(maker.options[:record]).call(Article, { :id => 2 })
-      model.find(:id => 2).should == Article.first(:id => 2)
+      mock.proxy(maker.options[:record]).call(Article, { :id => @article.to_param })
+      model.find(:id => @article.to_param).should == @article
     end
   end
   
@@ -71,10 +91,9 @@ describe Sinatra::Hat::Model do
   describe "update" do
     it "finds the record" do
       model = new_model
-      article = Article.new
-      mock.proxy(model).find(anything) { article }
-      mock.proxy(article).attributes = { "title" => "Hooray!" }
-      model.update("article[title]" => "Hooray!")
+      mock.proxy(model).find(anything) { @article }
+      mock.proxy(@article).attributes = { "name" => "Hooray!" }
+      model.update("id" => @article.to_param, "article[name]" => "Hooray!")
     end
   end
   
@@ -95,24 +114,22 @@ describe Sinatra::Hat::Model do
       attr_reader :article
       
       before(:each) do
-        @article = Article.new
         @maker = new_maker(Article)
         @maker.setup(mock_app)
-        stub(maker.model).find(anything) { @article }
+        child_maker = maker.mount(Comment)
+        child_maker.parent = maker
+        @child_model = new_model(child_maker)
       end
       
       context "when there is an association proxy" do
         it "uses the association proxy" do
-          mock(comments_proxy = []).new(anything)
-          mock.proxy(article).comments { comments_proxy }
-          new_model(maker.mount(Comment)).new
+          @child_model.new(:article_id => @article.to_param)
         end
       end
 
       context "when there isn't an association proxy" do
         it "just returns the klass" do
           mock.proxy(Comment).new(anything)
-          mock.proxy(article).respond_to?("comments") { false }
           new_model(maker.mount(Comment)).new
         end
       end
