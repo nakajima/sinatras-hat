@@ -4,13 +4,7 @@ def mount!
     # set :logging, true
     
     mount Person do
-      finder { |model, params| model.all }
-      record { |model, params| model.find_by_id(params[:id]) }
-      
-      mount Comment do
-        finder { |model, params| model.all }
-        record { |model, params| model.find_by_id(params[:id]) }
-      end
+      mount Comment
     end
   end
 end
