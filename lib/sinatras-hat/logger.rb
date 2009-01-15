@@ -1,5 +1,6 @@
 module Sinatra
   module Hat
+    # TODO This needs to be using Rack::CommonLogger
     class Logger
       def initialize(maker)
         @maker = maker
