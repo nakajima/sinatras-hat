@@ -181,6 +181,11 @@ after :create do |on|
 end
 </pre>
 
+## Other Stuff
 
+I'll be writing docs for the following topics soon:
+
+* Specifying which actions to generate
+* Protecting actions with basic auth
 
 (c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
