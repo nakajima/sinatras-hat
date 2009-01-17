@@ -27,6 +27,9 @@ to `/articles` will simply call `Article.all` to populate the `@articles`
 instance variable. Going to `/articles/2` will call `Article.find_by_id(2)`
 to populate the `@article` instance variable.
 
+We call `find_by_id` instead of `find` because the `record` option should
+simply return `nil` when the record can't be found.
+
 Not every class is an ActiveRecord though (especially if you're not using
 ActiveRecord). That's why you can use the `finder` and `record` options.
 
@@ -93,25 +96,17 @@ Sinatra's Hat has some default flows:
 
 ### After the `create` action
 
-#### On Success
-
-If a record is successfully created, Sinatra's Hat will redirect to that
+**On Success**: If a record is successfully created, Sinatra's Hat will redirect to that
 record's show page.
 
-#### On Failure
-
-If a record cannot be saved, Sinatra's Hat will render the `new` action.
+**On Failure**: If a record cannot be saved, Sinatra's Hat will render the `new` action.
 
 ### After the `Update` action
 
-#### On Success
-
-If a record is successfully updated, Sinatra's Hat will redirect to that
+**On Success**: If a record is successfully updated, Sinatra's Hat will redirect to that
 record's show page.
 
-#### On Failure
-
-If a record cannot be updated, Sinatra's Hat will render the `edit` action.
+**On Failure**: If a record cannot be updated, Sinatra's Hat will render the `edit` action.
 
 ## Custom Flows
 
