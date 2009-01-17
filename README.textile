@@ -15,6 +15,9 @@ Now you've basically got the same functionality as you'll get in Rails
 by running @script/generate scaffold Article@. The views for your @Article@
 will live in @views/articles@, and be named @index.erb@, @show.erb@, etc.
 
+You can look at my "Hatter":http://github.com/nakajima/hatter/tree/master
+project, or the @examples/@ directory in this one to see this in action.
+
 Go ahead, try it.
 
 (c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
