@@ -34,8 +34,8 @@ describe "handle create" do
       end
       
       context "when there's no format" do
-        it "redirects to that record's path" do
-          mock(request).redirect("/articles/2")
+        it "redirects" do
+          mock(request).redirect(anything)
           mock.proxy(maker.responder).success(:create, request, new_article)
           handle(request)
         end

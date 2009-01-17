@@ -22,24 +22,27 @@ end
 Spec::Runner.configure do |config|
   config.mock_with :rr
   config.include Sinatra::Test
-  config.include ActsAsFu
+end
+
+include ActsAsFu
+
+build_model(:articles) do
+  string :name
+  string :description
+  
+  has_many :comments
+end
+
+build_model(:comments) do
+  string :name
+  integer :article_id
+  
+  belongs_to :article
 end
 
 def build_models!
-  build_model(:articles) do
-    string :name
-    string :description
-    
-    has_many :comments
-  end
-  
-  build_model(:comments) do
-    string :name
-    integer :article_id
-    
-    belongs_to :article
-  end
-  
+  Article.delete_all
+  Comment.delete_all
   @article = Article.create! :name => "An article"
   @non_child = @article.comments.create! :name => "Non child!"
   @comment = @article.comments.create! :name => "The child comment"
