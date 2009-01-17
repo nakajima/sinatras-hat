@@ -80,5 +80,11 @@ end
 With that custom formatter, a request to `/articles.ruby` will return
 the equivalent of `Article.all.inspect`.
 
+### Automatic formatters
+
+If you don't specify a custom formatter, then Sinatra's Hat will try to
+call `to_#{format}` on the record object. That means that with most ORMs,
+things like `to_xml`, `to_json`, and `to_yaml` will be supported right out
+of the box.
 
 (c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
