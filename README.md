@@ -181,11 +181,17 @@ after :create do |on|
 end
 </pre>
 
-## Other Stuff
+## Other Features
 
 I'll be writing docs for the following topics soon:
 
 * Specifying which actions to generate
 * Protecting actions with basic auth
+
+## Other Info
+
+* [View the CI build](http://ci.patnakajima.com/sinatra-s-hat)
+* Thanks a ton to the [Sinatra team](http://github.com/sinatra) for such an
+  awesome framework.
 
 (c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
