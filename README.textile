@@ -17,4 +17,4 @@ will live in @views/articles@, and be named @index.erb@, @show.erb@, etc.
 
 Go ahead, try it.
 
-(c) Copyright 2008 Pat Nakajima. All Rights Reserved. 
+(c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
