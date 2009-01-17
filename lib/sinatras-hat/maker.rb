@@ -85,7 +85,9 @@ module Sinatra
         if actions.empty?
           options[:protect] ||= Set.new([])
         else
-          Set.new(options[:protect] = actions)
+          actions == [:all] ? 
+            Set.new(options[:protect] = only) :
+            Set.new(options[:protect] = actions)
         end
       end
       
@@ -109,7 +111,7 @@ module Sinatra
           :record => proc { |model, params| model.find_by_id(params[:id]) },
           :protect => [ ],
           :formats => { },
-          :credentials => { :username => 'username', :password => 'password' },
+          :credentials => { :username => 'username', :password => 'password', :realm => "The App" },
           :authenticator => proc { |username, password| [username, password] == [:username, :password].map(&credentials.method(:[])) }
         }
       end

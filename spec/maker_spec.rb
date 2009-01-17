@@ -41,6 +41,27 @@ describe Sinatra::Hat::Maker do
     new_maker(Article).klass.should == Article
   end
   
+  describe "protect" do
+    before(:each) do
+      @maker = new_maker
+    end
+    
+    it "sets the protected actions" do
+      maker.protect :index, :show
+      maker.protect.should == [:index, :show]
+    end
+    
+    it "can set the protected actions to :all" do
+      maker.protect :all
+      maker.protect.should == maker.only
+    end
+    
+    it "can set the credentials" do
+      maker.protect :username => "admin", :password => "awesome", :realm => "awesome app"
+      maker.credentials.should == { :username => "admin", :password => "awesome", :realm => "awesome app" }
+    end
+  end
+  
   describe "handling actions" do
     before(:each) do
       @request = fake_request
@@ -162,6 +183,26 @@ describe Sinatra::Hat::Maker do
       it "finds all for the model" do
         mock(Article).all
         maker.options[:finder][Article, { }]
+      end
+      
+      it "has a block setter" do
+        fn = proc { |u, p| [u, p] }
+        maker.authenticator(&fn)
+        maker.authenticator[:user, :pass].should == [:user, :pass]
+      end
+    end
+    
+    describe ":credentials" do
+      it "has username" do
+        maker.options[:credentials][:username].should_not be_nil
+      end
+      
+      it "has password" do
+        maker.options[:credentials][:password].should_not be_nil
+      end
+      
+      it "has realm" do
+        maker.options[:credentials][:realm].should_not be_nil
       end
     end
     
