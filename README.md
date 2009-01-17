@@ -87,4 +87,105 @@ call `to_#{format}` on the record object. That means that with most ORMs,
 things like `to_xml`, `to_json`, and `to_yaml` will be supported right out
 of the box.
 
+## Default Flows
+
+Sinatra's Hat has some default flows:
+
+### After the `create` action
+
+#### On Success
+
+If a record is successfully created, Sinatra's Hat will redirect to that
+record's show page.
+
+#### On Failure
+
+If a record cannot be saved, Sinatra's Hat will render the `new` action.
+
+### After the `Update` action
+
+#### On Success
+
+If a record is successfully updated, Sinatra's Hat will redirect to that
+record's show page.
+
+#### On Failure
+
+If a record cannot be updated, Sinatra's Hat will render the `edit` action.
+
+## Custom Flows
+
+To specify custom flows for your actions, you can use the `after` method.
+
+Let's say that after a user creates an Article, you want to render the
+article's edit action, and if it can't be created, you want to redirect
+back to the articles index.
+
+<pre>
+mount Article do
+  after :create do |on|
+    on.success { |record| render(:edit) }
+    on.failure { |record| redirect(:index) }
+  end
+end
+</pre>
+
+### `redirect` options
+
+When specifying a custom redirect, you can pass one of a few things:
+
+#### A String
+
+When you pass `redirect` a string, the redirect will go to that string.
+
+<pre>
+after :create do |on|
+  on.success { |record| redirect("/articles/#{record.to_param}") }
+end
+</pre>
+
+#### A Record
+
+When you pass `redirect` a record, the redirect will go to the show
+action for that record.
+
+<pre>
+after :create do |on|
+  on.success { |record| redirect(record) }
+end
+</pre>
+
+#### A symbol
+
+If you pass `redirect` the name of an action as a symbol (like `:index`),
+then the redirect will go to the correct path for that option:
+
+<pre>
+after :create do |on|
+  on.success { redirect(:index) }
+end
+</pre>
+
+When the action requires a record (like `:show`), then just pass the
+record as a second argument:
+
+<pre>
+after :create do |on|
+  on.success { |record| redirect(:show, record) }
+end
+</pre>
+
+### Responding with a `render`
+
+When you want your response to just render a template, just call `render`
+with the name of the template:
+
+<pre>
+after :create do |on|
+  on.failure { |record| render(:new) }
+end
+</pre>
+
+
+
 (c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
