@@ -36,11 +36,9 @@ module Sinatra
         request.error(404) unless only.include?(action)
         protect!(request) if protect.include?(action)
         
-        logger.info ">> #{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
-        logger.info "   action: #{action.to_s.upcase}"
-        logger.info "   params: #{request.params.inspect}"
-        
-        instance_exec(request, &self.class.actions[action][:fn])
+        log_with_benchmark(request, action) do
+          instance_exec(request, &self.class.actions[action][:fn])
+        end
       end
       
       def after(action)
@@ -138,6 +136,23 @@ module Sinatra
       end
       
       private
+      
+      def log_with_benchmark(request, action)
+        msg = [ ]
+        msg << "#{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"
+        msg << "Params: #{request.params.inspect}"
+        msg << "Action: #{action.to_s.upcase}"
+        
+        logger.info ">> " + msg.join(' | ')
+        
+        result = nil
+        
+        t = Benchmark.realtime { result = yield }
+        
+        logger.info "   Request finished in #{t} sec."
+        
+        result
+      end
       
       def resource
         @resource ||= Resource.new(self)
