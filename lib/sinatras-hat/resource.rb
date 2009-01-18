@@ -11,7 +11,7 @@ module Sinatra
         suffix = suffix.dup
         
         path = resources.inject("") do |memo, maker|
-          memo += fragment(record, maker)
+          memo += fragment(maker, record)
         end
         
         suffix.gsub!('/:id', "/#{record.id}") if record
@@ -21,7 +21,7 @@ module Sinatra
       
       private
       
-      def fragment(record, maker)
+      def fragment(maker, record)
         @maker.eql?(maker) ?
           "/#{maker.prefix}" :
           "/#{maker.prefix}/" + interpolate(maker, record)
