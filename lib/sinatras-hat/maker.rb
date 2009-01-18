@@ -90,7 +90,7 @@ module Sinatra
       end
       
       def prefix
-        @prefix ||= options[:prefix] || model.plural
+        options[:prefix] ||= model.plural
       end
       
       def parents
@@ -103,7 +103,7 @@ module Sinatra
       
       def options
         @options ||= {
-          :only => Set.new([:index, :show, :new, :create, :edit, :update, :destroy]),
+          :only => Set.new(Maker.actions.keys),
           :parent => nil,
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.find_by_id(params[:id]) },
