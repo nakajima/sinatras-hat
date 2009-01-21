@@ -68,6 +68,22 @@ as your `Article` model supports a `comments` association proxy, then the `finde
 and `record` options for `Comment` will automatically scope their results by
 the parent `Article`.
 
+## Basic Auth
+
+To protect actions using basic authentication, you can use the `protect` method.
+
+<pre>
+mount Article do
+  protect :create, :update, :destroy, :username => "foo", :password => "bar", :realm => "BLOGZ"
+end
+</pre>
+
+The above snippet will protect your <acronym title="Create|Update|Destroy">CUD</acronym>
+actions with basic auth, using the username "foo" and password "bar". The realm
+for the basic auth prompt will say "BLOGZ".
+
+If you want to protect all of your actions, you cay say `protect :all`.
+
 ## `.xml`, `.json`, `.yaml`, and whatever else you want
 
 If a request has a format extensions, then Sinatra's Hat will first check
