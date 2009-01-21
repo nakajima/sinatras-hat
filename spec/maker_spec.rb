@@ -341,5 +341,21 @@ describe Sinatra::Hat::Maker do
       end
       maker.responder.defaults[:create][:success][].should == :new_default!
     end
+    
+    describe "when there are nested resources" do
+      before(:each) do
+        @child_maker = new_maker(Comment)
+        @child_maker.parent = @maker
+      end
+      
+      it "mutates the child's response" do
+        @child_maker.after(:create) do |on|
+          on.success { :child_response }
+        end
+        
+        @child_maker.responder.defaults[:create][:success][].should == :child_response
+        @maker.responder.defaults[:create][:success].should_not === @child_maker.responder.defaults[:create][:success]
+      end
+    end
   end
 end

@@ -6,41 +6,6 @@ module Sinatra
     class Responder
       delegate :model, :to => :maker
       
-      DEFAULTS = {
-        :show => {
-          :success => proc { |data| render(:show) },
-          :failure => proc { |data| redirect('/') }
-        },
-        
-        :index => {
-          :success => proc { |data| render(:index) },
-          :failure => proc { |data| redirect('/') }
-        },
-        
-        :create => {
-          :success => proc { |data| redirect(data) },
-          :failure => proc { |data| render(:new) }
-        },
-        
-        :new => {
-          :success => proc { |data| render(:new) },
-          :failure => proc { |data| redirect('/') }
-        },
-        
-        :edit => {
-          :success => proc { |data| render(:edit) }
-        },
-        
-        :destroy => {
-          :success => proc { |data| redirect(resource_path('/')) }
-        },
-        
-        :update => {
-          :success => proc { |data| redirect(data) },
-          :failure => proc { |data| render(:edit) }
-        }
-      }
-      
       attr_reader :maker
       
       def initialize(maker)
@@ -48,7 +13,40 @@ module Sinatra
       end
       
       def defaults
-        @defaults ||= DEFAULTS.dup
+        @defaults ||= {
+          :show => {
+            :success => proc { |data| render(:show) },
+            :failure => proc { |data| redirect('/') }
+          },
+
+          :index => {
+            :success => proc { |data| render(:index) },
+            :failure => proc { |data| redirect('/') }
+          },
+
+          :create => {
+            :success => proc { |data| redirect(data) },
+            :failure => proc { |data| render(:new) }
+          },
+
+          :new => {
+            :success => proc { |data| render(:new) },
+            :failure => proc { |data| redirect('/') }
+          },
+
+          :edit => {
+            :success => proc { |data| render(:edit) }
+          },
+
+          :destroy => {
+            :success => proc { |data| redirect(resource_path('/')) }
+          },
+
+          :update => {
+            :success => proc { |data| redirect(data) },
+            :failure => proc { |data| render(:edit) }
+          }
+        }
       end
       
       def success(name, request, data)
