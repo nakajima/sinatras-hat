@@ -15,7 +15,7 @@ module Sinatra
       
       def render(action)
         begin
-          @request.erb action.to_sym, :views_directory => views, :layout => :layout
+          @request.erb "#{maker.prefix}/#{action}".to_sym
         rescue Errno::ENOENT
           no_template! "Can't find #{File.expand_path(File.join(views, action.to_s))}.erb"
         end

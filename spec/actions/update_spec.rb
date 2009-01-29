@@ -65,10 +65,7 @@ describe "handle create" do
       
       context "when there's no format" do
         it "renders edit template" do
-          mock(request).erb \
-            :edit,
-            :layout => :layout,
-            :views_directory => fixture('views/articles')
+          mock(request).erb :"articles/edit"
           mock.proxy(maker.responder).failure(:update, request, article)
           handle(request)
         end
