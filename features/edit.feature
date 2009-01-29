@@ -7,7 +7,7 @@ Story: Generating an "edit" action
     Given a model that has a record
     And I mount the model
     When I get the edit page for that record
-    Then the edit.erb template is rendered
+    Then I should see "Editing"
 
   Scenario: Getting the edit page for a non-existent record
     Given a model that has a record

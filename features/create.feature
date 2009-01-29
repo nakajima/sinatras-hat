@@ -13,4 +13,4 @@ Story: Generating a "create" action
     Given a mounted model
     When I make a POST request with invalid form params
     Then a record is not created
-    And the new.erb template is rendered
+    And I should see "So, you want to create a new Person?"

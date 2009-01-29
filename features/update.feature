@@ -14,7 +14,7 @@ Story: Generating an "update" action
     Given a model that has a record
     And I mount the model
     When I make a PUT request with invalid form params
-    Then the edit.erb template is rendered
+    Then I should see "Editing"
     And the record is not updated
 
   Scenario: Trying to update a record that does not exist

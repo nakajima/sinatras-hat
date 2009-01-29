@@ -6,7 +6,7 @@ Story: Generating a "new" action
   Scenario: Getting the new action without a format
     Given a mounted model
     When I get the new page for that record
-    Then the new.erb template is rendered 
+    Then I should see "So, you want to create a new Person?"
   
   Scenario: Getting the new action with a valid format
     Given a mounted model

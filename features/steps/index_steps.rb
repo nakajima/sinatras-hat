@@ -26,5 +26,5 @@ Then /^the result should be serialized$/ do
 end
 
 Then /^the index\.erb template should be rendered$/ do
-  @response.body.should == "The people: #{Person.all.map(&:name).join(', ')}."
+  @response.body.should include("The people: #{Person.all.map(&:name).join(', ')}.")
 end

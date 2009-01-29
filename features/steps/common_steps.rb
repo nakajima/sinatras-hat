@@ -57,3 +57,7 @@ end
 Then /^the new\.erb template is rendered$/ do
   body.should == "So, you want to create a new Person?"
 end
+
+Then /^I should see "(.*)"$/ do |text|
+  body.should include(text)
+end

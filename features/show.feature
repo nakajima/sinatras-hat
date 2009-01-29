@@ -7,7 +7,7 @@ Story: Generating a "show" action
     Given a model that has a record
     And I mount the model
     When I get the show page for that record
-    Then the show.erb template is rendered
+    Then I should see "The person:"
   
   Scenario: Trying to show a record that does not exist
     Given a model that does not have a record
