@@ -135,6 +135,10 @@ module Sinatra
         @logger ||= Logger.new(self)
       end
       
+      def resource
+        @resource ||= Resource.new(self)
+      end
+      
       private
       
       def log_with_benchmark(request, action)
@@ -152,10 +156,6 @@ module Sinatra
         logger.info "   Request finished in #{t} sec."
         
         result
-      end
-      
-      def resource
-        @resource ||= Resource.new(self)
       end
     end
   end
