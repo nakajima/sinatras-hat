@@ -11,7 +11,6 @@ module Sinatra
         @actions ||= { }
       end
       
-      # enables the douche-y DSL you see in actions.rb
       def self.action(name, path, options={}, &block)
         verb = options[:verb] || :get
         Router.cache << [verb, name, path]
