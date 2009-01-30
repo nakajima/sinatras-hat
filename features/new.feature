@@ -1,4 +1,4 @@
-Story: Generating a "new" action
+Feature: Generating a "new" action
   As a developer
   I want to generate a "new" action
   So that I don't have to manually code it

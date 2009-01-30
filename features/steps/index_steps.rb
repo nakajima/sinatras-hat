@@ -24,7 +24,3 @@ end
 Then /^the result should be serialized$/ do
   @response.body.should == Person.all.to_xml
 end
-
-Then /^the index\.erb template should be rendered$/ do
-  @response.body.should include("The people: #{Person.all.map(&:name).join(', ')}.")
-end

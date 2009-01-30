@@ -1,26 +1,17 @@
-require File.join(File.dirname(__FILE__), *%w[.. .. spec spec_helper])
+require File.join(File.dirname(__FILE__), *%w[.. .. lib sinatras-hat])
 
-Sinatra::Test.tap do |mod|
-  mod.module_eval { remove_method(:should) }
-  include mod
+require 'sinatra/test'
+require 'acts_as_fu'
+
+Sinatra::Test.module_eval do
+  def mock_app(base=Sinatra::Base, &block)
+    @app = Sinatra.new(base, &block)
+  end
+end
+
+World do
+  extend ActsAsFu
+  extend Sinatra::Test
 end
 
 require 'spec/expectations'
-require 'acts_as_fu'
-
-include ActsAsFu
-
-build_model(:people) do
-  string :name
-  
-  has_many :comments
-  
-  validates_presence_of :name
-end
-
-build_model(:comments) do
-  integer :person_id
-  string :name
-  
-  belongs_to :person
-end

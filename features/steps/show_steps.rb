@@ -16,10 +16,6 @@ When /^I get the GET request for a non\-existent record with a format$/ do
   get "/people/87345873485763485.xml"
 end
 
-Then /^the show\.erb template is rendered$/ do
-  body.should == "The person: #{@record.name}."
-end
-
 Then /^the body is the serialized record$/ do
   body.should == @record.to_xml
 end

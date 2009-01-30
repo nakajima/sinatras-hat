@@ -1,4 +1,4 @@
-Story: Custom format handlers
+Feature: Custom format handlers
   As a developer
   I want to provide custom format handlers
   So that I expose data in more interesting ways

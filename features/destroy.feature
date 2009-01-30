@@ -1,4 +1,4 @@
-Story: Generating a "destroy" action
+Feature: Generating a "destroy" action
   As a developer
   I want to generate a "destroy" action
   So that I don't have to manually code it

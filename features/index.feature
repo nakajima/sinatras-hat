@@ -1,4 +1,4 @@
-Story: Generating an "index" action
+Feature: Generating an "index" action
   As a developer
   I want to generate an "index" action
   So that I don't have to manually code it
@@ -7,7 +7,7 @@ Story: Generating an "index" action
     Given a mounted model
     And the model has some records
     When Make a GET request to the index without a format
-    Then the index.erb template should be rendered
+    Then I should see "The people:"
 
   Scenario: A request with a known format specified
     Given a mounted model

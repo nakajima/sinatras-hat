@@ -13,7 +13,7 @@ require 'sinatra/test/rspec'
 require 'lib/sinatras-hat'
 
 # Tired of stupid mocks
-require 'acts_as_fu'
+require 'acts_as_fu/base'
 
 def fixture(path)
   File.join(File.dirname(__FILE__), 'fixtures', path)

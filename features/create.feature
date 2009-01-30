@@ -1,4 +1,4 @@
-Story: Generating a "create" action
+Feature: Generating a "create" action
   As a developer
   I want to generate a "create" action
   So that I don't have to manually code it

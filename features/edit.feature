@@ -1,4 +1,4 @@
-Story: Generating an "edit" action
+Feature: Generating an "edit" action
   As a developer
   I want to generate an "edit" action
   So that I don't have to manually code it

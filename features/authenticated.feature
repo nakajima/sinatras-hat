@@ -1,4 +1,4 @@
-Story: Protected actions
+Feature: Protected actions
   As a developer
   I want to protect certain actions
   So that I maintain privacy of my app

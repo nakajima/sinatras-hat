@@ -8,5 +8,4 @@ Feature: Rendering view layouts
     And the model has some records
     When Make a GET request to the index without a format
     Then I should see "TEH LAYOUTZ"
-    And the index.erb template should be rendered
-    
+    And I should see "The people:"

@@ -1,4 +1,4 @@
-Story: Generating an "index" action for a child resource
+Feature: Generating an "index" action for a child resource
   As a developer
   I want to generate an "index" action for a child resource
   So that I don't have to manually code it
@@ -9,7 +9,7 @@ Story: Generating an "index" action for a child resource
     And I mount the model
     When Make a GET request to the nested index without a format
     Then the status code is 200
-    Then the nested resource index.erb template should be rendered
+    Then I should see "The nested view!"
 
   Scenario: Requesting a valid format
     Given a model that has a record

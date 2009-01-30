@@ -1,4 +1,4 @@
-Story: Generating a "show" action
+Feature: Generating a "show" action
   As a developer
   I want to generate a "show" action
   So that I don't have to manually code it

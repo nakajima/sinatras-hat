@@ -1,4 +1,4 @@
-Story: Generating an "update" action
+Feature: Generating an "update" action
   As a developer
   I want to generate an "update" action
   So that I don't have to manually code it
