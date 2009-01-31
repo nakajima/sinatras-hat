@@ -48,8 +48,8 @@ describe Sinatra::Hat::Router do
 
     describe "generating index route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).get('/articles')
-        mock.proxy(app).get('/articles.:format')
+        mock.proxy(app).get('/articles/?')
+        mock.proxy(app).get('/articles.:format/?')
         router.generate(app)
       end
       
@@ -62,8 +62,8 @@ describe Sinatra::Hat::Router do
     
     describe "generating show route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).get('/articles/:id')
-        mock.proxy(app).get('/articles/:id.:format')
+        mock.proxy(app).get('/articles/:id/?')
+        mock.proxy(app).get('/articles/:id.:format/?')
         router.generate(app)
       end
       
@@ -76,8 +76,8 @@ describe Sinatra::Hat::Router do
     
     describe "generating create route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).post('/articles')
-        mock.proxy(app).post('/articles.:format')
+        mock.proxy(app).post('/articles/?')
+        mock.proxy(app).post('/articles.:format/?')
         router.generate(app)
       end
       
@@ -90,8 +90,8 @@ describe Sinatra::Hat::Router do
     
     describe "generating new route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).get('/articles/new')
-        mock.proxy(app).get('/articles/new.:format')
+        mock.proxy(app).get('/articles/new/?')
+        mock.proxy(app).get('/articles/new.:format/?')
         router.generate(app)
       end
       
@@ -104,8 +104,8 @@ describe Sinatra::Hat::Router do
     
     describe "generating destroy route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).delete('/articles/:id')
-        mock.proxy(app).delete('/articles/:id.:format')
+        mock.proxy(app).delete('/articles/:id/?')
+        mock.proxy(app).delete('/articles/:id.:format/?')
         router.generate(app)
       end
       
@@ -118,8 +118,8 @@ describe Sinatra::Hat::Router do
     
     describe "generating edit route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).get('/articles/:id/edit')
-        mock.proxy(app).get('/articles/:id/edit.:format')
+        mock.proxy(app).get('/articles/:id/edit/?')
+        mock.proxy(app).get('/articles/:id/edit.:format/?')
         router.generate(app)
       end
       
@@ -132,8 +132,8 @@ describe Sinatra::Hat::Router do
     
     describe "generating update route" do
       it "uses the maker's resource path" do
-        mock.proxy(app).put('/articles/:id')
-        mock.proxy(app).put('/articles/:id.:format')
+        mock.proxy(app).put('/articles/:id/?')
+        mock.proxy(app).put('/articles/:id.:format/?')
         router.generate(app)
       end
       

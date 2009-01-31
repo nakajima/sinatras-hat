@@ -34,8 +34,8 @@ module Sinatra
         
         logger.info ">> route for #{maker.klass} #{action}:\t#{method.to_s.upcase}\t#{path}"
         
-        app.send(method, path) { handler[self] }
-        app.send(method, "#{path}.:format") { handler[self] }        
+        app.send(method, path + "/?") { handler[self] }
+        app.send(method, "#{path}.:format" + "/?") { handler[self] }        
       end
     end
   end
