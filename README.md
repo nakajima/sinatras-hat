@@ -68,6 +68,9 @@ as your `Article` model supports a `comments` association proxy, then the `finde
 and `record` options for `Comment` will automatically scope their results by
 the parent `Article`.
 
+**Note:** Currently, only one level of nesting is supported. Here's a Lighthouse
+ticket for the issue: [http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/tickets/1-resources-can-only-be-nested-one-level](http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/tickets/1-resources-can-only-be-nested-one-level).
+
 ## Basic Auth
 
 To protect actions using basic authentication, you can use the `protect` method.
@@ -206,6 +209,7 @@ I'll be writing docs for the following topics soon:
 
 ## Other Info
 
+* [View the Lighthouse Project](http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/overview)
 * [View the CI build](http://ci.patnakajima.com/sinatra-s-hat)
 * Thanks a ton to the [Sinatra team](http://github.com/sinatra) for such an
   awesome framework.
