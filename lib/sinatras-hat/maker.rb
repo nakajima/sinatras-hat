@@ -140,6 +140,10 @@ module Sinatra
       
       private
       
+      def protected?(action)
+        protect.include?(action)
+      end
+      
       def log_with_benchmark(request, action)
         msg = [ ]
         msg << "#{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}"

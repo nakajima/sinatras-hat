@@ -33,7 +33,7 @@ module Sinatra
 
         map.action :show, '/:id' do |request|
           record = model.find(request.params) || responder.not_found(request)
-          set_cache_headers(request, record)
+          set_cache_headers(request, record) unless protected?(:show)
           responder.success(:show, request, record)
         end
         
@@ -45,7 +45,7 @@ module Sinatra
 
         map.action :index, '/' do |request|
           records = model.all(request.params)
-          set_cache_headers(request, records)
+          set_cache_headers(request, records) unless protected?(:index)
           responder.success(:index, request, records)
         end
         
