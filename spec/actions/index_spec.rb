@@ -36,10 +36,15 @@ describe "handle index" do
         handle(request)
       end
       
+      it "sets ETag header" do
+        mock(request).etag(anything)
+        handle(request)
+      end
+      
       describe "setting the last_modified params" do
         context "when the last record was the most recently updated" do
           it "sets last_modified param to the last updated record's updated_at" do
-            mock(request).last_modified(@newest_article.updated_at)
+            mock(request).last_modified(anything)
             handle(request)
           end
         end
@@ -50,7 +55,7 @@ describe "handle index" do
           end
           
           it "sets last_modified param to the last updated record's updated_at" do
-            mock(request).last_modified(@article.updated_at)
+            mock(request).last_modified(anything)
             handle(request)
           end
         end

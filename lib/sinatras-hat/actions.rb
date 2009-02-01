@@ -33,7 +33,7 @@ module Sinatra
 
         map.action :show, '/:id' do |request|
           record = model.find(request.params) || responder.not_found(request)
-          set_last_modified(request, record)
+          set_cache_headers(request, record)
           responder.success(:show, request, record)
         end
         
@@ -45,14 +45,28 @@ module Sinatra
 
         map.action :index, '/' do |request|
           records = model.all(request.params)
-          set_last_modified(request, model.find_last_modified(records))
+          set_cache_headers(request, records)
           responder.success(:index, request, records)
         end
         
         private
         
-        def set_last_modified(request, record)
-          request.last_modified(record.updated_at) if record.respond_to?(:updated_at)
+        def set_cache_headers(request, data)
+          
+          set_etag(request, data)
+          set_last_modified(request, data)
+        end
+        
+        def set_etag(request, data)
+          record = model.find_last_modified(Array(data))
+          return unless record.respond_to?(:updated_at)
+          request.etag("#{record.id}-#{record.updated_at}-#{data.is_a?(Array)}")
+        end
+        
+        def set_last_modified(request, data)
+          record = model.find_last_modified(Array(data))
+          return unless record.respond_to?(:updated_at)
+          request.last_modified(record.updated_at)
         end
       end
     end

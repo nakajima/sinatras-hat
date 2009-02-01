@@ -36,8 +36,13 @@ describe "handle show" do
         handle(request)
       end
       
-      it "sets last_modified param" do
+      it "sets last_modified header" do
         mock(request).last_modified(@article.updated_at)
+        handle(request)
+      end
+      
+      it "sets ETag header" do
+        mock(request).etag(anything)
         handle(request)
       end
     end
@@ -46,16 +51,21 @@ describe "handle show" do
       before(:each) do
         params = { :id => @article.to_param }
         @request = fake_request(params)
-        stub(maker.model).find(params).returns(@article)
+        stub(maker.model).find(anything).returns(@article)
       end
       
-      it "renders the show template" do
+      it "uses the success response" do
         mock.proxy(maker.responder).success(:show, request, @article)
         handle(request)
       end
       
       it "sets last_modified param" do
         mock(request).last_modified(@article.updated_at)
+        handle(request)
+      end
+      
+      it "sets ETag header" do
+        mock(request).etag(anything)
         handle(request)
       end
     end
