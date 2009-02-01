@@ -28,6 +28,13 @@ describe Sinatra::Hat::Response do
       end
     end
     
+    context "when there are options passed" do
+      it "sends the options to the request" do
+        mock(request).last_modified :yesterday
+        new_response.render(:show, :last_modified => :yesterday)
+      end
+    end
+        
     context "when there is no views dir" do
       before(:each) do
         stub(request.options).views { nil }

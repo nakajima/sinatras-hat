@@ -1,6 +1,7 @@
 Before do
   build_model(:people) do
     string :name
+    timestamps
 
     has_many :comments
 
@@ -10,6 +11,7 @@ Before do
   build_model(:comments) do
     integer :person_id
     string :name
+    timestamps
 
     belongs_to :person
   end

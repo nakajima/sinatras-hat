@@ -29,6 +29,7 @@ include ActsAsFu
 build_model(:articles) do
   string :name
   string :description
+  timestamps
   
   has_many :comments
 end
@@ -68,6 +69,7 @@ def fake_request(options={})
   stub(request).env.returns({ })
   stub(request).params.returns(options)
   stub(request).response.returns(Sinatra::Response.new)
+  stub(request).last_modified(anything)
   request
 end
 

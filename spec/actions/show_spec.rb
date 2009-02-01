@@ -28,11 +28,16 @@ describe "handle show" do
       before(:each) do
         params = { :format => "yaml", :id => @article.to_param }
         @request = fake_request(params)
-        stub(maker.model).find(params).returns(:article)
+        stub(maker.model).find(params).returns(@article)
       end
       
       it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize(request, :article)
+        mock.proxy(maker.responder).serialize(request, @article)
+        handle(request)
+      end
+      
+      it "sets last_modified param" do
+        mock(request).last_modified(@article.updated_at)
         handle(request)
       end
     end
@@ -41,11 +46,16 @@ describe "handle show" do
       before(:each) do
         params = { :id => @article.to_param }
         @request = fake_request(params)
-        stub(maker.model).find(params).returns(:article)
+        stub(maker.model).find(params).returns(@article)
       end
       
       it "renders the show template" do
-        mock.proxy(maker.responder).success(:show, request, :article)
+        mock.proxy(maker.responder).success(:show, request, @article)
+        handle(request)
+      end
+      
+      it "sets last_modified param" do
+        mock(request).last_modified(@article.updated_at)
         handle(request)
       end
     end
@@ -59,6 +69,11 @@ describe "handle show" do
     
     it "returns not_found" do
       mock.proxy(maker.responder).not_found(request)
+      handle(request)
+    end
+    
+    it "does not set last_modified param" do
+      mock(request).last_modified(@article.updated_at).never
       handle(request)
     end
   end

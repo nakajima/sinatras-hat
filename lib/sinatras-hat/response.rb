@@ -13,8 +13,9 @@ module Sinatra
         @request = request
       end
       
-      def render(action)
+      def render(action, options={})
         begin
+          options.each { |sym, value| @request.send(sym, value) }
           @request.erb "#{maker.prefix}/#{action}".to_sym
         rescue Errno::ENOENT
           no_template! "Can't find #{File.expand_path(File.join(views, action.to_s))}.erb"

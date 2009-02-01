@@ -33,6 +33,7 @@ module Sinatra
 
         map.action :show, '/:id' do |request|
           record = model.find(request.params) || responder.not_found(request)
+          request.last_modified(record.updated_at) if record.respond_to?(:updated_at)
           responder.success(:show, request, record)
         end
         
