@@ -66,13 +66,6 @@ describe Sinatra::Hat::Responder do
     end
   end
   
-  describe "not_found" do
-    it "calls not_found on the request" do
-      mock(request = fake_request).not_found
-      new_responder.not_found(request)
-    end
-  end
-  
   describe "failure" do
     # context "when there's a format" do
     #   it "serializes the response" do

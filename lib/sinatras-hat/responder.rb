@@ -49,22 +49,26 @@ module Sinatra
         }
       end
       
+      # Called when a request is handled successfully. For most GET
+      # requests, this is always the case. For update/create actions,
+      # it is when the record is created/updated successfully.
       def success(name, request, data)
         handle(:success, name, request, data)
       end
       
+      # Called when a request is not able to handled. This could be
+      # because a record could not be created or saved.
       def failure(name, request, data)
         handle(:failure, name, request, data)
       end
       
+      # Serializes the data passed in, first looking for a custom formatter,
+      # then falling back on trying to call to_[format] on the data. If neither
+      # are available, returns an error with the status code 406.
       def serialize(request, data)
         name = request.params[:format].to_sym
         formatter = to_format(name)
         formatter[data] || request.error(406)
-      end
-      
-      def not_found(request)
-        request.not_found
       end
             
       private

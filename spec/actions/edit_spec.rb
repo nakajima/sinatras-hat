@@ -25,7 +25,7 @@ describe "handle show" do
     end
     
     it "returns not_found" do
-      mock.proxy(maker.responder).not_found(request)
+      mock(request).not_found
       handle(request)
     end
   end

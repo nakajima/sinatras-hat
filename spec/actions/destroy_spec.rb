@@ -51,7 +51,7 @@ describe "handle destroy" do
     end
     
     it "returns not_found" do
-      mock.proxy(maker.responder).not_found(request)
+      mock.proxy(request).not_found
       catch(:halt) { handle(request) }
     end
   end
