@@ -50,6 +50,14 @@ module Sinatra
         "#{singular}_id".to_sym
       end
       
+      def find_last_modified(records)
+        if records.all? { |r| r.respond_to?(:updated_at) }
+          records.sort_by { |r| r.updated_at }.last
+        else
+          records.last
+        end
+      end
+      
       private
       
       def proxy(params)

@@ -26,13 +26,34 @@ describe "handle index" do
   describe "rendering a response" do
     context "when there's a :format param" do
       before(:each) do
+        @newest_article = Article.create!
         @request = fake_request(:format => "yaml")
-        stub(maker.model).all(anything).returns([:article])
+        stub(maker.model).all(anything).returns([@newest_article, @article])
       end
       
       it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize(request, [:article])
+        mock.proxy(maker.responder).serialize(request, [@newest_article, @article])
         handle(request)
+      end
+      
+      describe "setting the last_modified params" do
+        context "when the last record was the most recently updated" do
+          it "sets last_modified param to the last updated record's updated_at" do
+            mock(request).last_modified(@newest_article.updated_at)
+            handle(request)
+          end
+        end
+        
+        context "when the last record was not the most recently updated" do
+          before(:each) do
+            @article.update_attribute :name, "Updated recently"
+          end
+          
+          it "sets last_modified param to the last updated record's updated_at" do
+            mock(request).last_modified(@article.updated_at)
+            handle(request)
+          end
+        end
       end
     end
     

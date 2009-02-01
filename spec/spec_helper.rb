@@ -32,6 +32,10 @@ build_model(:articles) do
   timestamps
   
   has_many :comments
+  
+  def self.all
+    super(:order => 'created_at DESC')
+  end
 end
 
 build_model(:comments) do

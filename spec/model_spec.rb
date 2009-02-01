@@ -20,6 +20,16 @@ describe Sinatra::Hat::Model do
     end
   end
   
+  describe "find_last_modified" do
+    before(:each) do
+      @last_modified_article = Article.create!
+    end
+    
+    it "returns the last modified record" do
+      new_model.find_last_modified([@article, @last_modified_article]).should == @last_modified_article
+    end
+  end
+  
   describe "all()" do
     before(:each) do
       @maker = new_maker
