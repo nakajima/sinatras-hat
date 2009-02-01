@@ -10,49 +10,45 @@ module Sinatra
     module Actions
       def self.included(map)
         map.action :destroy, '/:id', :verb => :delete do |request|
-          record = model.find(request.params) || responder.not_found(request)
-          record.destroy
-          responder.success(:destroy, request, record)
+          set :result, model.find(request.params)
+          result.destroy rescue nil
+          set :success, true
         end
         
         map.action :new, '/new' do |request|
-          new_record = model.new(request.params)
-          responder.success(:new, request, new_record)
+          set :result, model.new(request.params)
+          set :success, true
         end
         
         map.action :update, '/:id', :verb => :put do |request|
-          record = model.update(request.params) || responder.not_found(request)
-          result = record.save ? :success : :failure
-          responder.send(result, :update, request, record)
+          set :result, model.update(request.params)
+          set :success, result.save rescue false
         end
         
         map.action :edit, '/:id/edit' do |request|
-          record = model.find(request.params) || responder.not_found(request)
-          responder.success(:edit, request, record)
+          set :result, model.find(request.params)
+          set :success, true
         end
 
         map.action :show, '/:id' do |request|
-          record = model.find(request.params) || responder.not_found(request)
-          set_cache_headers(request, record)
-          responder.success(:show, request, record)
+          set :result, model.find(request.params)
+          set :success, result
         end
         
         map.action :create, '/', :verb => :post do |request|
           record = model.new(request.params)
-          result = record.save ? :success : :failure
-          responder.send(result, :create, request, record)
+          set :success, record.save
+          set :result, record
         end
 
         map.action :index, '/' do |request|
-          records = model.all(request.params)
-          set_cache_headers(request, records)
-          responder.success(:index, request, records)
+          set :result, model.all(request.params)
+          set :success, true
         end
         
         private
         
         def set_cache_headers(request, data)
-          
           set_etag(request, data)
           set_last_modified(request, data)
         end

@@ -66,12 +66,15 @@ describe Sinatra::Hat::Maker do
     before(:each) do
       @request = fake_request
       @maker = new_maker
-      stub(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request| [self, passed_request] }
+      stub(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request|
+        set :result, [self, passed_request]
+      }
     end
     
-    it "takes an action and instance_exec's its event handler" do
-      mock(Sinatra::Hat::Maker.actions[:index])[:fn].returns proc { |passed_request| [self, passed_request] }
-      maker.handle(:index, request).should == [maker, request]
+    it "instantiates a new Request and calls perform!" do
+      mock(stub_request = Sinatra::Hat::Request.new(@request, :index)).perform!
+      mock(Sinatra::Hat::Request).new(@request, :index) { stub_request }
+      maker.handle(:index, request)
     end
     
     context "when the action is protected" do

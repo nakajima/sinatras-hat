@@ -36,7 +36,12 @@ module Sinatra
         protect!(request) if protect.include?(action)
         
         log_with_benchmark(request, action) do
-          instance_exec(request, &self.class.actions[action][:fn])
+          r = Request.new(request, action)
+          r.set_last_modified(model)
+          r.perform!
+          r.success? ?
+            responder.success(action, request, r.result) :
+            responder.failure(action, request, r.result)
         end
       end
       

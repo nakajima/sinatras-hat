@@ -75,6 +75,7 @@ def fake_request(options={})
   stub(request).response.returns(Sinatra::Response.new)
   stub(request).last_modified(anything)
   stub(request).etag(anything)
+  stub(request).not_found
   request
 end
 

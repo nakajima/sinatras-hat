@@ -19,6 +19,10 @@ class MountedApp < Sinatra::Base
     finder { |model, params| model.all }
     record { |model, params| model.first(:id => params[:id]) }
     
+    caches :show do
+      set :etag, 
+    end
+    
     # Mount children as a nested resource
     mount(Comment) do
       finder { |model, params| model.all }

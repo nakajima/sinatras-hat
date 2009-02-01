@@ -62,10 +62,6 @@ module Sinatra
         formatter = to_format(name)
         formatter[data] || request.error(406)
       end
-      
-      def not_found(request)
-        request.not_found
-      end
             
       private
       
