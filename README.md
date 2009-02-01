@@ -200,6 +200,11 @@ after :create do |on|
 end
 </pre>
 
+## Todo
+
+* Make `last_modified` calls more efficient
+* Investigate other forms of caching
+
 ## Other Features
 
 I'll be writing docs for the following topics soon:
