@@ -146,13 +146,13 @@ module Sinatra
         msg << "Params: #{request.params.inspect}"
         msg << "Action: #{action.to_s.upcase}"
         
-        logger.info ">> " + msg.join(' | ')
+        logger.info "[sinatras-hat] " + msg.join(' | ')
         
         result = nil
         
         t = Benchmark.realtime { result = yield }
         
-        logger.info "   Request finished in #{t} sec."
+        logger.info "               Request finished in #{t} sec."
         
         result
       end
