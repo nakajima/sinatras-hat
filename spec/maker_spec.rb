@@ -289,7 +289,7 @@ describe Sinatra::Hat::Maker do
         grand_parent = new_maker(Article)
         parent = new_maker(Article, :parent => grand_parent)
         child = new_maker(Comment, :parent => parent)
-        child.parents.should == [parent, grand_parent]
+        child.parents.should == [grand_parent, parent]
       end
     end
   end

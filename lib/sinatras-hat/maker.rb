@@ -93,7 +93,7 @@ module Sinatra
       end
       
       def parents
-        @parents ||= parent ? Array(parent) + parent.parents : []
+        @parents ||= parent ? parent.parents + Array(parent) : []
       end
       
       def resource_path(*args)

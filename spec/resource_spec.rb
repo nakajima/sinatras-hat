@@ -62,6 +62,10 @@ describe Sinatra::Hat::Resource do
         @resource = Sinatra::Hat::Resource.new(@grand_child)
       end
       
+      it "returns nested resource path" do
+        @resource.path('/:id').should == "/articles/:article_id/comments/:comment_id/replies/:id"
+      end
+      
       it "can return path for model object" do
         @resource.path('/:id', @reply).should == "/articles/#{@article.to_param}/comments/#{@comment.to_param}/replies/#{@reply.to_param}"
       end
