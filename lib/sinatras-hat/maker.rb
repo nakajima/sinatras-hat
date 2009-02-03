@@ -92,6 +92,15 @@ module Sinatra
         end
       end
       
+      # A way to determine a record's representation in the database
+      def to_param(name=nil)
+        if name
+          options[:to_param] = name
+        else
+          options[:to_param]
+        end
+      end
+      
       # A list of actions to protect via basic auth. Protected actions
       # will have the authenticator block called before they are handled. 
       def protect(*actions)
@@ -129,9 +138,10 @@ module Sinatra
           :only => Set.new(Maker.actions.keys),
           :parent => nil,
           :finder => proc { |model, params| model.all },
-          :record => proc { |model, params| model.find_by_id(params[:id]) },
+          :record => proc { |model, params| model.send("find_by_#{to_param}", params[:id]) },
           :protect => [ ],
           :formats => { },
+          :to_param => :id,
           :credentials => { :username => 'username', :password => 'password', :realm => "The App" },
           :authenticator => proc { |username, password| [username, password] == [:username, :password].map(&credentials.method(:[])) }
         }

@@ -147,6 +147,21 @@ describe Sinatra::Hat::Maker do
       end
     end
     
+    describe ":to_param" do
+      it "is :id by default" do
+        maker.options[:to_param].should == :id
+      end
+      
+      it "is methodized" do
+        maker.to_param.should == :id
+      end
+      
+      it "has methodized setter" do
+        maker.to_param :permalink
+        maker.to_param.should == :permalink
+      end
+    end
+    
     describe ":parent" do
       it "is nil" do
         maker.options[:parent].should be_nil

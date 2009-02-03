@@ -17,7 +17,7 @@ module Sinatra
         end
         
         path = clean(path + suffix)
-        path.gsub!(/:(\w+)/) { parents.pop.id } if record
+        path.gsub!(/:(\w+)/) { parents.pop.send(@maker.to_param) } if record
         path
       end
       
