@@ -114,7 +114,7 @@ module Sinatra
       # An array of parent Maker instances under which this instance
       # was nested.
       def parents
-        @parents ||= parent ? Array(parent) + parent.parents : []
+        @parents ||= parent ? parent.parents + Array(parent) : []
       end
       
       # Looks up the resource path for the specified arguments using this
