@@ -8,20 +8,20 @@ module Sinatra
       end
       
       def path(suffix, record=nil)
-        suffix = suffix.dup
-        
-        parents = path_records_for(record) if record
-        
-        path = resources.inject("") do |memo, maker|
+        records = record ? path_records_for(record) : []
+        results = resources.inject("") do |memo, maker|
           memo += fragment(maker, record)
         end
         
-        path = clean(path + suffix)
-        path.gsub!(/:(\w+)/) { parents.pop.send(@maker.to_param) } if record
-        path
+        interpolate(clean(results + suffix.dup), records)
       end
       
       private
+      
+      def interpolate(uri, records)
+        return uri if records.empty?
+        uri.gsub(/:(\w+)/) { records.pop.send(@maker.to_param) }
+      end
       
       def path_records_for(record)
         [record].tap do |parents|
