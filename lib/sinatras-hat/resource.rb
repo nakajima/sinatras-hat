@@ -24,7 +24,7 @@ module Sinatra
       private
       
       def path_records_for(record)
-        returning [record] do |parents|
+        [record].tap do |parents|
           resources.reverse.each do |resource|
             parents << resource.model.find_owner(parents.last.attributes)
             parents.compact!
