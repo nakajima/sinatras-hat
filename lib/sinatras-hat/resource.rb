@@ -10,27 +10,37 @@ module Sinatra
       def path(suffix, record=nil)
         suffix = suffix.dup
         
+        parents = path_records_for(record) if record
+        
         path = resources.inject("") do |memo, maker|
           memo += fragment(maker, record)
         end
         
-        suffix.gsub!('/:id', "/#{record.id}") if record
-        
-        clean(path + suffix)
+        path = clean(path + suffix)
+        path.gsub!(/:(\w+)/) { parents.pop.id } if record
+        path
       end
       
       private
       
+      def path_records_for(record)
+        returning [record] do |parents|
+          resources.reverse.each do |resource|
+            parents << resource.model.find_owner(parents.last.attributes)
+            parents.compact!
+            parents.uniq!
+          end
+        end
+      end
+      
       def fragment(maker, record)
         @maker.eql?(maker) ?
           "/#{maker.prefix}" :
-          "/#{maker.prefix}/" + interpolate(maker, record)
+          "/#{maker.prefix}/" + key(maker)
       end
       
-      def interpolate(maker, record)
-        foreign_key = maker.model.foreign_key
-        result = record ? record.send(foreign_key) : foreign_key
-        result.inspect
+      def key(maker)
+        maker.model.foreign_key.inspect
       end
       
       def clean(s)
