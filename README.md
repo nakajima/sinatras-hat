@@ -68,8 +68,21 @@ as your `Article` model supports a `comments` association proxy, then the `finde
 and `record` options for `Comment` will automatically scope their results by
 the parent `Article`.
 
-**Note:** Currently, only one level of nesting is supported. Here's a Lighthouse
-ticket for the issue: [http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/tickets/1-resources-can-only-be-nested-one-level](http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/tickets/1-resources-can-only-be-nested-one-level).
+## Limiting routes
+
+By default, Sinatra's Hat creates seven routes for each mounted model (the
+four ones for <acronym title="Create|Read|Update|Destroy">CRUD</acronym>
+actions plus the routes for index, new and edit action), but you can reduce
+the number of available routes with `only`:
+
+<pre>
+mount Article do
+  only :index, :show
+end
+</pre>
+
+Only the listed actions will return valid responses; requests for the
+"missing" routes will produce 404 "Not Found" HTTP responses.
 
 ## Basic Auth
 
@@ -109,6 +122,8 @@ call `to_#{format}` on the record object. That means that with most ORMs,
 things like `to_xml`, `to_json`, and `to_yaml` will be supported right out
 of the box.
 
+Requests for unknow formats will produce 406 "Not Acceptable" HTTP responses.
+
 ## Default Flows
 
 Sinatra's Hat has some default flows:
@@ -143,6 +158,11 @@ mount Article do
   end
 end
 </pre>
+
+Only `:create` and `:update` actions allow to handle success and failure
+differently; for the other actions you can customize only the `success` result
+and if something goes wrong (i.e., when a record cannot be found) they will
+simply return a 404 "Not Found" HTTP response.
 
 ### `redirect` options
 
@@ -205,13 +225,6 @@ end
 * Make `last_modified` calls more efficient
 * Investigate other forms of caching
 
-## Other Features
-
-I'll be writing docs for the following topics soon:
-
-* Specifying which actions to generate
-* Protecting actions with basic auth
-
 ## Other Info
 
 * [View the Lighthouse Project](http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/overview)
@@ -219,4 +232,4 @@ I'll be writing docs for the following topics soon:
 * Thanks a ton to the [Sinatra team](http://github.com/sinatra) for such an
   awesome framework.
 
-(c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved. 
+(c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved.
