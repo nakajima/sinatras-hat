@@ -266,6 +266,28 @@ describe Sinatra::Hat::Maker do
   end
   
   describe "prefix" do
+    context "when used as a method" do
+      before(:each) do
+        @maker = new_maker(Article)
+      end
+
+      it "is a getter if called without argument" do
+        maker.prefix.should == maker.options[:prefix]
+      end
+
+      it "is a setter if called with an argument" do
+        maker.prefix 'super/heroes'
+        maker.prefix.should == 'super/heroes'
+        maker.prefix.should == maker.options[:prefix]
+      end
+
+      it "memoizes the value" do
+        maker.prefix.should == 'articles'
+        maker.prefix 'secret/agents'
+        maker.prefix.should_not == 'secret/agents'
+      end
+    end
+
     context "when specified as an option" do
       it "returns the option value" do
         new_maker(Article, :prefix => "posts").prefix.should == "posts"

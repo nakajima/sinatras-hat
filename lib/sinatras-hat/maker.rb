@@ -116,8 +116,8 @@ module Sinatra
       end
       
       # The path prefix to use for routes and such.
-      def prefix
-        options[:prefix] ||= model.plural
+      def prefix(name = nil)
+        options[:prefix] ||= (name || model.plural)
       end
       
       # An array of parent Maker instances under which this instance
