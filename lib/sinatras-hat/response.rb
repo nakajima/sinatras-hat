@@ -6,7 +6,7 @@ module Sinatra
     class Response
       attr_reader :maker
       
-      delegate :resource_path, :to => :maker
+      delegate :model, :resource_path, :to => :maker
       
       def initialize(maker, request)
         @maker = maker
@@ -26,6 +26,14 @@ module Sinatra
         @request.redirect url_for(*args)
       end
       
+      def url_for(resource, *args)
+        case resource
+        when String then resource
+        when Symbol then resource_path(Maker.actions[resource][:path], *args)
+        else maker_for(resource).resource_path('/:id', resource)
+        end
+      end
+      
       private
       
       def no_template!(msg)
@@ -42,12 +50,9 @@ module Sinatra
         end
       end
       
-      def url_for(resource, *args)
-        case resource
-        when String then resource
-        when Symbol then resource_path(Maker.actions[resource][:path], *args)
-        else resource_path('/:id', resource)
-        end
+      def maker_for(record)
+        resource = record.is_a?(model.klass) ? maker : maker.parents.detect { |m| record.is_a?(m.model.klass) }
+        resource || maker
       end
     end
   end

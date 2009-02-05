@@ -5,7 +5,7 @@ class Article; end
 describe Sinatra::Hat::Response do
   attr_reader :maker, :response, :request
   
-  def new_response
+  def new_response(maker=@maker)
     Sinatra::Hat::Response.new(maker, request)
   end
   
@@ -65,15 +65,30 @@ describe Sinatra::Hat::Response do
       end
     end
     
-    context "when passed some data" do
+    context "when passed a record" do
       before(:each) do
         stub(@article = Article.new).id { 2 }
       end
       
-      it "redirects to the resource path for that data" do
-        mock(request).redirect("/articles/2")
-        new_response.redirect(@article)
+      context "when passed a record for the current maker" do
+        it "redirects to the resource path for that data" do
+          mock(request).redirect("/articles/2")
+          new_response.redirect(@article)
+        end
       end
+
+      context "when passed a record for the current maker" do
+        before(:each) do
+          @article.save!
+          @comment = @article.comments.create!
+          @child_maker = new_maker(Comment, :parent => @maker)
+        end
+        
+        it "redirects to the resource path for that data" do
+          mock(request).redirect("/articles/#{@article.to_param}")
+          new_response(@child_maker).redirect(@article)
+        end
+      end      
     end
     
     context "when passed a symbol" do
