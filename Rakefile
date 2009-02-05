@@ -1,12 +1,17 @@
 require 'spec/rake/spectask'
 require 'rake/classic_namespace'
+require 'cucumber/rake/task'
  
-task :default => [:spec]
+task :default => [:spec, :features]
  
 desc "Run all specs"
 Spec::Rake::SpecTask.new('spec') do |t|
   t.spec_files = FileList['spec/**/*.rb']
   t.spec_opts = ['--colour']
+end
+
+Cucumber::Rake::Task.new do |c|
+  c.cucumber_opts = '--format progress'
 end
 
 namespace :sinatra do
