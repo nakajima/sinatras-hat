@@ -133,7 +133,9 @@ describe Sinatra::Hat::Maker do
       
       it "has methodized setter" do
         maker.only :index, :show
-        maker.only.should == [:index, :show]
+        maker.only.should have(2).entries
+        maker.only.should include(:index)
+        maker.only.should include(:show)
       end
     end
     
@@ -279,12 +281,6 @@ describe Sinatra::Hat::Maker do
         maker.prefix 'super/heroes'
         maker.prefix.should == 'super/heroes'
         maker.prefix.should == maker.options[:prefix]
-      end
-
-      it "memoizes the value" do
-        maker.prefix.should == 'articles'
-        maker.prefix 'secret/agents'
-        maker.prefix.should_not == 'secret/agents'
       end
     end
 
