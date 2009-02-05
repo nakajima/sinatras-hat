@@ -30,8 +30,9 @@ describe Sinatra::Hat::Response do
     
     context "when there are options passed" do
       it "sends the options to the request" do
-        mock(request).last_modified :yesterday
-        new_response.render(:show, :last_modified => :yesterday)
+        t = Time.now
+        mock(request).last_modified t
+        new_response.render(:show, :last_modified => t)
       end
     end
         
