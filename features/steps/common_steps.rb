@@ -56,6 +56,10 @@ Given /^I mount the model$/ do
   Given "a mounted model"
 end
 
+When /^I make a GET request for that record$/ do
+  get "/people/#{@record.to_param}"
+end
+
 When /^I make a GET request for that record using the '(\w+)' format$/ do |format|
   get "/people/#{@record.to_param}.#{format}"
 end
