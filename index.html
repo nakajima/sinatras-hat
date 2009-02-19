@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>nakajima/sinatras-hat @ GitHub</title>
+	
+	<style type="text/css">
+		body {
+  		margin-top: 1.0em;
+  		background-color: #ddecc5;
+		  font-family: "helvetica"; 
+  		color: #000000;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+		h1 { font-size: 3.8em; color: #22133a; margin-bottom: 3px; }
+		h1 .small { font-size: 0.4em; }
+		h1 a { text-decoration: none }
+		h2 { font-size: 1.5em; color: #22133a; }
+    h3 { text-align: center; color: #22133a; }
+    a { color: #22133a; }
+    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .download { float: right; }
+		pre { background: #000; color: #fff; padding: 15px;}
+    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+    .footer { text-align:center; padding-top:30px; font-style: italic; }
+	</style>
+	
+</head>
+
+<body>
+  <a href="http://github.com/nakajima/sinatras-hat"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+  
+  <div id="container">
+
+    <div class="download">
+      <a href="http://github.com/nakajima/sinatras-hat/zipball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
+      <a href="http://github.com/nakajima/sinatras-hat/tarball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+    </div>
+      
+    <h1><a href="http://github.com/nakajima/sinatras-hat">sinatras-hat</a> 
+      <span class="small">by <a href="http://github.com/nakajima">nakajima</a></small></h1>
+
+    <div class="description">
+      DSL-ified RESTy apps with Sinatra.
+    </div>
+
+    <p><h1 id="sinatra8217s_hat">Sinatra&#8217;s Hat</h1>
+
+<p>Easy REST-ful apps with Sinatra.</p>
+
+<p>Using Sinatra&#8217;s Hat is centered around the <code>mount</code> method, which is
+added to <code>Sinatra::Base</code>. It takes at bare minimum a model class. This
+class will be mounted as a REST-ful resource, giving you all the CRUD
+actions, as well as <code>new</code> and <code>edit</code> actions. Let&#8217;s look at some code:</p>
+
+<pre>
+mount Article
+</pre>
+
+<p>Now you&#8217;ve basically got the same functionality as you&#8217;ll get in Rails
+by running <code>script/generate scaffold Article</code>. The views for your <code>Article</code>
+will live in <code>views/articles</code>, and be named <code>index.erb</code>, <code>show.erb</code>, etc.</p>
+
+<p>You can look at my <a href="http://github.com/nakajima/hatter/tree/master">Hatter</a>
+project, or the <code>examples/</code> directory in this one to see this in action.</p>
+
+<p>Go ahead, try it.</p>
+
+<h2 id="orm_agnostic_or_orm_atheist">ORM agnostic? Or ORM atheist?</h2>
+
+<p>By default, Sinatra&#8217;s Hat works with ActiveRecord. That means that going
+to <code>/articles</code> will simply call <code>Article.all</code> to populate the <code>@articles</code>
+instance variable. Going to <code>/articles/2</code> will call <code>Article.find_by_id(2)</code>
+to populate the <code>@article</code> instance variable.</p>
+
+<p>We call <code>find_by_id</code> instead of <code>find</code> because the <code>record</code> option should
+simply return <code>nil</code> when the record can&#8217;t be found.</p>
+
+<p>Not every class is an ActiveRecord though (especially if you&#8217;re not using
+ActiveRecord). That&#8217;s why you can use the <code>finder</code> and <code>record</code> options.</p>
+
+<p>This example will show you how to use DataMapper with Sinatra&#8217;s Hat:</p>
+
+<pre>
+mount Article do
+  finder { |model, params| model.all }
+  record { |model, params| model.first(:id => params[:id]) }
+end
+</pre>
+
+<p>As you can see, both <code>finder</code> and <code>record</code> take a block, which will get
+passed the &#8220;model&#8221; and <code>params</code> for each request. The reason you should use
+the &#8220;model&#8221; argument instead of referencing the class directly is that
+when you start nesting mounted models, then Sinatra&#8217;s Hat will attempt to
+pass the association proxy as the model argument instead of the class itself.</p>
+
+<p>&#8220;Nested mounted models?&#8221; you ask?</p>
+
+<h2 id="nested_mounted_models">Nested mounted models.</h2>
+
+<p>You don&#8217;t want to have to expose your entire application at the top level
+of URL paths. That wouldn&#8217;t be very RESTful, and more importantly, it&#8217;d be
+damn ugly. So Sinatra&#8217;s Hat allows you to nest resources:</p>
+
+<pre>
+mount Article do
+  mount Comment
+end
+</pre>
+
+<p>With this example, you&#8217;d get <code>/articles/1/comments</code>, <code>/articles/1/comments/1</code>
+and all the rest of the actions you get for articles, just nested. As long
+as your <code>Article</code> model supports a <code>comments</code> association proxy, then the <code>finder</code>
+and <code>record</code> options for <code>Comment</code> will automatically scope their results by
+the parent <code>Article</code>.</p>
+
+<h2 id="limiting_routes">Limiting routes</h2>
+
+<p>By default, Sinatra&#8217;s Hat creates seven routes for each mounted model (the
+four ones for <acronym title="Create|Read|Update|Destroy">CRUD</acronym>
+actions plus the routes for index, new and edit action), but you can reduce
+the number of available routes with <code>only</code>:</p>
+
+<pre>
+mount Article do
+  only :index, :show
+end
+</pre>
+
+<p>Only the listed actions will return valid responses; requests for the
+&#8220;missing&#8221; routes will produce 404 &#8220;Not Found&#8221; HTTP responses.</p>
+
+<h2 id="basic_auth">Basic Auth</h2>
+
+<p>To protect actions using basic authentication, you can use the <code>protect</code> method.</p>
+
+<pre>
+mount Article do
+  protect :create, :update, :destroy, :username => "foo", :password => "bar", :realm => "BLOGZ"
+end
+</pre>
+
+<p>The above snippet will protect your <acronym title="Create|Update|Destroy">CUD</acronym>
+actions with basic auth, using the username &#8220;foo&#8221; and password &#8220;bar&#8221;. The realm
+for the basic auth prompt will say &#8220;BLOGZ&#8221;.</p>
+
+<p>If you want to protect all of your actions, you cay say <code>protect :all</code>.</p>
+
+<h2 id="xml_json_yaml_and_whatever_else_you_want"><code>.xml</code>, <code>.json</code>, <code>.yaml</code>, and whatever else you want</h2>
+
+<p>If a request has a format extensions, then Sinatra&#8217;s Hat will first check
+to see if it has a custom way of serializing that format. To specify a 
+custom formatter, you can use the <code>formats</code> hash:</p>
+
+<pre>
+mount Article do
+  formats[:ruby] = { |data| data.inspect }
+end
+</pre>
+
+<p>With that custom formatter, a request to <code>/articles.ruby</code> will return
+the equivalent of <code>Article.all.inspect</code>.</p>
+
+<h3 id="automatic_formatters">Automatic formatters</h3>
+
+<p>If you don&#8217;t specify a custom formatter, then Sinatra&#8217;s Hat will try to
+call <code>to_#{format}</code> on the record object. That means that with most ORMs,
+things like <code>to_xml</code>, <code>to_json</code>, and <code>to_yaml</code> will be supported right out
+of the box.</p>
+
+<p>Requests for unknow formats will produce 406 &#8220;Not Acceptable&#8221; HTTP responses.</p>
+
+<h2 id="default_flows">Default Flows</h2>
+
+<p>Sinatra&#8217;s Hat has some default flows:</p>
+
+<h3 id="after_the_create_action">After the <code>create</code> action</h3>
+
+<p><strong>On Success</strong>: If a record is successfully created, Sinatra&#8217;s Hat will redirect to that
+record&#8217;s show page.</p>
+
+<p><strong>On Failure</strong>: If a record cannot be saved, Sinatra&#8217;s Hat will render the <code>new</code> action.</p>
+
+<h3 id="after_the_update_action">After the <code>Update</code> action</h3>
+
+<p><strong>On Success</strong>: If a record is successfully updated, Sinatra&#8217;s Hat will redirect to that
+record&#8217;s show page.</p>
+
+<p><strong>On Failure</strong>: If a record cannot be updated, Sinatra&#8217;s Hat will render the <code>edit</code> action.</p>
+
+<h2 id="custom_flows">Custom Flows</h2>
+
+<p>To specify custom flows for your actions, you can use the <code>after</code> method.</p>
+
+<p>Let&#8217;s say that after a user creates an Article, you want to render the
+article&#8217;s edit action, and if it can&#8217;t be created, you want to redirect
+back to the articles index.</p>
+
+<pre>
+mount Article do
+  after :create do |on|
+    on.success { |record| render(:edit) }
+    on.failure { |record| redirect(:index) }
+  end
+end
+</pre>
+
+<p>Only <code>:create</code> and <code>:update</code> actions allow to handle success and failure
+differently; for the other actions you can customize only the <code>success</code> result
+and if something goes wrong (i.e., when a record cannot be found) they will
+simply return a 404 &#8220;Not Found&#8221; HTTP response.</p>
+
+<h3 id="redirect_options"><code>redirect</code> options</h3>
+
+<p>When specifying a custom redirect, you can pass one of a few things:</p>
+
+<h4 id="a_string">A String</h4>
+
+<p>When you pass <code>redirect</code> a string, the redirect will go to that string.</p>
+
+<pre>
+after :create do |on|
+  on.success { |record| redirect("/articles/#{record.to_param}") }
+end
+</pre>
+
+<h4 id="a_record">A Record</h4>
+
+<p>When you pass <code>redirect</code> a record, the redirect will go to the show
+action for that record.</p>
+
+<pre>
+after :create do |on|
+  on.success { |record| redirect(record) }
+end
+</pre>
+
+<h4 id="a_symbol">A symbol</h4>
+
+<p>If you pass <code>redirect</code> the name of an action as a symbol (like <code>:index</code>),
+then the redirect will go to the correct path for that option:</p>
+
+<pre>
+after :create do |on|
+  on.success { redirect(:index) }
+end
+</pre>
+
+<p>When the action requires a record (like <code>:show</code>), then just pass the
+record as a second argument:</p>
+
+<pre>
+after :create do |on|
+  on.success { |record| redirect(:show, record) }
+end
+</pre>
+
+<h3 id="responding_with_a_render">Responding with a <code>render</code></h3>
+
+<p>When you want your response to just render a template, just call <code>render</code>
+with the name of the template:</p>
+
+<pre>
+after :create do |on|
+  on.failure { |record| render(:new) }
+end
+</pre>
+
+<h2 id="todo">Todo</h2>
+
+<ul>
+<li>Make <code>last_modified</code> calls more efficient</li>
+<li>Investigate other forms of caching</li>
+</ul>
+
+<h2 id="other_info">Other Info</h2>
+
+<ul>
+<li><a href="http://nakajima.lighthouseapp.com/projects/24609-sinatras-hat/overview">View the Lighthouse Project</a></li>
+<li><a href="http://ci.patnakajima.com/sinatra-s-hat">View the CI build</a></li>
+<li>Thanks a ton to the <a href="http://github.com/sinatra">Sinatra team</a> for such an
+awesome framework.</li>
+</ul>
+
+<p>(c) Copyright 2008-2009 Pat Nakajima. All Rights Reserved.</p>
+
+</p><h2>Dependencies</h2>
+<p>sinatra
+extlib
+metaid</p>
+<h2>Install</h2>
+<p><pre>$ gem install sinatras-hat</pre></p>
+<h2>License</h2>
+<p><pre>Copyright (c) 2008-2009 Pat Nakajima
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.</pre></p>
+<h2>Authors</h2>
+<p>Pat Nakajima (patnakajima@gmail.com)<br/>Emanuele Vicentini (emanuele.vicentini@gmail.com)<br/></p>
+<h2>Contact</h2>
+<p>Pat Nakajima (patnakajima@gmail.com)<br/>      </p>
+
+
+    <h2>Download</h2>
+    <p>
+      You can download this project in either
+      <a href="http://github.com/nakajima/sinatras-hat/zipball/master">zip</a> or
+      <a href="http://github.com/nakajima/sinatras-hat/tarball/master">tar</a> formats.
+    </p>
+    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+      by running:
+      <pre>$ git clone git://github.com/nakajima/sinatras-hat</pre>
+    </p>
+      
+    <div class="footer">
+      get the source code on GitHub : <a href="http://github.com/nakajima/sinatras-hat">nakajima/sinatras-hat</a>
+    </div>
+    
+  </div>
+
+  
+</body>
+</html>
