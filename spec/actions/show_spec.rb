@@ -31,11 +31,6 @@ describe "handle show" do
         stub(maker.model).find(params).returns(@article)
       end
       
-      it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize(request, @article)
-        handle(request)
-      end
-      
       it "sets last_modified header" do
         mock(request).last_modified(@article.updated_at)
         handle(request)

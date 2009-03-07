@@ -30,12 +30,7 @@ describe "handle index" do
         @request = fake_request(:format => "yaml")
         stub(maker.model).all(anything).returns([@newest_article, @article])
       end
-      
-      it "serializes the data in the appropriate format" do
-        mock.proxy(maker.responder).serialize(request, [@newest_article, @article])
-        handle(request)
-      end
-      
+
       it "sets ETag header" do
         mock(request).etag(anything)
         handle(request)

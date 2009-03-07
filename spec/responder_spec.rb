@@ -21,10 +21,22 @@ describe Sinatra::Hat::Responder do
   end
   
   describe "success" do
+    context "when there's a default format" do
+      before(:each) do
+        @maker.format :json
+      end
+      
+      it 'serializes the response with the default format' do
+        request = fake_request
+        responder = new_responder
+        responder.success(:show, request, :article).should == :article.to_json
+      end
+    end
+    
     context "when there's a format" do
       it "serializes the response" do
         request = fake_request(:format => "yaml")
-        mock.proxy(responder = new_responder).serialize(request, :article)
+        mock.proxy(responder = new_responder).serialize(:article, "yaml")
         responder.success(:show, request, :article)
       end
     end
@@ -93,26 +105,28 @@ describe Sinatra::Hat::Responder do
     
     context "when there is no formatter" do
       context "when the data responds to to_*" do
-        it "calls to_* on the data" do
-          responder.serialize(fake_request(:format => "yaml"), [:article]).should == [:article].to_yaml
+        it "serializes data and gets mime type" do
+          response, mime = responder.serialize([:article], "yaml")
+          response.should == [:article].to_yaml
+          mime.should == 'text/yaml'
         end
       end
 
       context "when the data doesn't respond to to_*" do
-        it "returns a 406 error code for the response" do
-          mock(bad_request = fake_request(:format => "say_what")).error(406)
-          responder.serialize(bad_request, [:article])
+        it "returns nil" do
+          responder.serialize([:article], "say_what").should be_nil
         end
       end
     end
     
     context "when there is a formatter" do
       before(:each) do
-        maker.formats[:ruby] = proc { |data| [data, :formatted].inspect }
+        maker.formats[:yaml] = proc { |data| [data, :formatted].inspect }
       end
       
-      it "calls the formatter, passing the data" do
-        responder.serialize(fake_request(:format => "ruby"), :article).should == [:article, :formatted].inspect
+      it "returns serialized data and the mime type" do
+        response = responder.serialize(:article, "yaml")
+        response.should == [[:article, :formatted].inspect, 'text/yaml']
       end
     end
   end

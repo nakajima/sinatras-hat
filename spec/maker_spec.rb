@@ -174,6 +174,23 @@ describe Sinatra::Hat::Maker do
       end
     end
     
+    describe ':format' do
+      it 'is nil by default' do
+        maker.options[:format].should be_nil
+        maker.options.should have_key(:format)
+      end
+      
+      it 'is methodized' do
+        maker.options[:format] = :json
+        maker.format.should == :json
+      end
+      
+      it 'has methodized setter' do
+        maker.format :json
+        maker.format.should == :json
+      end
+    end
+    
     describe ":protect" do
       it "is empty by default" do
         maker.options[:protect].should be_empty

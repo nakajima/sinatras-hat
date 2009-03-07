@@ -65,22 +65,30 @@ module Sinatra
       # Serializes the data passed in, first looking for a custom formatter,
       # then falling back on trying to call to_[format] on the data. If neither
       # are available, returns an error with the status code 406.
-      def serialize(request, data)
-        name = request.params[:format].to_sym
+      def serialize(data, format)
+        return nil unless format
+        name = format.to_sym
+        mime = get_mime_type(format)
         formatter = to_format(name)
-        formatter[data] || request.error(406)
+        formatter[data] ? [formatter[data], mime] : nil
       end
             
       private
       
       def handle(result, name, request, data)
-        if format = request.params[:format]
-          serialize(request, data)
+        if format = request.params[:format] || maker.format
+          response, mime = serialize(data, format)
+          request.content_type(mime) if mime
+          response or request.error(406)
         else
           request.instance_variable_set(ivar_name(data), data)
           response = Response.new(maker, request)
           response.instance_exec(data, &defaults[name][result])
         end
+      end
+      
+      def get_mime_type(format)
+        Rack::Mime::MIME_TYPES['.' + format.to_s]
       end
       
       def ivar_name(data)

@@ -20,4 +20,4 @@ class MountedApp < Sinatra::Base
   end
 end
 
-MountedApp.run!
+MountedApp.run! if __FILE__ == $0

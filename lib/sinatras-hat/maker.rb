@@ -55,6 +55,8 @@ module Sinatra
       # The path prefix to use for generating groutes.
       option_setter :prefix
       
+      option_setter :format
+      
       def initialize(klass, overrides={})
         @klass = klass
         options.merge!(overrides)
@@ -116,6 +118,7 @@ module Sinatra
         @options ||= {
           :only => Set.new(Maker.actions.keys),
           :parent => nil,
+          :format => nil,
           :prefix => model.plural,
           :finder => proc { |model, params| model.all },
           :record => proc { |model, params| model.send("find_by_#{to_param}", params[:id]) },

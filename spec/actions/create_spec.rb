@@ -40,14 +40,6 @@ describe "handle create" do
           handle(request)
         end
       end
-
-      context "when there is a format" do
-        it "serializes the record" do
-          request_with_format = fake_request(:format => "yaml")
-          mock.proxy(maker.responder).serialize(request_with_format, new_article)
-          handle(request_with_format)
-        end
-      end
     end
 
     context "when the save is not successful" do
