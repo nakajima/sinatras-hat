@@ -34,8 +34,12 @@ module Sinatra
         
         logger.info ">> route for #{maker.klass} #{action}:\t#{method.to_s.upcase}\t#{path}"
         
-        app.send(method, path + "/?") { handler[self] }
-        app.send(method, "#{path}.:format" + "/?") { handler[self] }        
+        app.send(method, "#{path}*" + "/?") do
+          id, format = (params[:id].to_s + params[:splat].join).split('.')
+          params['id'] = id
+          params['format'] = format
+          handler[self]
+        end
       end
     end
   end
