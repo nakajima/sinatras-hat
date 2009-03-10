@@ -5,13 +5,13 @@ module Sinatra
     # context of a new Response object, or serializes the data.
     class Responder
       delegate :model, :to => :maker
-      
+
       attr_reader :maker
-      
+
       def initialize(maker)
         @maker = maker
       end
-      
+
       def defaults
         @defaults ||= {
           :show => {
@@ -48,20 +48,20 @@ module Sinatra
           }
         }
       end
-      
+
       # Called when a request is handled successfully. For most GET
       # requests, this is always the case. For update/create actions,
       # it is when the record is created/updated successfully.
       def success(name, request, data)
         handle(:success, name, request, data)
       end
-      
+
       # Called when a request is not able to handled. This could be
       # because a record could not be created or saved.
       def failure(name, request, data)
         handle(:failure, name, request, data)
       end
-      
+
       # Serializes the data passed in, first looking for a custom formatter,
       # then falling back on trying to call to_[format] on the data. If neither
       # are available, returns an error with the status code 406.
@@ -72,9 +72,9 @@ module Sinatra
         formatter = to_format(name)
         formatter[data] ? [formatter[data], mime] : nil
       end
-            
+
       private
-      
+
       def handle(result, name, request, data)
         if format = request.params[:format] || maker.format
           response, mime = serialize(data, format)
@@ -86,15 +86,15 @@ module Sinatra
           response.instance_exec(data, &defaults[name][result])
         end
       end
-      
+
       def get_mime_type(format)
         Rack::Mime::MIME_TYPES['.' + format.to_s]
       end
-      
+
       def ivar_name(data)
-        "@" + (data.respond_to?(:each) ? model.plural : model.singular)
+        "@" + (data.kind_of?(Array) ? model.plural : model.singular)
       end
-      
+
       def to_format(name)
         maker.formats[name] || Proc.new do |data|
           method_name = "to_#{name}"
